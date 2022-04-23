@@ -1,0 +1,11 @@
+D:\Unity\Project\Sword Fighter\Server\SwordFighterServer\SwordFighterServer\bin\Debug\netcoreapp2.2\SwordFighterServer.deps.json
+D:\Unity\Project\Sword Fighter\Server\SwordFighterServer\SwordFighterServer\bin\Debug\netcoreapp2.2\SwordFighterServer.runtimeconfig.json
+D:\Unity\Project\Sword Fighter\Server\SwordFighterServer\SwordFighterServer\bin\Debug\netcoreapp2.2\SwordFighterServer.runtimeconfig.dev.json
+D:\Unity\Project\Sword Fighter\Server\SwordFighterServer\SwordFighterServer\bin\Debug\netcoreapp2.2\SwordFighterServer.dll
+D:\Unity\Project\Sword Fighter\Server\SwordFighterServer\SwordFighterServer\bin\Debug\netcoreapp2.2\SwordFighterServer.pdb
+D:\Unity\Project\Sword Fighter\Server\SwordFighterServer\SwordFighterServer\obj\Debug\netcoreapp2.2\SwordFighterServer.csprojAssemblyReference.cache
+D:\Unity\Project\Sword Fighter\Server\SwordFighterServer\SwordFighterServer\obj\Debug\netcoreapp2.2\SwordFighterServer.csproj.CoreCompileInputs.cache
+D:\Unity\Project\Sword Fighter\Server\SwordFighterServer\SwordFighterServer\obj\Debug\netcoreapp2.2\SwordFighterServer.AssemblyInfoInputs.cache
+D:\Unity\Project\Sword Fighter\Server\SwordFighterServer\SwordFighterServer\obj\Debug\netcoreapp2.2\SwordFighterServer.AssemblyInfo.cs
+D:\Unity\Project\Sword Fighter\Server\SwordFighterServer\SwordFighterServer\obj\Debug\netcoreapp2.2\SwordFighterServer.dll
+D:\Unity\Project\Sword Fighter\Server\SwordFighterServer\SwordFighterServer\obj\Debug\netcoreapp2.2\SwordFighterServer.pdb
