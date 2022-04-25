@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public struct ClientInput
+public struct ClientInput // 클라이언트측 예측 방식
 {
     public int seqNum;
     public int horizontal_raw;
@@ -17,7 +17,6 @@ public class MainCharacter : MonoBehaviour
     public Transform m_CameraObject;
     public Transform m_CharacterModel;
     
-    // Shared
     private float timer;
     private int currentTick = 0;
     private const float TICKS_PER_SEC = 30f;
@@ -25,7 +24,6 @@ public class MainCharacter : MonoBehaviour
     private const int BUFFER_SIZE = 1024;
     private const float SPEED = 0.16f;
 
-    // Client specific
     private readonly Queue<ClientInput> inputTimeline = new Queue<ClientInput>();
 
     private void SendMovementDataToServer(ClientInput clientInput) {
@@ -94,20 +92,17 @@ public class MainCharacter : MonoBehaviour
     }
 
     public void OnStateReceived(int receivedSeqNum, Vector3 receivedState) {
-        // Remove inputs which arrived at server.
-        while (inputTimeline.Count > 0 && inputTimeline.Peek().seqNum <= receivedSeqNum) {
+        while (inputTimeline.Count > 0 && inputTimeline.Peek().seqNum <= receivedSeqNum) { // 처리된 요청은 삭제
             inputTimeline.Dequeue();
         }
 
-        Vector3 newState = receivedState;
+        Vector3 newState = receivedState; // 서버로부터 받은 가장 최신 좌표
 
-        // Re-apply unacknowledged inputs.
-        foreach (var input in inputTimeline) {
+        foreach (var input in inputTimeline) { // 지금까지 input기록에 따라 시뮬레이션하여 현재 좌표 계산
             newState = ProcessMovement(newState, input);
         }
-
-        // Set new move state.
-        if (Vector3.Distance(newState, transform.position) > 0f) {
+        
+        if (Vector3.Distance(newState, transform.position) > 0f) { // 계산한 좌표가 맞는지 확인
             transform.position = newState;
         }
     }
