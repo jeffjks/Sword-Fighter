@@ -15,7 +15,7 @@ namespace SwordFighterServer
             Thread mainThread = new Thread(new ThreadStart(MainThread));
             mainThread.Start();
 
-            Server.Start(2, 26950);
+            Server.Start(4, 26950);
         }
 
         private static void MainThread()
@@ -26,7 +26,7 @@ namespace SwordFighterServer
 
             while (isRunning)
             {
-                while (nextLoop < DateTime.Now)
+                while (nextLoop < DateTime.Now) // 스레드를 사용하여 매 초 Constants.TICKS_PER_SEC 회 Update() 실행
                 {
                     GameLogic.Update();
 

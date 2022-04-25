@@ -100,7 +100,6 @@ public class Client : MonoBehaviour
                 int byteLength = stream.EndRead(result);
                 if (byteLength <= 0) {
                     Disconnect();
-                    return;
                 }
 
                 byte[] data = new byte[byteLength];
@@ -177,12 +176,16 @@ public class Client : MonoBehaviour
         Debug.Log("Initialize packets.");
     }
 
-    private void Disconnect() {
+    public void Disconnect() {
         if (isConnected) {
             isConnected = false;
             tcp.socket.Close();
 
             Debug.Log("Disconnceted from server.");
         }
+    }
+
+    public bool IsConnected() {
+        return isConnected;
     }
 }

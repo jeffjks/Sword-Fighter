@@ -2071,10 +2071,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_PlayerManager: {fileID: 3378578184601654357}
   m_Animator: {fileID: 6102899817224009438}
-  m_CameraRotationSpeed: 240
   m_CameraObject: {fileID: 8939089762944725779}
   m_CharacterModel: {fileID: 6708934368766509321}
-  m_Speed: 1228
 --- !u!114 &3378578184601654357
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2098,6 +2096,7 @@ MonoBehaviour:
   m_CurrentHp: 100
   m_MaxHp: 100
   m_Movement: {x: 0, y: 0}
+  direction: {x: 0, y: 0, z: 1}
   m_State: 0
 --- !u!1 &6102899817233482916
 GameObject:
@@ -2527,6 +2526,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8939089762944725779}
+  - component: {fileID: 5536195884698736628}
   m_Layer: 0
   m_Name: CameraObject
   m_TagString: Untagged
@@ -2549,3 +2549,16 @@ Transform:
   m_Father: {fileID: 6102899817232996674}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 36, y: 0, z: 0}
+--- !u!114 &5536195884698736628
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7651945911685033251}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e625013067349e94da5c2c29724316f0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_CameraRotationSpeed: 240

@@ -147,11 +147,11 @@ namespace SwordFighterServer
         }
 
 
-        public void SendIntoGame(string username)
+        public void SendIntoGame(string username) // 플레이어 접속 시 SpawnPlayer 패킷 전달
         {
             player = new Player(id, username, new Vector3(0, 0, 0));
 
-            foreach (Client client in Server.clients.Values)
+            foreach (Client client in Server.clients.Values) // 상대방 캐릭 생성
             {
                 if (client.player != null && client.id != id)
                 {
@@ -160,7 +160,7 @@ namespace SwordFighterServer
                 }
             }
 
-            foreach (Client client in Server.clients.Values) // 자신 캐릭 생성
+            foreach (Client client in Server.clients.Values) // 자신 캐릭 생성 (모든 유저에게 전달)
             {
                 if (client.player != null)
                 {

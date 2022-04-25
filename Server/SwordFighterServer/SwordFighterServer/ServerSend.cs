@@ -52,23 +52,27 @@ namespace SwordFighterServer
                 packet.Write(player.username);
                 packet.Write(player.position);
                 packet.Write(player.direction);
+                packet.Write(player.hitPoints);
+                packet.Write(player.state);
                 //Console.WriteLine($"(To {toClient} > SpawnPlayer: {player.id}");
 
                 SendTCPData(toClient, packet);
             }
         }
 
-        public static void PlayerMovement(Player player) // 플레이어 움직임, 좌표, 방향 패킷 전달 (자신에게는 제외)
+        public static void PlayerMovement(Player player, ClientInput clientInput) // 플레이어 움직임, 좌표, 방향 패킷 전달 (자신에게는 제외)
         {
             using (Packet packet = new Packet((int) ServerPackets.playerMovement))
             {
                 packet.Write(player.id);
 
                 packet.Write(player.movement);
+                packet.Write(clientInput.seqNum);
                 packet.Write(player.position);
                 packet.Write(player.direction);
 
-                SendTCPDataToAll(player.id, packet); // except
+                SendTCPDataToAll(packet);
+                //SendTCPDataToAll(player.id, packet); // except
             }
         }
 

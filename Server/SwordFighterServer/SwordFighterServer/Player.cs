@@ -3,6 +3,14 @@ using System.Collections.Generic;
 using System.Text;
 using System.Numerics;
 
+public struct ClientInput
+{
+    public int seqNum;
+    public int horizontal_raw;
+    public int vertical_raw;
+    public Vector3 cam_forward;
+}
+
 // 서버 내 캐릭터 시뮬레이션
 
 namespace SwordFighterServer
@@ -17,13 +25,14 @@ namespace SwordFighterServer
         public Vector3 position;
         public Vector3 direction; // 방향 벡터
         //public Quaternion rotation;
-        public int state;
         public int hitPoints_max;
         public int hitPoints;
+        public int state;
 
-        private int idleTicks; // 스킬 사용 후 스킬 종료까지 남은 시간
-        private bool invincibility;
-        private bool isBlocking;
+        private Queue<ClientInput> clientInputs = new Queue<ClientInput>();
+        private List<DateTime> stateList = new List<DateTime>(); // 스킬 사용 후 종료 시점 기록용
+        private int[] duration;
+        private int[] input_state;
 
         public Player(int id, string username, Vector3 spawnPosition)
         {
@@ -38,88 +47,48 @@ namespace SwordFighterServer
 
             movement = new Vector2(0, 0);
             inputs = new bool[4];
+            duration = new int[4] { 1500, 800, 800, 1000 };
+            input_state = new int[4] { 2, 3, 4, 5 };
         }
 
-        public void Update() // 스레드에 의해 실행
+        public void Update() // 스레드에 의해 실행. 클라이언트로부터 패킷을 받았을 때마다가 아닌 일정 시간마다 broadcast
         {
-            EndOfState();
+            UpdateState();
             Move();
         }
 
-        private void EndBlocking() // Blocking으로 인한 막기 판정 종료
+        private void UpdateState()
         {
-            if (state == 2) // Blocking
-            {
-                if (isBlocking && idleTicks <= 0)
-                {
-                    isBlocking = false;
-                }
-            }
-        }
-
-        private void EndInvincibility() // Roll로 인한 무적 판정 종료
-        {
-            if (state == 5) // Roll
-            {
-                if (invincibility && idleTicks <= 6)
-                {
-                    invincibility = false;
-                }
-            }
-        }
-
-        private void EndOfState()
-        {
-            if (idleTicks > 0)
-            {
-                idleTicks--;
-
-                EndBlocking();
-                EndInvincibility();
-
-                if (idleTicks == 0)
-                {
-                    if (state > 1) // 스킬 종료 시 state를 0으로 만들고 클라이언트에게 전달
-                    {
-                        state = 0;
-                        ServerSend.PlayerState(this);
-                    }
+            if (stateList.Count > 0) {
+                if (stateList[0] <= DateTime.Now) { // 스킬 종료 시 state를 0으로 만들고 클라이언트에게 전달
+                    state = 0;
+                    stateList.RemoveAt(0);
+                    ServerSend.PlayerState(this);
                 }
             }
         }
 
         private void Move()
         {
-            ServerSend.PlayerMovement(this);
+            while (clientInputs.Count > 0)
+            {
+                ClientInput clientInput = clientInputs.Peek();
+                position = ProcessMovement(position, clientInput);
+                if (clientInputs.Count == 1)
+                {
+                    ServerSend.PlayerMovement(this, clientInput);
+                }
+                clientInputs.Dequeue();
+            }
             //ServerSend.PlayerRotation(this);
         }
 
-        private void InputToState() // 클라이언트의 Input으로 스킬 사용
+        private void InputToState() // 클라이언트의 input을 감지하면 스킬 사용
         {
-            if (0 <= state && state <= 1 && idleTicks == 0)
+            if (0 <= state && state <= 1)
             {
-                if (inputs[0]) // Blocking
-                {
-                    state = 2;
-                    idleTicks = 45;
-                    isBlocking = true;
-                }
-                else if (inputs[1]) // Attack1
-                {
-                    state = 3;
-                    idleTicks = 24;
-                }
-                else if (inputs[2]) // Attack2
-                {
-                    state = 4;
-                    idleTicks = 24;
-                }
-                else if (inputs[3]) // Roll
-                {
-                    state = 5;
-                    idleTicks = 30;
-                    invincibility = true;
-                }
+                SetState(inputs);
+
                 if (state > 1)
                 {
                     ServerSend.PlayerState(this);
@@ -128,9 +97,27 @@ namespace SwordFighterServer
             }
         }
 
+        private void SetState(bool[] inputs) { // input에 따라 스킬 사용
+            for (int i = 0; i < inputs.Length; ++i)
+            {
+                if (inputs[i])
+                {
+                    stateList.Add(DateTime.Now.AddMilliseconds(duration[i])); // 스킬 종료 시점 기록
+                    stateList.Sort();
+                    state = input_state[i];
+
+                    if (i == 3) // Roll
+                    {
+                        position = GetRollDestination(position);
+                    }
+                    return;
+                }
+            }
+        }
+
         private bool IsBlocking(int fromId)
         {
-            if (!isBlocking)
+            if (state != 2)
             {
                 return false;
             }
@@ -139,7 +126,7 @@ namespace SwordFighterServer
             return (dot < 0); // 캐릭터의 방향을 계산하여 막기 판정
         }
 
-        private bool CheckDistance(int fromId)
+        private bool CheckDistance(int fromId) // 최소한의 피격 판정 검증
         {
             float distance = Vector3.Distance(Server.clients[fromId].player.position, position);
             return (distance < 2.5f);
@@ -151,18 +138,59 @@ namespace SwordFighterServer
             InputToState();
         }
 
-        public void SetMovement(Vector2 movement, Vector3 position, Vector3 direction)
+        public void SetMovement(Vector2 movement, ClientInput clientInput, Vector3 direction)
         {
             this.movement = movement;
-            this.position = position;
+            clientInputs.Enqueue(clientInput);
             this.direction = direction;
+        }
+
+        private Vector3 ProcessMovement(Vector3 pos, ClientInput clientInput)
+        {
+            if ((clientInput.horizontal_raw == 0 && clientInput.vertical_raw == 0))
+            {
+                return pos;
+            }
+            
+            Vector3 cam_right = Vector3.Cross(clientInput.cam_forward, new Vector3(0, -1, 0));
+            pos += (cam_right * clientInput.horizontal_raw + clientInput.cam_forward * clientInput.vertical_raw) * Constants.SPEED;
+
+            pos = ClampPosition(pos);
+            return pos;
+        }
+
+        private Vector3 GetRollDestination(Vector3 position)
+        {
+            position += direction * Constants.ROLL_DISTANCE;
+            return ClampPosition(position);
+        }
+
+        private Vector3 ClampPosition(Vector3 position)
+        {
+            if (position.X < -50f)
+            {
+                position.X = -50f;
+            }
+            else if (position.X > 50f)
+            {
+                position.X = 50f;
+            }
+            if (position.Z < -50f)
+            {
+                position.Z = -50f;
+            }
+            else if (position.Z > 50f)
+            {
+                position.Z = 50f;
+            }
+            return position;
         }
 
         public void ChangePlayerHp(int fromClient, int hitPoints) // 데미지 판정
         {
             if (hitPoints <= 0)
             {
-                if (!invincibility && !IsBlocking(fromClient))
+                if (state != 5 && !IsBlocking(fromClient))
                 {
                     if (CheckDistance(fromClient))
                     {

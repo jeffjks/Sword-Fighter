@@ -11,8 +11,13 @@ public class GameManager : MonoBehaviour
     public GameObject localPlayerPrefab;
     public GameObject playerPrefab;
 
+    [HideInInspector]
+    public MainCharacter m_MainCharacter;
+
     private void Awake() // Singleton
     {
+        Application.targetFrameRate = 30;
+        
         if (instance == null) {
             instance = this;
         }
@@ -22,12 +27,13 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public void SpawnPlayer(int id, string username, Vector3 position, Vector3 direction) {
+    public void SpawnPlayer(int id, string username, Vector3 position, Vector3 direction, int hp, int state) {
         GameObject player;
         Quaternion rot = Quaternion.LookRotation(direction);
 
         if (id == Client.instance.myId) {
             player = Instantiate(localPlayerPrefab, position, rot);
+            m_MainCharacter = player.GetComponent<MainCharacter>();
         }
         else {
             Client.instance.oppositeId = id;
@@ -36,6 +42,8 @@ public class GameManager : MonoBehaviour
 
         player.GetComponent<PlayerManager>().id = id;
         player.GetComponent<PlayerManager>().username = username;
+        player.GetComponent<PlayerManager>().m_CurrentHp = hp;
+        player.GetComponent<PlayerManager>().m_State = state;
         players.Add(id, player.GetComponent<PlayerManager>());
     }
 }

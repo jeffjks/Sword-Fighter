@@ -30,10 +30,14 @@ public class ClientSend : MonoBehaviour
         }
     }
 
-    public static void PlayerMovement(Vector2 movement) {
+    public static void PlayerMovement(Vector2 movement, ClientInput clientInput) {
         using (Packet packet = new Packet((int) ClientPackets.playerMovement)) {
             packet.Write(movement);
-            packet.Write(GameManager.players[Client.instance.myId].transform.position);
+            packet.Write(clientInput.seqNum);
+            packet.Write(clientInput.horizontal_raw);
+            packet.Write(clientInput.vertical_raw);
+            packet.Write(clientInput.cam_forward);
+            //packet.Write(GameManager.players[Client.instance.myId].transform.position);
             packet.Write(GameManager.players[Client.instance.myId].m_CharacterModel.forward);
 
             SendTCPData(packet);
