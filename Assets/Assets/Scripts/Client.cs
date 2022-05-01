@@ -120,27 +120,29 @@ public class Client : MonoBehaviour
             receivedData.SetBytes(data);
 
             if (receivedData.UnreadLength() >= 4) {
-                packetLength = receivedData.ReadInt();
+                packetLength = receivedData.ReadInt(); // 패킷 길이 (패킷 가장 첫 부분)
                 if (packetLength <= 0) {
                     return true;
                 }
             }
 
-            while (packetLength > 0 && packetLength <= receivedData.UnreadLength()) {
+            while (0 < packetLength && packetLength <= receivedData.UnreadLength()) {
                 byte[] packetBytes = receivedData.ReadBytes(packetLength);
 
                 ThreadManager.ExecuteOnMainThread(() =>
                 {
                     using (Packet packet = new Packet(packetBytes)) {
-                        int packetId = packet.ReadInt();
+                        int packetId = packet.ReadInt(); // 패킷 종류 (SpawnPlayer, PlayerMovement 등)
+                        //Debug.Log(packetId);
                         packetHandlers[packetId](packet);
                     }
                 });
 
                 packetLength = 0;
+                //Debug.Log(receivedData.UnreadLength());
 
-                if (receivedData.UnreadLength() >= 4) {
-                    packetLength = receivedData.ReadInt();
+                if (receivedData.UnreadLength() >= 4) { // 아직 패킷 길이가 남아있음 = 동시에 여러 종류의 패킷이 들어왔을 경우
+                    packetLength = receivedData.ReadInt(); // 읽은 Integer를 패킷 길이로 취급하여 패킷 읽기 계속 진행
                     if (packetLength <= 0) {
                         return true;
                     }

@@ -52,8 +52,6 @@ public class ClientHandle : MonoBehaviour
         int id = packet.ReadInt();
 
         int state = packet.ReadInt();
-
-        //Debug.Log(state);
         
         if (GameManager.players.ContainsKey(id)) {
             GameManager.players[id].m_State = state;

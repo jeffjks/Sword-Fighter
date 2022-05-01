@@ -5,13 +5,13 @@ using UnityEngine;
 public class ClientSend : MonoBehaviour
 {
     private static void SendTCPData(Packet packet) {
-        packet.WriteLength();
+        packet.WriteLength(); // 패킷 가장 앞 부분에 패킷 길이 삽입 (패킷id보다 앞에)
         Client.instance.tcp.SendData(packet);
     }
 
     #region Packets
     public static void WelcomeReceived() {
-        using (Packet packet = new Packet((int)ClientPackets.welcomeReceived)) {
+        using (Packet packet = new Packet((int)ClientPackets.welcomeReceived)) { // 패킷 생성 시 가장 앞 부분에 패킷id(종류) 삽입
             packet.Write(Client.instance.myId);
             packet.Write(UIManager.instance.m_UsernameField.text);
 
