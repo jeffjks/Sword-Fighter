@@ -12,7 +12,6 @@ public class Client : MonoBehaviour
     public string defaultIp = "127.0.0.1";
     public int port = 26950;
     public int myId = 0;
-    public int oppositeId = 0; // TEMP
     public TCP tcp;
 
     private bool isConnected = false;

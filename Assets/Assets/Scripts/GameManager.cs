@@ -10,6 +10,7 @@ public class GameManager : MonoBehaviour
 
     public GameObject localPlayerPrefab;
     public GameObject playerPrefab;
+    public UIManager m_UIManager;
 
     [HideInInspector]
     public MainCharacter m_MainCharacter;
@@ -36,7 +37,7 @@ public class GameManager : MonoBehaviour
             m_MainCharacter = player.GetComponent<MainCharacter>();
         }
         else {
-            Client.instance.oppositeId = id;
+            //Client.instance.oppositeId = id;
             player = Instantiate(playerPrefab, position, rot);
         }
 

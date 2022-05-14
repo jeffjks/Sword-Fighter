@@ -73,5 +73,6 @@ public class ClientHandle : MonoBehaviour
 
         Destroy(GameManager.players[id].gameObject);
         GameManager.players.Remove(id);
+        GameManager.instance.m_UIManager.DestroyUI(id);
     }
 }

@@ -1,0 +1,3 @@
+﻿  Program.cpp
+d:\unity\project\sword fighter\server\swordfighterserver c++\swordfighterserver c++\swordfighterserver c++\program.cpp(74): error C3861: 'getnameinfo': 식별자를 찾을 수 없습니다.
+d:\unity\project\sword fighter\server\swordfighterserver c++\swordfighterserver c++\swordfighterserver c++\program.cpp(80): error C3861: 'inet_ntop': 식별자를 찾을 수 없습니다.

@@ -13,10 +13,11 @@ public class UIManager : MonoBehaviour
     public InputField m_IpAdressField;
     public InputField m_UsernameField;
     public Image m_MyHpBar;
-    public Image m_OppositeHpBar;
-    public GameObject m_OppositeHpUI;
+    public GameObject m_OppositeUI_prefab;
     public Text m_MessageText;
+    public float m_MaxDistance;
 
+    private Dictionary<int, OppositeUI> m_OppositeUIs = new Dictionary<int, OppositeUI>();
     private bool m_Ingame = false;
 
     private void Awake() // Singleton
@@ -82,31 +83,54 @@ public class UIManager : MonoBehaviour
             }
         }
 
-        if (GameManager.players.ContainsKey(Client.instance.myId)) {
-            int my_current_hp = GameManager.players[Client.instance.myId].m_CurrentHp;
-            int my_max_hp = GameManager.players[Client.instance.myId].m_MaxHp;
-            SetMyHpBar(my_current_hp, my_max_hp);
-        }
-        
-        if (GameManager.players.ContainsKey(Client.instance.oppositeId)) {
-            if (!m_OppositeHpUI.activeSelf) {
-                m_OppositeHpUI.SetActive(true);
+        try {
+            foreach (KeyValuePair<int, PlayerManager> player in GameManager.players) {
+                PlayerManager myPm = GameManager.players[Client.instance.myId];
+                if (player.Key == Client.instance.myId) {
+                    int my_current_hp = myPm.m_CurrentHp;
+                    int my_max_hp = myPm.m_MaxHp;
+                    SetMyHpBar(my_current_hp, my_max_hp);
+                }
+                else {
+                    if (!m_OppositeUIs.ContainsKey(player.Key)) { // Create New UI Object
+                        GameObject oppositeUI = Instantiate(m_OppositeUI_prefab, Vector3.zero, Quaternion.identity, m_InGameMenu.transform);
+                        m_OppositeUIs.Add(player.Key, oppositeUI.GetComponent<OppositeUI>());
+                        m_OppositeUIs[player.Key].m_OppositeUI_Username.text = GameManager.players[player.Key].username;
+                    }
+                    if (m_OppositeUIs.ContainsKey(player.Key)) { // Update UI Object
+                        PlayerManager opPm = GameManager.players[player.Key];
+                        int opposite_current_hp = opPm.m_CurrentHp;
+                        int opposite_max_hp = opPm.m_MaxHp;
+                        m_OppositeUIs[player.Key].transform.position = Camera.main.WorldToScreenPoint(opPm.transform.position + new Vector3(0, 2.4f, 0));
+
+                        float distance = Vector3.Distance(myPm.transform.position, opPm.transform.position);
+                        if (distance < m_MaxDistance) {
+                            float scale = Mathf.Lerp(0.5f, 0.2f, distance/m_MaxDistance);
+                            m_OppositeUIs[player.Key].transform.localScale = new Vector3(scale, scale, scale);
+                            SetOppositeHpBar(m_OppositeUIs[player.Key], opposite_current_hp, opposite_max_hp);
+                        }
+                        else {
+                            m_OppositeUIs[player.Key].transform.localScale = Vector3.zero;
+                        }
+                    }
+                }
             }
-            int opposite_current_hp = GameManager.players[Client.instance.oppositeId].m_CurrentHp;
-            int opposite_max_hp = GameManager.players[Client.instance.oppositeId].m_MaxHp;
-            SetOppositeHpBar(opposite_current_hp, opposite_max_hp);
         }
-        else {
-            m_OppositeHpBar.fillAmount = 1f;
-            m_OppositeHpUI.SetActive(false);
+        catch (KeyNotFoundException e) {
+            Debug.LogError(e);
         }
+    }
+
+    public void DestroyUI(int id) {
+        Destroy(m_OppositeUIs[id].gameObject);
+        m_OppositeUIs.Remove(id);
     }
 
     public void SetMyHpBar(int current_hp, int max_hp) {
         m_MyHpBar.fillAmount = (float) current_hp/max_hp;
     }
 
-    public void SetOppositeHpBar(int current_hp, int max_hp) {
-        m_OppositeHpBar.fillAmount = (float) current_hp/max_hp;
+    public void SetOppositeHpBar(OppositeUI oppositeHP, int current_hp, int max_hp) {
+        oppositeHP.m_OppositeUI_HpBar.fillAmount = (float) current_hp/max_hp;
     }
 }

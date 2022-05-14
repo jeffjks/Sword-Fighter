@@ -36,8 +36,16 @@ public class MainCharacter : MonoBehaviour
         transform.position = ProcessMovement(transform.position, clientInput);
 
         ClientSend.PlayerMovement(movement, clientInput);
+        //StartCoroutine(PlayerMovementDelay(movement, clientInput));
         
         this.inputTimeline.Enqueue(clientInput);
+    }
+
+    private IEnumerator PlayerMovementDelay(Vector2 movement, ClientInput clientInput) {
+        yield return new WaitForSeconds(0.5f);
+        ClientSend.PlayerMovement(movement, clientInput);
+        //Debug.Log("B");
+        yield break;
     }
 
     private void SendInputDataToServer() {

@@ -1999,7 +1999,6 @@ MonoBehaviour:
   m_CharacterModel: {fileID: 6708934368766509321}
   m_PlayerCollider: {fileID: 4309770918851652384}
   m_Sword: {fileID: 7804646330452927711}
-  m_RollDistance: 1280
   m_OppositeCharacter: 1
   m_CurrentHp: 100
   m_MaxHp: 100
