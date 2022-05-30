@@ -7,6 +7,7 @@ TagManager:
   - Opposite
   - PlayerWeapon
   - OppositeWeapon
+  - Terrain
   layers:
   - Default
   - TransparentFX

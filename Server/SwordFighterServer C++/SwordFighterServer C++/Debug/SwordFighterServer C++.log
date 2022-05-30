@@ -1,0 +1,5 @@
+﻿  SwordFighterServer C++.cpp
+d:\unity\project\sword fighter\server\swordfighterserver c++\swordfighterserver c++\swordfighterserver c++.cpp(65): warning C4101: 'dwTmp' :참조되지 않은 지역 변수입니다.
+d:\unity\project\sword fighter\server\swordfighterserver c++\swordfighterserver c++\swordfighterserver c++.cpp(102): warning C4101: 'dwTmp' :참조되지 않은 지역 변수입니다.
+d:\unity\project\sword fighter\server\swordfighterserver c++\swordfighterserver c++\swordfighterserver c++.cpp(122): warning C4101: 'dwTmp' :참조되지 않은 지역 변수입니다.
+  SwordFighterServer C++.vcxproj -> D:\Unity\Project\Sword Fighter\Server\SwordFighterServer C++\Debug\SwordFighterServer C++.exe

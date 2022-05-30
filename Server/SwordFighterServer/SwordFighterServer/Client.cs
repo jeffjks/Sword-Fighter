@@ -73,7 +73,7 @@ namespace SwordFighterServer
                     int byteLength = stream.EndRead(result);
                     if (byteLength <= 0)
                     {
-                        Server.clients[id].DIsconnect();
+                        Server.clients[id].Disconnect();
                         return;
                     }
 
@@ -86,7 +86,7 @@ namespace SwordFighterServer
                 catch (Exception e)
                 {
                     Console.WriteLine($"Error receiving TCP data: {e}");
-                    Server.clients[id].DIsconnect();
+                    Server.clients[id].Disconnect();
                 }
             }
 
@@ -170,7 +170,7 @@ namespace SwordFighterServer
             }
         }
 
-        private void DIsconnect()
+        private void Disconnect()
         {
             Console.WriteLine($"{tcp.socket.Client.RemoteEndPoint} has disconnected.");
 

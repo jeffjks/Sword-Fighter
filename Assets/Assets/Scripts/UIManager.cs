@@ -34,11 +34,13 @@ public class UIManager : MonoBehaviour
     private void Start()
     {
         m_IpAdressField.text = Client.instance.defaultIp;
+        //m_IpAdressField.text = ChatClient.instance.defaultIp;
     }
 
     public void ConnectToServer() {
         try {
             Client.instance.ConnectToServer(m_IpAdressField.text);
+            ChatClient.instance.ConnectToServer(m_IpAdressField.text);
         }
         catch (FormatException e) {
             m_MessageText.text = "Invalid IP Adress!";
@@ -51,7 +53,7 @@ public class UIManager : MonoBehaviour
             return;
         }
         catch (Exception e) {
-            m_MessageText.text = "Unknonw error has occured";
+            m_MessageText.text = "Unknown error has occured";
             Debug.LogError(e);
             return;
         }
@@ -66,6 +68,7 @@ public class UIManager : MonoBehaviour
 
     private void ReturnToMainMenu() {
         Client.instance.Disconnect();
+        ChatClient.instance.Disconnect();
         foreach (KeyValuePair<int, PlayerManager> player in GameManager.players) {
             Destroy(GameManager.players[player.Key].gameObject);
         }
