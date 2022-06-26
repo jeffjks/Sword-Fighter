@@ -1,5 +1,8 @@
-﻿  SwordFighterServer C++.cpp
-d:\unity\project\sword fighter\server\swordfighterserver c++\swordfighterserver c++\swordfighterserver c++.cpp(65): warning C4101: 'dwTmp' :참조되지 않은 지역 변수입니다.
-d:\unity\project\sword fighter\server\swordfighterserver c++\swordfighterserver c++\swordfighterserver c++.cpp(102): warning C4101: 'dwTmp' :참조되지 않은 지역 변수입니다.
-d:\unity\project\sword fighter\server\swordfighterserver c++\swordfighterserver c++\swordfighterserver c++.cpp(122): warning C4101: 'dwTmp' :참조되지 않은 지역 변수입니다.
-  SwordFighterServer C++.vcxproj -> D:\Unity\Project\Sword Fighter\Server\SwordFighterServer C++\Debug\SwordFighterServer C++.exe
+﻿  ChatServerSend.cpp
+  Program.cpp
+d:\unity\project\sword fighter\server\swordfighterserver c++\swordfighterserver c++\program.cpp(27): error C4996: 'inet_ntoa': Use inet_ntop() or InetNtop() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+  d:\windows kits\10\include\10.0.17763.0\um\winsock2.h(1849): note: 'inet_ntoa' 선언을 참조하십시오.
+d:\unity\project\sword fighter\server\swordfighterserver c++\swordfighterserver c++\program.cpp(33): warning C4326: 'main'의 반환 형식이 'int'이어야 하는데 'void'입니다.
+d:\unity\project\sword fighter\server\swordfighterserver c++\swordfighterserver c++\program.cpp(81): error C4996: 'inet_ntoa': Use inet_ntop() or InetNtop() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+  d:\windows kits\10\include\10.0.17763.0\um\winsock2.h(1849): note: 'inet_ntoa' 선언을 참조하십시오.
+  코드를 생성하고 있습니다...

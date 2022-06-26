@@ -12,20 +12,29 @@ namespace SwordFighterServer
             Server.clients[toClient].tcp.SendData(packet);
         }
 
-        private static void SendTCPDataToAll(Packet packet)
+        private static void SendTCPDataToAll(int fromId, Packet packet)
         {
             packet.WriteLength();
             for (int i = 1; i <= Server.MaxPlayers; ++i)
             {
+                if (!Server.clients[i].IsReady(fromId)) // SpawnPlayer 패킷을 보낸 플레이어에게만 전송
+                {
+                    continue;
+                }
                 Server.clients[i].tcp.SendData(packet);
             }
         }
 
-        private static void SendTCPDataToAll(int exceptClient, Packet packet)
+        private static void SendTCPDataToAll(int exceptClient, int fromId, Packet packet)
         {
             packet.WriteLength();
             for (int i = 1; i <= Server.MaxPlayers; ++i)
             {
+                if (!Server.clients[i].IsReady(fromId)) // SpawnPlayer 패킷을 보낸 플레이어에게만 전송
+                {
+                    continue;
+                }
+
                 if (i != exceptClient)
                 {
                     Server.clients[i].tcp.SendData(packet);
@@ -54,13 +63,13 @@ namespace SwordFighterServer
                 packet.Write(player.direction);
                 packet.Write(player.hitPoints);
                 packet.Write(player.state);
-                //Console.WriteLine($"(To {toClient} > SpawnPlayer: {player.id}");
+                //packet.Write(Server.CurrentPlayers);
 
                 SendTCPData(toClient, packet);
             }
         }
 
-        public static void PlayerMovement(Player player, ClientInput clientInput) // 플레이어 움직임, 좌표, 방향 패킷 전달 (자신에게는 제외)
+        public static void PlayerMovement(Player player, ClientInput clientInput) // 플레이어 움직임, 좌표, 방향 패킷 전달
         {
             using (Packet packet = new Packet((int) ServerPackets.playerMovement))
             {
@@ -71,7 +80,7 @@ namespace SwordFighterServer
                 packet.Write(player.position);
                 packet.Write(player.direction);
 
-                SendTCPDataToAll(packet);
+                SendTCPDataToAll(player.id, packet);
                 //SendTCPDataToAll(player.id, packet); // except
             }
         }
@@ -84,7 +93,7 @@ namespace SwordFighterServer
 
                 packet.Write(player.state);
 
-                SendTCPDataToAll(packet);
+                SendTCPDataToAll(player.id, packet);
             }
         }
 
@@ -96,7 +105,7 @@ namespace SwordFighterServer
 
                 packet.Write(player.hitPoints);
 
-                SendTCPDataToAll(packet);
+                SendTCPDataToAll(player.id, packet);
             }
         }
 
@@ -106,7 +115,7 @@ namespace SwordFighterServer
             {
                 packet.Write(playerId);
 
-                SendTCPDataToAll(packet);
+                SendTCPDataToAll(playerId, packet);
             }
         }
         #endregion

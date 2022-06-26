@@ -9,6 +9,8 @@ namespace SwordFighterServer
 {
     class Client
     {
+        private Dictionary<int, bool> ready = new Dictionary<int, bool>();
+
         public static int dataBufferSize = 4096;
 
         public int id;
@@ -147,6 +149,21 @@ namespace SwordFighterServer
         }
 
 
+        public void SetReady(int playerId) // 플레이어가 준비 완료됨 (SpawnPlayer 패킷을 보냄)
+        {
+            ready[playerId] = true;
+            //Console.WriteLine($"Player {id} Get Ready.");
+        }
+
+        public bool IsReady(int playerId)
+        {
+            if (ready.ContainsKey(playerId))
+            {
+                return ready[playerId];
+            }
+            return false;
+        }
+
         public void SendIntoGame(string username) // 플레이어 접속 시 SpawnPlayer 패킷 전달
         {
             player = new Player(id, username, new Vector3(0, 0, 0));
@@ -157,6 +174,7 @@ namespace SwordFighterServer
                 {
                     ServerSend.SpawnPlayer(id, client.player);
                     //Console.WriteLine($"SendIntoGame1 - SpawnPlayer: {id}, {client.player.username}");
+                    SetReady(client.player.id);
                 }
             }
 
@@ -166,6 +184,7 @@ namespace SwordFighterServer
                 {
                     ServerSend.SpawnPlayer(client.id, player);
                     //Console.WriteLine($"SendIntoGame2 - SpawnPlayer: {client.id}, {username}");
+                    client.SetReady(player.id);
                 }
             }
         }
@@ -176,8 +195,10 @@ namespace SwordFighterServer
 
             player = null;
             tcp.Disconnect();
+            ready.Clear();
 
             ServerSend.PlayerDisconnected(id);
+            Server.CurrentPlayers--;
         }
     }
 }

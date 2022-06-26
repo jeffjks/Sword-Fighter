@@ -36,7 +36,7 @@ public class ClientHandle : MonoBehaviour
         //Quaternion rotation = packet.ReadQuaternion();
 
         //Debug.Log(id);
-        if (Client.instance.myId == id) {
+        if (Client.instance.myId == id) { // 자신 플레이어
             GameManager.instance.m_MainCharacter.OnStateReceived(seqNum, position);
         }
         else { // 다른 플레이어
@@ -44,6 +44,9 @@ public class ClientHandle : MonoBehaviour
                 GameManager.players[id].m_Movement = movement;
                 GameManager.players[id].transform.position = position;
                 GameManager.players[id].direction = direction;
+            }
+            else {
+                Debug.Log("XXX: " + id);
             }
         }
     }
@@ -55,6 +58,9 @@ public class ClientHandle : MonoBehaviour
         
         if (GameManager.players.ContainsKey(id)) {
             GameManager.players[id].m_State = state;
+        }
+        else {
+            Debug.Log("YYY: " + id);
         }
     }
 
@@ -71,8 +77,10 @@ public class ClientHandle : MonoBehaviour
     public static void PlayerDisconnected(Packet packet) {
         int id = packet.ReadInt();
 
-        Destroy(GameManager.players[id].gameObject);
-        GameManager.players.Remove(id);
-        GameManager.instance.m_UIManager.DestroyUI(id);
+        if (GameManager.players.ContainsKey(id)) {
+            Destroy(GameManager.players[id].gameObject);
+            GameManager.players.Remove(id);
+            GameManager.instance.m_UIManager.DestroyUI(id);
+        }
     }
 }

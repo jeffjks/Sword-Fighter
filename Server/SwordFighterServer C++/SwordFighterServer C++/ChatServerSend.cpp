@@ -1,4 +1,4 @@
-
+/*
 class ChatServerSend {
 
 public:
@@ -11,3 +11,4 @@ void ChatServerSend::SendTCPData(int toClient, Packet packet)
 	packet.WriteLength();
 	Server.clients[toClient].tcp.SendData(packet);
 }
+*/

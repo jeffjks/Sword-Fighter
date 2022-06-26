@@ -19,6 +19,7 @@ public class MainCharacter : MonoBehaviour
     
     private float timer;
     private int currentTick = 0;
+    private bool isReady = false;
     private const float TICKS_PER_SEC = 30f;
     private const float MS_PER_TICK = 1000f / TICKS_PER_SEC;
     private const int BUFFER_SIZE = 1024;
@@ -27,6 +28,9 @@ public class MainCharacter : MonoBehaviour
     private readonly Queue<ClientInput> inputTimeline = new Queue<ClientInput>();
 
     private void SendMovementDataToServer(ClientInput clientInput) {
+        if (m_PlayerManager.m_State == -1) {
+            return;
+        }
         Vector2 movement = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
 
         if (m_PlayerManager.m_State > 1) {
@@ -94,7 +98,10 @@ public class MainCharacter : MonoBehaviour
             return;
         }
 
-        SendInputDataToServer();
+        isReady = true; // TEMP
+        if (isReady) {
+            SendInputDataToServer();
+        }
 
         //Debug.Log(m_State);
     }

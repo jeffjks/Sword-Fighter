@@ -30,7 +30,7 @@ namespace SwordFighterServer
         public int state;
 
         private Queue<ClientInput> clientInputs = new Queue<ClientInput>();
-        private List<DateTime> stateList = new List<DateTime>(); // 스킬 사용 후 종료 시점 기록용
+        private LinkedList<DateTime> stateLinkedList = new LinkedList<DateTime>(); // 스킬 사용 후 종료 시점 기록용
         private int[] duration;
         private int[] input_state;
 
@@ -41,9 +41,9 @@ namespace SwordFighterServer
             position = spawnPosition;
             //rotation = Quaternion.Identity;
             direction = new Vector3(0, 0, 1);
-            state = 0;
             hitPoints_max = 100;
             hitPoints = hitPoints_max;
+            state = 0;
 
             movement = new Vector2(0, 0);
             inputs = new bool[4];
@@ -59,10 +59,11 @@ namespace SwordFighterServer
 
         private void UpdateState()
         {
-            if (stateList.Count > 0) {
-                if (stateList[0] <= DateTime.Now) { // 스킬 종료 시 state를 0으로 만들고 클라이언트에게 전달
+            if (stateLinkedList.Count > 0) {
+                if (stateLinkedList.First.Value <= DateTime.Now) { // 스킬 종료 시 state를 0으로 만들고 클라이언트에게 전달
                     state = 0;
-                    stateList.RemoveAt(0);
+                    stateLinkedList.RemoveFirst();
+                    //stateLinkedList.RemoveAt(0);
                     ServerSend.PlayerState(this);
                 }
             }
@@ -97,13 +98,29 @@ namespace SwordFighterServer
             }
         }
 
+        private void AddStateToStateLinkedList(DateTime dateTime)
+        {
+            var currentNode = stateLinkedList.First;
+            while (currentNode != null)
+            {
+                DateTime currentDateTime = currentNode.Value;
+                if (dateTime < currentDateTime)
+                {
+                    stateLinkedList.AddBefore(currentNode, dateTime);
+                    break;
+                }
+                currentNode = currentNode.Next;
+            }
+        }
+
         private void SetState(bool[] inputs) { // input에 따라 스킬 사용
             for (int i = 0; i < inputs.Length; ++i)
             {
                 if (inputs[i])
                 {
-                    stateList.Add(DateTime.Now.AddMilliseconds(duration[i])); // 스킬 종료 시점 기록
-                    stateList.Sort();
+                    AddStateToStateLinkedList(DateTime.Now.AddMilliseconds(duration[i])); // 스킬 종료 시점 추가
+                    //stateList.Add();
+                    //stateList.Sort();
                     state = input_state[i];
 
                     if (i == 3) // Roll

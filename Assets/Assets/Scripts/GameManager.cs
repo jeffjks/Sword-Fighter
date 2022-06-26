@@ -41,10 +41,13 @@ public class GameManager : MonoBehaviour
             player = Instantiate(playerPrefab, position, rot);
         }
 
-        player.GetComponent<PlayerManager>().id = id;
-        player.GetComponent<PlayerManager>().username = username;
-        player.GetComponent<PlayerManager>().m_CurrentHp = hp;
-        player.GetComponent<PlayerManager>().m_State = state;
-        players.Add(id, player.GetComponent<PlayerManager>());
+        PlayerManager playerManager = player.GetComponent<PlayerManager>();
+        playerManager.id = id;
+        playerManager.username = username;
+        playerManager.m_CurrentHp = hp;
+        playerManager.m_State = state;
+        players.Add(id, playerManager);
+
+        //ClientSend.PlayerReady(); // 캐릭터 생성 시 해당 플레이어의 PlayerReady 패킷 전송
     }
 }

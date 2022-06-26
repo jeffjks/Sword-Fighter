@@ -40,7 +40,7 @@ public class UIManager : MonoBehaviour
     public void ConnectToServer() {
         try {
             Client.instance.ConnectToServer(m_IpAdressField.text);
-            ChatClient.instance.ConnectToServer(m_IpAdressField.text);
+            //ChatClient.instance.ConnectToServer(m_IpAdressField.text);
         }
         catch (FormatException e) {
             m_MessageText.text = "Invalid IP Adress!";

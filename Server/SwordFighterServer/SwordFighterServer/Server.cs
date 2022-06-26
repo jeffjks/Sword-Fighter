@@ -12,6 +12,7 @@ namespace SwordFighterServer
     {
         public static int MaxPlayers { get; private set; }
         public static int Port { get; private set; }
+        public static int CurrentPlayers;
         public static Dictionary<int, Client> clients = new Dictionary<int, Client>(); // 클라이언트 관리용 Dictionary
         public delegate void PacketHandler(int fromClient, Packet packet);
         public static Dictionary<int, PacketHandler> packetHandlers;
@@ -45,6 +46,7 @@ namespace SwordFighterServer
                 if (clients[i].tcp.socket == null)
                 {
                     clients[i].tcp.Connect(client);
+                    CurrentPlayers++;
                     return;
                 }
             }
