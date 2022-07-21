@@ -13,13 +13,14 @@ public struct ClientInput // 클라이언트측 예측 방식
 public class MainCharacter : MonoBehaviour
 {
     public PlayerManager m_PlayerManager;
-    public Animator m_Animator;
+    //public Animator m_Animator;
     public Transform m_CameraObject;
     public Transform m_CharacterModel;
+    public UIManager m_UIManager;
     
     private float timer;
     private int currentTick = 0;
-    private bool isReady = false;
+    //private bool isReady = false;
     private const float TICKS_PER_SEC = 30f;
     private const float MS_PER_TICK = 1000f / TICKS_PER_SEC;
     private const int BUFFER_SIZE = 1024;
@@ -31,7 +32,7 @@ public class MainCharacter : MonoBehaviour
         if (m_PlayerManager.m_State == -1) {
             return;
         }
-        Vector2 movement = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
+        Vector2 movement = m_PlayerManager.inputVector;
 
         if (m_PlayerManager.m_State > 1) {
             clientInput.horizontal_raw = 0;
@@ -76,11 +77,20 @@ public class MainCharacter : MonoBehaviour
         }
     }
 
-    void FixedUpdate()
+    void FixedUpdate() // Camera
     {
-        int horizontal_raw = (int) Input.GetAxisRaw("Horizontal");
-        int vertical_raw = (int) Input.GetAxisRaw("Vertical");
+        int horizontal_raw;
+        int vertical_raw;
         Vector3 cam_forward = Vector3.Normalize(new Vector3(m_CameraObject.forward.x, 0, m_CameraObject.forward.z));
+
+        if (m_UIManager.GetWritingChat()) {
+            horizontal_raw = 0;
+            vertical_raw = 0;
+        }
+        else {
+            horizontal_raw = (int) m_PlayerManager.inputVector_raw.x;
+            vertical_raw = (int) m_PlayerManager.inputVector_raw.y;
+        }
 
         ClientInput clientInput = new ClientInput {
             seqNum = this.currentTick++,
@@ -98,8 +108,8 @@ public class MainCharacter : MonoBehaviour
             return;
         }
 
-        isReady = true; // TEMP
-        if (isReady) {
+        //isReady = true; // TEMP
+        if (!m_UIManager.GetWritingChat()) {
             SendInputDataToServer();
         }
 

@@ -11,6 +11,7 @@ public class GameManager : MonoBehaviour
     public GameObject localPlayerPrefab;
     public GameObject playerPrefab;
     public UIManager m_UIManager;
+    public ObjectPooling m_ObjectPooling;
 
     [HideInInspector]
     public MainCharacter m_MainCharacter;
@@ -29,19 +30,21 @@ public class GameManager : MonoBehaviour
     }
 
     public void SpawnPlayer(int id, string username, Vector3 position, Vector3 direction, int hp, int state) {
-        GameObject player;
+        PlayerManager playerManager;
         Quaternion rot = Quaternion.LookRotation(direction);
 
         if (id == Client.instance.myId) {
-            player = Instantiate(localPlayerPrefab, position, rot);
-            m_MainCharacter = player.GetComponent<MainCharacter>();
+            //player = Instantiate(localPlayerPrefab, position, rot);
+            //m_MainCharacter = player.GetComponent<MainCharacter>();
+            m_MainCharacter = m_ObjectPooling.GetLocalPlayer();
+            playerManager = m_MainCharacter.m_PlayerManager;
         }
         else {
             //Client.instance.oppositeId = id;
-            player = Instantiate(playerPrefab, position, rot);
+            //player = Instantiate(playerPrefab, position, rot);
+            playerManager = m_ObjectPooling.GetOppositePlayer();
         }
 
-        PlayerManager playerManager = player.GetComponent<PlayerManager>();
         playerManager.id = id;
         playerManager.username = username;
         playerManager.m_CurrentHp = hp;

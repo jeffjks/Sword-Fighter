@@ -4,6 +4,10 @@ using UnityEngine;
 using System;
 using System.Text;
 
+// 패킷 보낼 때는 Big-Endian, BitConverter는 기본적으로 Little-Endian.
+// 따라서 Write 함수에서 Reverse 함수를 사용하여 Big-Endian 형식으로 바이트 기록
+// Read 함수에서도 마찬가지 Reverse 함수 사용 (ReadString, ReadBytes 제외)
+
 /// <summary>Sent from server to client.</summary>
 public enum ServerPackets
 {
@@ -22,6 +26,18 @@ public enum ClientPackets
     playerInput,
     playerMovement,
     changeHp
+}
+
+/// <summary>Chat from server to client.</summary>
+public enum ChatServerPackets
+{
+    chatMessage = 1,
+}
+
+/// <summary>Chat from client to server.</summary>
+public enum ChatClientPackets
+{
+    chatMessage = 1,
 }
 
 public class Packet : IDisposable
@@ -58,6 +74,12 @@ public class Packet : IDisposable
     }
 
     #region Functions
+
+    private void ReverseArray(ref byte[] array) {
+        Array.Copy(readableBuffer, readPos, array, 0, array.Length);
+        Array.Reverse(array);
+    }
+
     /// <summary>Sets the packet's content and prepares it to be read.</summary>
     /// <param name="_data">The bytes to add to the packet.</param>
     public void SetBytes(byte[] _data)
@@ -69,14 +91,20 @@ public class Packet : IDisposable
     /// <summary>Inserts the length of the packet's content at the start of the buffer.</summary>
     public void WriteLength()
     {
-        buffer.InsertRange(0, BitConverter.GetBytes(buffer.Count)); // Insert the byte length of the packet at the very beginning
+        byte[] reverseArray = BitConverter.GetBytes(buffer.Count);
+        Array.Reverse(reverseArray);
+
+        buffer.InsertRange(0, reverseArray); // Insert the byte length of the packet at the very beginning
     }
 
     /// <summary>Inserts the given int at the start of the buffer.</summary>
     /// <param name="_value">The int to insert.</param>
     public void InsertInt(int _value)
     {
-        buffer.InsertRange(0, BitConverter.GetBytes(_value)); // Insert the int at the start of the buffer
+        byte[] reverseArray = BitConverter.GetBytes(buffer.Count);
+        Array.Reverse(reverseArray);
+
+        buffer.InsertRange(0, reverseArray); // Insert the int at the start of the buffer
     }
 
     /// <summary>Gets the packet's content in array form.</summary>
@@ -132,38 +160,53 @@ public class Packet : IDisposable
     /// <param name="_value">The short to add.</param>
     public void Write(short _value)
     {
-        buffer.AddRange(BitConverter.GetBytes(_value));
+        byte[] reverseArray = BitConverter.GetBytes(_value);
+        Array.Reverse(reverseArray);
+        
+        buffer.AddRange(reverseArray);
     }
     /// <summary>Adds an int to the packet.</summary>
     /// <param name="_value">The int to add.</param>
     public void Write(int _value)
     {
-        buffer.AddRange(BitConverter.GetBytes(_value));
+        byte[] reverseArray = BitConverter.GetBytes(_value);
+        Array.Reverse(reverseArray);
+        
+        buffer.AddRange(reverseArray);
     }
     /// <summary>Adds a long to the packet.</summary>
     /// <param name="_value">The long to add.</param>
     public void Write(long _value)
     {
-        buffer.AddRange(BitConverter.GetBytes(_value));
+        byte[] reverseArray = BitConverter.GetBytes(_value);
+        Array.Reverse(reverseArray);
+        
+        buffer.AddRange(reverseArray);
     }
     /// <summary>Adds a float to the packet.</summary>
     /// <param name="_value">The float to add.</param>
     public void Write(float _value)
     {
-        buffer.AddRange(BitConverter.GetBytes(_value));
+        byte[] reverseArray = BitConverter.GetBytes(_value);
+        Array.Reverse(reverseArray);
+        
+        buffer.AddRange(reverseArray);
     }
     /// <summary>Adds a bool to the packet.</summary>
     /// <param name="_value">The bool to add.</param>
     public void Write(bool _value)
     {
-        buffer.AddRange(BitConverter.GetBytes(_value));
+        byte[] reverseArray = BitConverter.GetBytes(_value);
+        Array.Reverse(reverseArray);
+        
+        buffer.AddRange(reverseArray);
     }
     /// <summary>Adds a string to the packet.</summary>
     /// <param name="_value">The string to add.</param>
     public void Write(string _value)
     {
         Write(_value.Length); // Add the length of the string to the packet
-        buffer.AddRange(Encoding.ASCII.GetBytes(_value)); // Add the string itself
+        buffer.AddRange(Encoding.UTF8.GetBytes(_value)); // Add the string itself
     }
 
     // Overload
@@ -241,8 +284,11 @@ public class Packet : IDisposable
     {
         if (buffer.Count > readPos)
         {
+            byte[] reverseArray = new byte[2];
+            ReverseArray(ref reverseArray);
+            
             // If there are unread bytes
-            short _value = BitConverter.ToInt16(readableBuffer, readPos); // Convert the bytes to a short
+            short _value = BitConverter.ToInt16(reverseArray, 0); // Convert the bytes to a short
             if (_moveReadPos)
             {
                 // If _moveReadPos is true and there are unread bytes
@@ -262,8 +308,11 @@ public class Packet : IDisposable
     {
         if (buffer.Count > readPos)
         {
+            byte[] reverseArray = new byte[4];
+            ReverseArray(ref reverseArray);
+            
             // If there are unread bytes
-            int _value = BitConverter.ToInt32(readableBuffer, readPos); // Convert the bytes to an int
+            int _value = BitConverter.ToInt32(reverseArray, 0); // Convert the bytes to an int
             if (_moveReadPos)
             {
                 // If _moveReadPos is true
@@ -283,8 +332,11 @@ public class Packet : IDisposable
     {
         if (buffer.Count > readPos)
         {
+            byte[] reverseArray = new byte[8];
+            ReverseArray(ref reverseArray);
+            
             // If there are unread bytes
-            long _value = BitConverter.ToInt64(readableBuffer, readPos); // Convert the bytes to a long
+            long _value = BitConverter.ToInt64(reverseArray, 0); // Convert the bytes to a long
             if (_moveReadPos)
             {
                 // If _moveReadPos is true
@@ -304,8 +356,11 @@ public class Packet : IDisposable
     {
         if (buffer.Count > readPos)
         {
+            byte[] reverseArray = new byte[4];
+            ReverseArray(ref reverseArray);
+            
             // If there are unread bytes
-            float _value = BitConverter.ToSingle(readableBuffer, readPos); // Convert the bytes to a float
+            float _value = BitConverter.ToSingle(reverseArray, 0); // Convert the bytes to a float
             if (_moveReadPos)
             {
                 // If _moveReadPos is true
@@ -347,7 +402,8 @@ public class Packet : IDisposable
         try
         {
             int _length = ReadInt(); // Get the length of the string
-            string _value = Encoding.ASCII.GetString(readableBuffer, readPos, _length); // Convert the bytes to a string
+
+            string _value = Encoding.UTF8.GetString(readableBuffer, readPos, _length); // Convert the bytes to a string
             if (_moveReadPos && _value.Length > 0)
             {
                 // If _moveReadPos is true string is not empty

@@ -120,6 +120,7 @@ public class Client : MonoBehaviour
 
             if (receivedData.UnreadLength() >= 4) {
                 packetLength = receivedData.ReadInt(); // 패킷 길이 (패킷 가장 첫 부분)
+                //Debug.Log(packetLength);
                 if (packetLength <= 0) {
                     return true;
                 }

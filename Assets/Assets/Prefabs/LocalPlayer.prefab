@@ -2073,6 +2073,7 @@ MonoBehaviour:
   m_Animator: {fileID: 6102899817224009438}
   m_CameraObject: {fileID: 8939089762944725779}
   m_CharacterModel: {fileID: 6708934368766509321}
+  m_UIManager: {fileID: 0}
 --- !u!114 &3378578184601654357
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2086,12 +2087,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Animator: {fileID: 6102899817224009438}
-  id: 0
-  username: 
+  id: 1
+  username: asds
   m_CharacterModel: {fileID: 6708934368766509321}
   m_PlayerCollider: {fileID: 4309770918851652384}
   m_Sword: {fileID: 1472356315278172450}
-  m_RollDistance: 1280
   m_OppositeCharacter: 0
   m_CurrentHp: 100
   m_MaxHp: 100

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Numerics;
 
 public struct ClientInput
@@ -59,7 +58,8 @@ namespace SwordFighterServer
 
         private void UpdateState()
         {
-            if (stateLinkedList.Count > 0) {
+            if (stateLinkedList.Count > 0)
+            {
                 if (stateLinkedList.First.Value <= DateTime.Now) { // 스킬 종료 시 state를 0으로 만들고 클라이언트에게 전달
                     state = 0;
                     stateLinkedList.RemoveFirst();
@@ -101,15 +101,29 @@ namespace SwordFighterServer
         private void AddStateToStateLinkedList(DateTime dateTime)
         {
             var currentNode = stateLinkedList.First;
-            while (currentNode != null)
+
+            if (currentNode == null)
             {
+                stateLinkedList.AddFirst(dateTime);
+                return;
+            }
+
+            while (true)
+            {
+                Console.WriteLine("State 0");
                 DateTime currentDateTime = currentNode.Value;
-                if (dateTime < currentDateTime)
+                if (currentDateTime < dateTime)
                 {
-                    stateLinkedList.AddBefore(currentNode, dateTime);
-                    break;
+                    stateLinkedList.AddAfter(currentNode, dateTime);
+                    return;
                 }
                 currentNode = currentNode.Next;
+
+                if (currentNode == null)
+                {
+                    stateLinkedList.AddLast(dateTime);
+                    return;
+                }
             }
         }
 

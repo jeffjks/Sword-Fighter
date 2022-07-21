@@ -10,15 +10,19 @@ public class UIManager : MonoBehaviour
 
     public GameObject m_StartMenu;
     public GameObject m_InGameMenu;
+    public GameObject m_ChatInputField;
+    public InputField m_MyChatInputField;
+    public ChatMessageWindow m_ChatMessageWindow;
     public InputField m_IpAdressField;
     public InputField m_UsernameField;
     public Image m_MyHpBar;
     public GameObject m_OppositeUI_prefab;
-    public Text m_MessageText;
+    public Text m_ErrorText;
     public float m_MaxDistance;
 
     private Dictionary<int, OppositeUI> m_OppositeUIs = new Dictionary<int, OppositeUI>();
     private bool m_Ingame = false;
+    private bool m_WritingChat = false;
 
     private void Awake() // Singleton
     {
@@ -34,26 +38,30 @@ public class UIManager : MonoBehaviour
     private void Start()
     {
         m_IpAdressField.text = Client.instance.defaultIp;
-        //m_IpAdressField.text = ChatClient.instance.defaultIp;
+        m_IpAdressField.text = ChatClient.instance.defaultIp;
     }
 
     public void ConnectToServer() {
         try {
-            Client.instance.ConnectToServer(m_IpAdressField.text);
-            //ChatClient.instance.ConnectToServer(m_IpAdressField.text);
+            if (Client.instance.enabled) {
+                Client.instance.ConnectToServer(m_IpAdressField.text);
+            }
+            if (ChatClient.instance.enabled) {
+                ChatClient.instance.ConnectToServer(m_IpAdressField.text);
+            }
         }
         catch (FormatException e) {
-            m_MessageText.text = "Invalid IP Adress!";
+            m_ErrorText.text = "Invalid IP Adress!";
             Debug.LogError(e);
             return;
         }
         catch (TimeoutException e) {
-            m_MessageText.text = "Failed to connect server.";
+            m_ErrorText.text = "Failed to connect server.";
             Debug.LogError(e);
             return;
         }
         catch (Exception e) {
-            m_MessageText.text = "Unknown error has occured";
+            m_ErrorText.text = "Unknown error has occured";
             Debug.LogError(e);
             return;
         }
@@ -62,27 +70,38 @@ public class UIManager : MonoBehaviour
         m_UsernameField.interactable = false;
         m_MyHpBar.fillAmount = 1f;
         //m_OppositeHpBar.fillAmount = 1f;
-        m_MessageText.text = string.Empty;
+        m_ErrorText.text = string.Empty;
         m_Ingame = true;
     }
 
     private void ReturnToMainMenu() {
         Client.instance.Disconnect();
         ChatClient.instance.Disconnect();
-        foreach (KeyValuePair<int, PlayerManager> player in GameManager.players) {
-            Destroy(GameManager.players[player.Key].gameObject);
+        foreach (KeyValuePair<int, PlayerManager> playerManager in GameManager.players) {
+            //Destroy(GameManager.players[playerManager.Key].gameObject);
+            playerManager.Value.gameObject.SetActive(false);
         }
         GameManager.players.Clear();
         m_StartMenu.SetActive(true);
         m_InGameMenu.SetActive(false);
         m_UsernameField.interactable = true;
         m_Ingame = false;
+        WritingChatOff();
     }
+
+    
 
     void Update() {
         if (m_Ingame) {
-            if (!Client.instance.IsConnected() || Input.GetButtonDown("Exit")) {
+            if (Client.instance.enabled && !Client.instance.IsConnected()) {
                 ReturnToMainMenu();
+            }
+            else if (Input.GetButtonDown("Exit")) {
+                ReturnToMainMenu();
+            }
+
+            if (Input.GetButtonDown("Submit")) {
+                ToggleWritingChat();
             }
         }
 
@@ -135,5 +154,25 @@ public class UIManager : MonoBehaviour
 
     public void SetOppositeHpBar(OppositeUI oppositeHP, int current_hp, int max_hp) {
         oppositeHP.m_OppositeUI_HpBar.fillAmount = (float) current_hp/max_hp;
+    }
+
+    public void ToggleWritingChat() {
+        if (m_WritingChat) {
+            m_ChatMessageWindow.PushTextMessage(m_MyChatInputField.text);
+            m_MyChatInputField.ActivateInputField();
+        }
+        m_WritingChat = !m_WritingChat;
+        m_MyChatInputField.text = string.Empty;
+        m_ChatInputField.SetActive(m_WritingChat);
+    }
+
+    public void WritingChatOff() {
+        m_WritingChat = false;
+        m_MyChatInputField.text = string.Empty;
+        m_ChatInputField.SetActive(false);
+    }
+
+    public bool GetWritingChat() {
+        return m_WritingChat;
     }
 }

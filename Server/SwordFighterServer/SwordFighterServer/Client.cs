@@ -82,7 +82,7 @@ namespace SwordFighterServer
                     byte[] data = new byte[byteLength];
                     Array.Copy(receiveBuffer, data, byteLength);
 
-                    receivedData.Reset(HandleData(data)); // handle data
+                    receivedData.Reset(HandleData(data)); // handle data. true -> reset, false -> unread (4 bytes)
                     stream.BeginRead(receiveBuffer, 0, dataBufferSize, ReceiveCallback, null);
                 }
                 catch (Exception e)
@@ -96,9 +96,9 @@ namespace SwordFighterServer
             {
                 int packetLength = 0;
 
-                receivedData.SetBytes(data);
+                receivedData.SetBytes(data); // Add data
 
-                if (receivedData.UnreadLength() >= 4)
+                if (receivedData.UnreadLength() >= 4) // Read packetLength
                 {
                     packetLength = receivedData.ReadInt();
                     if (packetLength <= 0)
@@ -109,7 +109,7 @@ namespace SwordFighterServer
 
                 while (packetLength > 0 && packetLength <= receivedData.UnreadLength())
                 {
-                    byte[] packetBytes = receivedData.ReadBytes(packetLength);
+                    byte[] packetBytes = receivedData.ReadBytes(packetLength); // receivedData에서 packetLength만큼 다 읽음
                     ThreadManager.ExecuteOnMainThread(() =>
                     {
                         using (Packet packet = new Packet(packetBytes))
@@ -120,7 +120,7 @@ namespace SwordFighterServer
                     });
 
                     packetLength = 0;
-                    if (receivedData.UnreadLength() >= 4)
+                    if (receivedData.UnreadLength() >= 4) // byte가 남았다면 packetLength를 읽고 다시 읽기 진행
                     {
                         packetLength = receivedData.ReadInt();
                         if (packetLength <= 0)

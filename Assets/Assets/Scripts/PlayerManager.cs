@@ -14,12 +14,11 @@ public class PlayerManager : MonoBehaviour
     public int m_CurrentHp;
     public int m_MaxHp;
 
-    [HideInInspector]
-    public Vector2 m_Movement = Vector2.zero;
-    [HideInInspector]
-    public Vector3 direction = Vector3.forward;
-    [HideInInspector]
-    public int m_State = 0;
+    [HideInInspector] public Vector2 m_Movement = Vector2.zero;
+    [HideInInspector] public Vector3 direction = Vector3.forward;
+    [HideInInspector] public int m_State = 0;
+    [HideInInspector] public Vector2Int inputVector_raw;
+    [HideInInspector] public Vector2 inputVector;
 
     private bool m_CanMove = true;
     private bool m_IsRolling = false;
@@ -31,13 +30,21 @@ public class PlayerManager : MonoBehaviour
             m_CanMove = false;
             m_PlayerCollider.enabled = false;
             m_Animator.SetInteger("State", m_State);
+            inputVector_raw = Vector2Int.zero;
+            inputVector = Vector2.zero;
             return;
         }
 
-        SetRotation();
+        if (GameManager.instance.m_UIManager.GetWritingChat()) {
+            inputVector_raw = Vector2Int.zero;
+            inputVector = Vector2.zero;
+        }
+        else {
+            inputVector_raw = new Vector2Int((int) Input.GetAxisRaw("Horizontal"), (int) Input.GetAxisRaw("Vertical"));
+            inputVector = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
+        }
 
-        int horizontal_raw = (int) Input.GetAxisRaw("Horizontal");
-        int vertical_raw = (int) Input.GetAxisRaw("Vertical");
+        SetRotation();
 
         if (m_OppositeCharacter) {
             if (m_State <= 1) {
@@ -53,7 +60,7 @@ public class PlayerManager : MonoBehaviour
         }
         else {
             if (m_State <= 1) {
-                if (horizontal_raw != 0 || vertical_raw != 0) {
+                if (inputVector_raw != Vector2Int.zero) {
                     if (m_CanMove) {
                         m_State = 1;
                     }
@@ -79,8 +86,8 @@ public class PlayerManager : MonoBehaviour
             m_Animator.SetFloat("MovementVertical", m_Movement.y);
         }
         else {
-            m_Animator.SetFloat("MovementHorizontal", Input.GetAxis("Horizontal"));
-            m_Animator.SetFloat("MovementVertical", Input.GetAxis("Vertical"));
+            m_Animator.SetFloat("MovementHorizontal", inputVector.x);
+            m_Animator.SetFloat("MovementVertical", inputVector.y);
         }
         m_Animator.SetInteger("State", m_State);
 

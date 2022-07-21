@@ -78,7 +78,8 @@ public class ClientHandle : MonoBehaviour
         int id = packet.ReadInt();
 
         if (GameManager.players.ContainsKey(id)) {
-            Destroy(GameManager.players[id].gameObject);
+            //Destroy(GameManager.players[id].gameObject);
+            GameManager.instance.m_ObjectPooling.ReturnOppositePlayer(GameManager.players[id]);
             GameManager.players.Remove(id);
             GameManager.instance.m_UIManager.DestroyUI(id);
         }

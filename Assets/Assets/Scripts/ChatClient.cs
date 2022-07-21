@@ -14,6 +14,8 @@ public class ChatClient : MonoBehaviour
     public int myId = 0;
     public TCP tcp;
 
+    public ChatMessageWindow m_ChatMessageWindow;
+
     private bool isConnected = false;
     private delegate void PacketHandler(Packet packet);
     private static Dictionary<int, PacketHandler> packetHandlers;
@@ -119,11 +121,6 @@ public class ChatClient : MonoBehaviour
             receivedData.SetBytes(data);
 
             if (receivedData.UnreadLength() >= 4) {
-                Debug.Log("TEST");
-                foreach (var item in data)
-                {
-                    Debug.Log(item);
-                }
                 packetLength = receivedData.ReadInt(); // 패킷 길이 (패킷 가장 첫 부분)
                 if (packetLength <= 0) {
                     return true;
@@ -136,9 +133,9 @@ public class ChatClient : MonoBehaviour
                 ThreadManager.ExecuteOnMainThread(() =>
                 {
                     using (Packet packet = new Packet(packetBytes)) {
-                        int packetId = packet.ReadInt(); // 패킷 종류 (SpawnPlayer, PlayerMovement 등)
-                        //Debug.Log(packetId);
-                        packetHandlers[packetId](packet);
+                        //int packetId = packet.ReadInt(); // 패킷 종류 (SpawnPlayer, PlayerMovement 등)
+                        //Debug.Log("packetId: " + packetId);
+                        packetHandlers[1](packet);
                     }
                 });
 
@@ -172,12 +169,7 @@ public class ChatClient : MonoBehaviour
     private void InitializeClientData() {
         packetHandlers = new Dictionary<int, PacketHandler>()
         {
-            { (int) ServerPackets.welcome, ClientHandle.Welcome },
-            { (int) ServerPackets.spawnPlayer, ClientHandle.SpawnPlayer },
-            { (int) ServerPackets.playerMovement, ClientHandle.PlayerMovement },
-            { (int) ServerPackets.playerState, ClientHandle.PlayerState },
-            { (int) ServerPackets.playerHp, ClientHandle.PlayerHp },
-            { (int) ServerPackets.playerDisconnected, ClientHandle.PlayerDisconnected },
+            { (int) ChatServerPackets.chatMessage, ChatClientHandle.MessageReceived },
         };
         Debug.Log("Initialize packets.");
     }
@@ -193,5 +185,9 @@ public class ChatClient : MonoBehaviour
 
     public bool IsConnected() {
         return isConnected;
+    }
+
+    public void GetTextMessage(string message) {
+        m_ChatMessageWindow.PushTextMessage(message);
     }
 }

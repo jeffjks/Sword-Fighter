@@ -21,10 +21,28 @@
     <ClCompile Include="Program.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="ChatServer.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Client.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="common.h">
       <Filter>소스 파일</Filter>
     </ClInclude>
+    <ClInclude Include="Packet.h">
+      <Filter>소스 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Client.h">
+      <Filter>소스 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ChatServer.h">
+      <Filter>소스 파일</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="cpp.hint" />
   </ItemGroup>
 </Project>
