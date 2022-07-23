@@ -1,50 +1,13 @@
 ﻿  ChatServer.cpp
-d:\unity\project\sword fighter\server\swordfighterserver c++\swordfighterserver c++\packet.h(159): warning C4244: '인수': 'long'에서 '_Ty'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+d:\unity\project\sword fighter\server\swordfighterserver c++\swordfighterserver c++\packet.h(160): warning C4244: '인수': 'long'에서 '_Ty'(으)로 변환하면서 데이터가 손실될 수 있습니다.
           with
           [
               _Ty=uint8_t
           ]
-d:\unity\project\sword fighter\server\swordfighterserver c++\swordfighterserver c++\packet.h(191): warning C4018: '>': signed 또는 unsigned가 일치하지 않습니다.
-d:\unity\project\sword fighter\server\swordfighterserver c++\swordfighterserver c++\packet.h(213): warning C4018: '>': signed 또는 unsigned가 일치하지 않습니다.
-d:\unity\project\sword fighter\server\swordfighterserver c++\swordfighterserver c++\packet.h(235): warning C4018: '>': signed 또는 unsigned가 일치하지 않습니다.
-d:\unity\project\sword fighter\server\swordfighterserver c++\swordfighterserver c++\packet.h(259): warning C4018: '>': signed 또는 unsigned가 일치하지 않습니다.
-d:\unity\project\sword fighter\server\swordfighterserver c++\swordfighterserver c++\packet.h(283): warning C4018: '>': signed 또는 unsigned가 일치하지 않습니다.
-d:\unity\project\sword fighter\server\swordfighterserver c++\swordfighterserver c++\packet.h(307): warning C4018: '>': signed 또는 unsigned가 일치하지 않습니다.
-  ChatServerSend.cpp
-d:\unity\project\sword fighter\server\swordfighterserver c++\swordfighterserver c++\packet.h(159): warning C4244: '인수': 'long'에서 '_Ty'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-          with
-          [
-              _Ty=uint8_t
-          ]
-d:\unity\project\sword fighter\server\swordfighterserver c++\swordfighterserver c++\packet.h(191): warning C4018: '>': signed 또는 unsigned가 일치하지 않습니다.
-d:\unity\project\sword fighter\server\swordfighterserver c++\swordfighterserver c++\packet.h(213): warning C4018: '>': signed 또는 unsigned가 일치하지 않습니다.
-d:\unity\project\sword fighter\server\swordfighterserver c++\swordfighterserver c++\packet.h(235): warning C4018: '>': signed 또는 unsigned가 일치하지 않습니다.
-d:\unity\project\sword fighter\server\swordfighterserver c++\swordfighterserver c++\packet.h(259): warning C4018: '>': signed 또는 unsigned가 일치하지 않습니다.
-d:\unity\project\sword fighter\server\swordfighterserver c++\swordfighterserver c++\packet.h(283): warning C4018: '>': signed 또는 unsigned가 일치하지 않습니다.
-d:\unity\project\sword fighter\server\swordfighterserver c++\swordfighterserver c++\packet.h(307): warning C4018: '>': signed 또는 unsigned가 일치하지 않습니다.
-  Client.cpp
-d:\unity\project\sword fighter\server\swordfighterserver c++\swordfighterserver c++\packet.h(159): warning C4244: '인수': 'long'에서 '_Ty'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-          with
-          [
-              _Ty=uint8_t
-          ]
-d:\unity\project\sword fighter\server\swordfighterserver c++\swordfighterserver c++\packet.h(191): warning C4018: '>': signed 또는 unsigned가 일치하지 않습니다.
-d:\unity\project\sword fighter\server\swordfighterserver c++\swordfighterserver c++\packet.h(213): warning C4018: '>': signed 또는 unsigned가 일치하지 않습니다.
-d:\unity\project\sword fighter\server\swordfighterserver c++\swordfighterserver c++\packet.h(235): warning C4018: '>': signed 또는 unsigned가 일치하지 않습니다.
-d:\unity\project\sword fighter\server\swordfighterserver c++\swordfighterserver c++\packet.h(259): warning C4018: '>': signed 또는 unsigned가 일치하지 않습니다.
-d:\unity\project\sword fighter\server\swordfighterserver c++\swordfighterserver c++\packet.h(283): warning C4018: '>': signed 또는 unsigned가 일치하지 않습니다.
-d:\unity\project\sword fighter\server\swordfighterserver c++\swordfighterserver c++\packet.h(307): warning C4018: '>': signed 또는 unsigned가 일치하지 않습니다.
-  Program.cpp
-d:\unity\project\sword fighter\server\swordfighterserver c++\swordfighterserver c++\packet.h(159): warning C4244: '인수': 'long'에서 '_Ty'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-          with
-          [
-              _Ty=uint8_t
-          ]
-d:\unity\project\sword fighter\server\swordfighterserver c++\swordfighterserver c++\packet.h(191): warning C4018: '>': signed 또는 unsigned가 일치하지 않습니다.
-d:\unity\project\sword fighter\server\swordfighterserver c++\swordfighterserver c++\packet.h(213): warning C4018: '>': signed 또는 unsigned가 일치하지 않습니다.
-d:\unity\project\sword fighter\server\swordfighterserver c++\swordfighterserver c++\packet.h(235): warning C4018: '>': signed 또는 unsigned가 일치하지 않습니다.
-d:\unity\project\sword fighter\server\swordfighterserver c++\swordfighterserver c++\packet.h(259): warning C4018: '>': signed 또는 unsigned가 일치하지 않습니다.
-d:\unity\project\sword fighter\server\swordfighterserver c++\swordfighterserver c++\packet.h(283): warning C4018: '>': signed 또는 unsigned가 일치하지 않습니다.
-d:\unity\project\sword fighter\server\swordfighterserver c++\swordfighterserver c++\packet.h(307): warning C4018: '>': signed 또는 unsigned가 일치하지 않습니다.
-  코드를 생성하고 있습니다...
+d:\unity\project\sword fighter\server\swordfighterserver c++\swordfighterserver c++\packet.h(192): warning C4018: '>': signed 또는 unsigned가 일치하지 않습니다.
+d:\unity\project\sword fighter\server\swordfighterserver c++\swordfighterserver c++\packet.h(214): warning C4018: '>': signed 또는 unsigned가 일치하지 않습니다.
+d:\unity\project\sword fighter\server\swordfighterserver c++\swordfighterserver c++\packet.h(236): warning C4018: '>': signed 또는 unsigned가 일치하지 않습니다.
+d:\unity\project\sword fighter\server\swordfighterserver c++\swordfighterserver c++\packet.h(260): warning C4018: '>': signed 또는 unsigned가 일치하지 않습니다.
+d:\unity\project\sword fighter\server\swordfighterserver c++\swordfighterserver c++\packet.h(284): warning C4018: '>': signed 또는 unsigned가 일치하지 않습니다.
+d:\unity\project\sword fighter\server\swordfighterserver c++\swordfighterserver c++\packet.h(308): warning C4018: '>': signed 또는 unsigned가 일치하지 않습니다.
   SwordFighterServer C++.vcxproj -> D:\Unity\Project\Sword Fighter\Server\SwordFighterServer C++\Debug\SwordFighterServer C++.exe

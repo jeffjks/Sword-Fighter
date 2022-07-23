@@ -179,7 +179,7 @@ public class ChatClient : MonoBehaviour
             isConnected = false;
             tcp.socket.Close();
 
-            Debug.Log("Disconnceted from server.");
+            Debug.Log("Disconnceted from chat server.");
         }
     }
 
@@ -187,7 +187,7 @@ public class ChatClient : MonoBehaviour
         return isConnected;
     }
 
-    public void GetTextMessage(string message) {
-        m_ChatMessageWindow.PushTextMessage(message);
+    public void GetTextMessage(int fromId, string message) {
+        m_ChatMessageWindow.PushTextMessage(fromId, message);
     }
 }

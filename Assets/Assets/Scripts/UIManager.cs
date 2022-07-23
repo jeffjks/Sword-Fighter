@@ -41,7 +41,12 @@ public class UIManager : MonoBehaviour
         m_IpAdressField.text = ChatClient.instance.defaultIp;
     }
 
-    public void ConnectToServer() {
+    private void ConnectToServer() {
+        if (m_UsernameField.text.Length < 4) {
+            m_ErrorText.text = "Username is too short!";
+            return;
+        }
+
         try {
             if (Client.instance.enabled) {
                 Client.instance.ConnectToServer(m_IpAdressField.text);
@@ -86,6 +91,7 @@ public class UIManager : MonoBehaviour
         m_InGameMenu.SetActive(false);
         m_UsernameField.interactable = true;
         m_Ingame = false;
+        m_ChatMessageWindow.ClearChatMessageWindow();
         WritingChatOff();
     }
 
@@ -156,14 +162,28 @@ public class UIManager : MonoBehaviour
         oppositeHP.m_OppositeUI_HpBar.fillAmount = (float) current_hp/max_hp;
     }
 
+    public void SendChatMessage(string message) {
+        if (message == string.Empty) {
+            return;
+        }
+        int fromId = Client.instance.myId;
+        m_ChatMessageWindow.PushTextMessage(fromId, message);
+        
+        using (Packet packet = new Packet((int) ChatClientPackets.chatMessage)) { // 패킷 생성 시 가장 앞 부분에 패킷id(종류) 삽입
+            packet.Write(message);
+            packet.WriteLength(); // 패킷 가장 앞 부분에 패킷 길이 삽입 (패킷id보다 앞에)
+            ChatClient.instance.tcp.SendData(packet);
+        }
+    }
+
     public void ToggleWritingChat() {
         if (m_WritingChat) {
-            m_ChatMessageWindow.PushTextMessage(m_MyChatInputField.text);
-            m_MyChatInputField.ActivateInputField();
+            SendChatMessage(m_MyChatInputField.text);
         }
         m_WritingChat = !m_WritingChat;
         m_MyChatInputField.text = string.Empty;
         m_ChatInputField.SetActive(m_WritingChat);
+        m_MyChatInputField.ActivateInputField();
     }
 
     public void WritingChatOff() {

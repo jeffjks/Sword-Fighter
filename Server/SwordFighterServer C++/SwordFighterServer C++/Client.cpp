@@ -1,50 +1,32 @@
-#include "Client.h"
+#include "ChatServer.h"
 
 using namespace std;
 
-void Client::Connect() {
+void Client::ReceiveData() {
     // While loop: 클라이언트의 메세지를 받아서 출력 후 클라이언트에 다시 보냅니다.
     char buf[dataBufferSize];
 
-    while (true)
+    // Wait for client to send data
+    // 메세지를 성공적으로 받으면 recv 함수는 메세지의 크기를 반환한다.
+
+    ZeroMemory(buf, dataBufferSize);
+
+    int bytesReceived = recv(clientSocket, buf, dataBufferSize, 0);
+    if (bytesReceived == SOCKET_ERROR)
     {
-        ZeroMemory(buf, dataBufferSize);
-
-        // Wait for client to send data
-        // 메세지를 성공적으로 받으면 recv 함수는 메세지의 크기를 반환한다.
-        //cout << "Receive Ready" << endl;
-        int bytesReceived = recv(clientSocket, buf, dataBufferSize, 0);
-        if (bytesReceived == SOCKET_ERROR)
-        {
-            cerr << "Error in recv(). Quitting" << endl;
-            closesocket(clientSocket);
-            clientSocket = NULL;
-            continue;
-        }
-
-        if (bytesReceived == 0)
-        {
-            cout << "Client disconnected " << endl;
-            closesocket(clientSocket);
-            clientSocket = NULL;
-            continue;
-        }
-
-        //Packet packet(buf);
-        //packetQueue.push(packet);
-        //clients[i].Reset(HandleData(buf));
-        //clients[i].SetBytes(buf);
-        Packet packet = receivedData;
-        packet.Reset(HandleData(buf, bytesReceived));
-
-        // Echo message back to client
-        /*
-        for (int i = 0; i < 24; ++i) {
-            cout << (int) buf[i] << " ";
-        }*/
-        //cout << "received: " << buf << endl;
-        //send(clientSocket, buf, bytesReceived + 1, 0);
+        cerr << "Error in recv(). Quitting" << endl;
+        Disconnect();
+        return;
     }
+    else if (bytesReceived == 0)
+    {
+        cerr << "Client disconnected " << endl;
+        Disconnect();
+        return;
+    }
+
+    Packet packet = receivedData;
+    packet.Reset(HandleData(buf, bytesReceived));
 }
 
 bool Client::HandleData(char* data, int length) {
@@ -62,7 +44,7 @@ bool Client::HandleData(char* data, int length) {
     while (packetLength > 0 && packetLength <= receivedData.UnreadLength())
     {
         const char* packetBytes = receivedData.ReadBytes(packetLength); // receivedData에서 packetLength만큼 다 읽음
-        //ThreadManager.ExecuteOnMainThread(() = >
+
         Packet packet(packetBytes, length);
 
         int packetId = packet.ReadInt() - 1;
@@ -90,4 +72,8 @@ bool Client::HandleData(char* data, int length) {
     }
 
     return false;
+}
+
+void Client::Disconnect() {
+    chatServer->DisconnectClient(id);
 }

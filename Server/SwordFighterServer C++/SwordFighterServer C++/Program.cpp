@@ -8,6 +8,10 @@ using namespace std;
 
 
 int main() {
+    #ifdef _WIN32
+        SetConsoleOutputCP(CP_UTF8);
+    #endif
+
     ChatServer chatServer;
     chatServer.Start();
 }
