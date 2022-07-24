@@ -6,29 +6,19 @@ using namespace std;
     Server
 */
 
-void ChatServer::Broadcast() {
-    while (true) {
-        if (messageQueue.empty()) {
-            continue;
-        }
-        mtx.lock();
-        while (!messageQueue.empty()) {
-            pair<int, string> msg = messageQueue.front();
-            ChatMessage(msg.first, msg.second);
-            messageQueue.pop();
-        }
-        mtx.unlock();
-    }
+void ChatServer::SendTCPData(int clientId, Packet packet) {
+    const char* send_buffer = packet.ToArray();
+    send(clients[clientId]->clientSocket, send_buffer, packet.Length(), 0);
 }
 
-void ChatServer::SendTCPDataToAll(int fromId, Packet packet, bool exceptMe = false) {
+void ChatServer::SendTCPDataToAll(int index, int fromId, Packet packet, bool exceptMe = false) {
     const char* send_buffer = packet.ToArray();
 
     for (int i = 1; i <= MAX_PLAYERS; ++i) {
         if (clients[i]->clientSocket == INVALID_SOCKET) {
             continue;
         }
-        if (fromId == i && exceptMe) {
+        if (index == i && exceptMe) {
             continue;
         }
         cout << i << ", " << fromId << ", " << exceptMe << endl;
@@ -36,14 +26,29 @@ void ChatServer::SendTCPDataToAll(int fromId, Packet packet, bool exceptMe = fal
     }
 }
 
-void ChatServer::ChatMessage(int fromId, string str) {
-    Packet packet;
+void ChatServer::PopMessageQueue() { // Thread
+    while (true) {
+        if (messageQueue.empty()) {
+            continue;
+        }
+        mtx.lock();
+        while (!messageQueue.empty()) {
+            MessageQueueData messageQueueData = messageQueue.front();
+            Broadcast(messageQueueData.clientIndex, messageQueueData.fromId, messageQueueData.message);
+            messageQueue.pop();
+        }
+        mtx.unlock();
+    }
+}
+
+void ChatServer::Broadcast(int index, int fromId, string str) {
+    Packet packet((int)ChatServerPackets::chatServerMessage); // packet id
     packet.Write(fromId); // 채팅 주인
     packet.Write(str); // 채팅 내용
     packet.WriteLength(); // 패킷 길이
     cout << fromId << ": " << str << endl;
 
-    SendTCPDataToAll(fromId, packet, true);
+    SendTCPDataToAll(index, fromId, packet, true);
 }
 
 void ChatServer::InitializeServerData()
@@ -79,7 +84,6 @@ void ChatServer::AcceptClient(int index) {
         return;
     }
 
-    //strcpy_s(sock_array[total_socket_count].ipaddr, inet_ntoa(addr.sin_addr));
 
 
     for (int i = 1; i <= MAX_PLAYERS; i++) // 비어있는 가장 첫 clients Dictionary에 배정
@@ -120,7 +124,7 @@ void ChatServer::AcceptClient(int index) {
     }
 
 
-    Packet packet;
+    Packet packet((int)ChatServerPackets::chatServerMessage); // packet id
     string str = string(u8"환영합니다.");
 
     packet.Write(SERVER_MESSAGE);
@@ -192,7 +196,7 @@ int ChatServer::Start() {
 
     InitializeServerData();
 
-    thread(&ChatServer::Broadcast, this).detach();
+    thread(&ChatServer::PopMessageQueue, this).detach();
 
 
     while (true) {
@@ -232,15 +236,18 @@ int ChatServer::Start() {
     // Cleanup winsock <-> WSAStartup
     WSACleanup();
 
-    delete *clients;
+    for (auto& it : clients) {
+        delete it.second;
+        clients.erase(it.first);
+    }
     return 0;
 }
 
-void ChatServer::DisconnectClient(int id) {
-    closesocket(clients[id]->clientSocket);
-    clients[id]->clientSocket = INVALID_SOCKET;
-    clients[id]->evnt = NULL;
-    WSACloseEvent(clients[id]->evnt);
+void ChatServer::DisconnectClient(int index) {
+    closesocket(clients[index]->clientSocket);
+    clients[index]->clientSocket = INVALID_SOCKET;
+    clients[index]->evnt = NULL;
+    WSACloseEvent(clients[index]->evnt);
 
     total_socket_count--;
 }

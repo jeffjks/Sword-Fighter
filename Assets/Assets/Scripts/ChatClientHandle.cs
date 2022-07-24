@@ -4,7 +4,11 @@ using UnityEngine;
 
 public class ChatClientHandle : MonoBehaviour
 {
-    // TODO id와 닉네임 일치화
+    // Unused
+    public static void GetUserId(Packet packet) {
+        ChatClientSend.SendUserId();
+    }
+    
     public static void MessageReceived(Packet packet) { // msg 후 toClient 읽기
         int id = packet.ReadInt();
         string msg = packet.ReadString();

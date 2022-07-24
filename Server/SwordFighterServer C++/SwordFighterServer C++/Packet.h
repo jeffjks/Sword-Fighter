@@ -4,26 +4,20 @@
 
 using namespace std;
 
-/*
+
 /// <summary>Sent from server to client.</summary>
-public enum ServerPackets
+enum ChatServerPackets
 {
-	welcome = 1,
-	spawnPlayer,
-	playerMovement,
-	playerState,
-	playerHp,
-	playerDisconnected
-}
+    getUserId = 1,
+    chatServerMessage
+};
 
 /// <summary>Sent from client to server.</summary>
-public enum ClientPackets
+enum ChatClientPackets
 {
-	welcomeReceived = 1,
-	playerInput,
-	playerMovement,
-	changeHp
-}*/
+    sendUserId = 1,
+    chatClientMessage
+};
 
 // https://sanghun219.tistory.com/192?category=894929
 

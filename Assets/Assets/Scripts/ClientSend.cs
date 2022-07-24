@@ -11,12 +11,13 @@ public class ClientSend : MonoBehaviour
 
     #region Packets
     public static void WelcomeReceived() {
-        using (Packet packet = new Packet((int)ClientPackets.welcomeReceived)) { // 패킷 생성 시 가장 앞 부분에 패킷id(종류) 삽입
+        using (Packet packet = new Packet((int) ClientPackets.welcomeReceived)) { // 패킷 생성 시 가장 앞 부분에 패킷id(종류) 삽입
             packet.Write(Client.instance.myId);
             packet.Write(UIManager.instance.m_UsernameField.text);
 
             SendTCPData(packet);
         }
+        Client.instance.ClientReady();
     }
 
     public static void PlayerInput(bool[] inputs) {

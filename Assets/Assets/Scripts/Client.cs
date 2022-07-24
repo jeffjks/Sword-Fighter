@@ -15,11 +15,13 @@ public class Client : MonoBehaviour
     public TCP tcp;
 
     private bool isConnected = false;
+    private bool isClientReady = false;
     private delegate void PacketHandler(Packet packet);
     private static Dictionary<int, PacketHandler> packetHandlers;
 
     private void Awake() // Singleton
     {
+        isClientReady = false;
         if (instance == null) {
             instance = this;
         }
@@ -189,5 +191,13 @@ public class Client : MonoBehaviour
 
     public bool IsConnected() {
         return isConnected;
+    }
+
+    public void ClientReady() {
+        isClientReady = true;
+    }
+
+    public bool IsClientReady() {
+        return isClientReady;
     }
 }

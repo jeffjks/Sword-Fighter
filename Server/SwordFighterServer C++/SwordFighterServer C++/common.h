@@ -9,5 +9,17 @@
 #pragma comment(lib,"ws2_32")
 #pragma warning(disable:4996)
 
-static queue<pair<int, string>> messageQueue;
+struct MessageQueueData {
+    int clientIndex;
+    int fromId;
+    string message;
+
+    MessageQueueData(int _clientIndex, int _fromId, string _message) {
+        clientIndex = _clientIndex;
+        fromId = _fromId;
+        message = _message;
+    }
+};
+
+static queue<MessageQueueData> messageQueue;
 static mutex mtx;

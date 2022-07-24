@@ -11,7 +11,7 @@ public class ChatClient : MonoBehaviour
 
     public string defaultIp = "127.0.0.1";
     public int port = 26960;
-    public int myId = 0;
+    //public int myId = 0;
     public TCP tcp;
 
     public ChatMessageWindow m_ChatMessageWindow;
@@ -133,9 +133,9 @@ public class ChatClient : MonoBehaviour
                 ThreadManager.ExecuteOnMainThread(() =>
                 {
                     using (Packet packet = new Packet(packetBytes)) {
-                        //int packetId = packet.ReadInt(); // 패킷 종류 (SpawnPlayer, PlayerMovement 등)
+                        int packetId = packet.ReadInt(); // 패킷 종류 (ChatMessage 등)
                         //Debug.Log("packetId: " + packetId);
-                        packetHandlers[1](packet);
+                        packetHandlers[packetId](packet);
                     }
                 });
 
@@ -169,7 +169,8 @@ public class ChatClient : MonoBehaviour
     private void InitializeClientData() {
         packetHandlers = new Dictionary<int, PacketHandler>()
         {
-            { (int) ChatServerPackets.chatMessage, ChatClientHandle.MessageReceived },
+            { (int) ChatServerPackets.getUserId, ChatClientHandle.GetUserId },
+            { (int) ChatServerPackets.chatServerMessage, ChatClientHandle.MessageReceived },
         };
         Debug.Log("Initialize packets.");
     }

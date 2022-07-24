@@ -166,14 +166,12 @@ public class UIManager : MonoBehaviour
         if (message == string.Empty) {
             return;
         }
+        if (!Client.instance.IsClientReady()) {
+            return;
+        }
         int fromId = Client.instance.myId;
         m_ChatMessageWindow.PushTextMessage(fromId, message);
-        
-        using (Packet packet = new Packet((int) ChatClientPackets.chatMessage)) { // 패킷 생성 시 가장 앞 부분에 패킷id(종류) 삽입
-            packet.Write(message);
-            packet.WriteLength(); // 패킷 가장 앞 부분에 패킷 길이 삽입 (패킷id보다 앞에)
-            ChatClient.instance.tcp.SendData(packet);
-        }
+        ChatClientSend.SendChatMessage(fromId, message);
     }
 
     public void ToggleWritingChat() {

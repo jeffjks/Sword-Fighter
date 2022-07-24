@@ -31,13 +31,15 @@ public enum ClientPackets
 /// <summary>Chat from server to client.</summary>
 public enum ChatServerPackets
 {
-    chatMessage = 1,
+    getUserId = 1,
+    chatServerMessage
 }
 
 /// <summary>Chat from client to server.</summary>
 public enum ChatClientPackets
 {
-    chatMessage = 1,
+    sendUserId = 1,
+    chatClientMessage
 }
 
 public class Packet : IDisposable

@@ -49,7 +49,7 @@ bool Client::HandleData(char* data, int length) {
 
         int packetId = packet.ReadInt() - 1;
         try {
-            fp[packetId](id, packet);
+            fp[packetId](index, packet);
         }
         catch (exception e) {
             cout << "Unknown packet id" << endl;
@@ -75,5 +75,5 @@ bool Client::HandleData(char* data, int length) {
 }
 
 void Client::Disconnect() {
-    chatServer->DisconnectClient(id);
+    chatServer->DisconnectClient(index);
 }
