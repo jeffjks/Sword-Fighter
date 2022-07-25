@@ -10,22 +10,20 @@ public class UIManager : MonoBehaviour
 
     public GameObject m_StartMenu;
     public GameObject m_InGameMenu;
-    public GameObject m_ChatInputField;
-    public InputField m_MyChatInputField;
-    public ChatMessageWindow m_ChatMessageWindow;
+    public UI_ChatInputField m_UI_ChatInputField;
+    public UI_ChatWindow m_UI_ChatWindow;
     public InputField m_IpAdressField;
     public InputField m_UsernameField;
-    public Image m_MyHpBar;
-    public GameObject m_OppositeUI_prefab;
+    public UI_HpBarMain m_UI_HpBarMain;
     public Text m_ErrorText;
-    public float m_MaxDistance;
 
-    private Dictionary<int, OppositeUI> m_OppositeUIs = new Dictionary<int, OppositeUI>();
+    private ObjectPooling m_ObjectPooling;
     private bool m_Ingame = false;
-    private bool m_WritingChat = false;
 
     private void Awake() // Singleton
     {
+        m_ObjectPooling = GameManager.instance.m_ObjectPooling;
+        
         if (instance == null) {
             instance = this;
         }
@@ -73,26 +71,25 @@ public class UIManager : MonoBehaviour
         m_StartMenu.SetActive(false);
         m_InGameMenu.SetActive(true);
         m_UsernameField.interactable = false;
-        m_MyHpBar.fillAmount = 1f;
+        m_UI_HpBarMain.FillMainHpBar(1f);
         //m_OppositeHpBar.fillAmount = 1f;
         m_ErrorText.text = string.Empty;
         m_Ingame = true;
+        
+        m_ObjectPooling.Init(3);
     }
 
     private void ReturnToMainMenu() {
         Client.instance.Disconnect();
         ChatClient.instance.Disconnect();
-        foreach (KeyValuePair<int, PlayerManager> playerManager in GameManager.players) {
-            //Destroy(GameManager.players[playerManager.Key].gameObject);
-            playerManager.Value.gameObject.SetActive(false);
-        }
-        GameManager.players.Clear();
+
+        m_UI_ChatWindow.ClearChatWindow();
+        m_UI_ChatInputField.WritingChatOff();
+
         m_StartMenu.SetActive(true);
         m_InGameMenu.SetActive(false);
         m_UsernameField.interactable = true;
         m_Ingame = false;
-        m_ChatMessageWindow.ClearChatMessageWindow();
-        WritingChatOff();
     }
 
     
@@ -107,90 +104,8 @@ public class UIManager : MonoBehaviour
             }
 
             if (Input.GetButtonDown("Submit")) {
-                ToggleWritingChat();
+                m_UI_ChatInputField.ToggleWritingChat();
             }
         }
-
-        try {
-            foreach (KeyValuePair<int, PlayerManager> player in GameManager.players) {
-                PlayerManager myPm = GameManager.players[Client.instance.myId];
-                if (player.Key == Client.instance.myId) {
-                    int my_current_hp = myPm.m_CurrentHp;
-                    int my_max_hp = myPm.m_MaxHp;
-                    SetMyHpBar(my_current_hp, my_max_hp);
-                }
-                else {
-                    if (!m_OppositeUIs.ContainsKey(player.Key)) { // Create New UI Object
-                        GameObject oppositeUI = Instantiate(m_OppositeUI_prefab, Vector3.zero, Quaternion.identity, m_InGameMenu.transform);
-                        m_OppositeUIs.Add(player.Key, oppositeUI.GetComponent<OppositeUI>());
-                        m_OppositeUIs[player.Key].m_OppositeUI_Username.text = GameManager.players[player.Key].username;
-                    }
-                    if (m_OppositeUIs.ContainsKey(player.Key)) { // Update UI Object
-                        PlayerManager opPm = GameManager.players[player.Key];
-                        int opposite_current_hp = opPm.m_CurrentHp;
-                        int opposite_max_hp = opPm.m_MaxHp;
-                        m_OppositeUIs[player.Key].transform.position = Camera.main.WorldToScreenPoint(opPm.transform.position + new Vector3(0, 2.4f, 0));
-
-                        float distance = Vector3.Distance(myPm.transform.position, opPm.transform.position);
-                        if (distance < m_MaxDistance) {
-                            float scale = Mathf.Lerp(0.5f, 0.2f, distance/m_MaxDistance);
-                            m_OppositeUIs[player.Key].transform.localScale = new Vector3(scale, scale, scale);
-                            SetOppositeHpBar(m_OppositeUIs[player.Key], opposite_current_hp, opposite_max_hp);
-                        }
-                        else {
-                            m_OppositeUIs[player.Key].transform.localScale = Vector3.zero;
-                        }
-                    }
-                }
-            }
-        }
-        catch (KeyNotFoundException e) {
-            Debug.LogError(e);
-        }
-    }
-
-    public void DestroyUI(int id) {
-        Destroy(m_OppositeUIs[id].gameObject);
-        m_OppositeUIs.Remove(id);
-    }
-
-    public void SetMyHpBar(int current_hp, int max_hp) {
-        m_MyHpBar.fillAmount = (float) current_hp/max_hp;
-    }
-
-    public void SetOppositeHpBar(OppositeUI oppositeHP, int current_hp, int max_hp) {
-        oppositeHP.m_OppositeUI_HpBar.fillAmount = (float) current_hp/max_hp;
-    }
-
-    public void SendChatMessage(string message) {
-        if (message == string.Empty) {
-            return;
-        }
-        if (!Client.instance.IsClientReady()) {
-            return;
-        }
-        int fromId = Client.instance.myId;
-        m_ChatMessageWindow.PushTextMessage(fromId, message);
-        ChatClientSend.SendChatMessage(fromId, message);
-    }
-
-    public void ToggleWritingChat() {
-        if (m_WritingChat) {
-            SendChatMessage(m_MyChatInputField.text);
-        }
-        m_WritingChat = !m_WritingChat;
-        m_MyChatInputField.text = string.Empty;
-        m_ChatInputField.SetActive(m_WritingChat);
-        m_MyChatInputField.ActivateInputField();
-    }
-
-    public void WritingChatOff() {
-        m_WritingChat = false;
-        m_MyChatInputField.text = string.Empty;
-        m_ChatInputField.SetActive(false);
-    }
-
-    public bool GetWritingChat() {
-        return m_WritingChat;
     }
 }

@@ -183,7 +183,10 @@ public class Client : MonoBehaviour
     public void Disconnect() {
         if (isConnected) {
             isConnected = false;
+            isClientReady = false;
             tcp.socket.Close();
+            
+            GameManager.instance.Reset();
 
             Debug.Log("Disconnceted from server.");
         }

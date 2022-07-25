@@ -60,7 +60,7 @@ void ChatServer::InitializeServerData()
 }
 
 void ChatServer::AcceptClient(int index) {
-    int key;
+    int key = -1;
     if (wsaNetEvents.iErrorCode[FD_ACCEPT_BIT] != 0)
     {
         // 에러 로그를 출력하고 다음 순서를 진행한다.
@@ -102,9 +102,12 @@ void ChatServer::AcceptClient(int index) {
             break;
         }
     }
-
-    // close listening socket
-    //int closeResult = closesocket(listenSocket);
+    
+    if (key == -1) {
+        closesocket(acceptClientSocket);
+        cout << "Server is full!" << endl;
+        return;
+    }
 
     char host[NI_MAXHOST];             // 클라이언트의 host 이름
     char service[NI_MAXHOST];        // 클라이언트의 PORT 번호

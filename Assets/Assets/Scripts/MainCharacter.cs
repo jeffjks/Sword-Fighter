@@ -16,8 +16,8 @@ public class MainCharacter : MonoBehaviour
     //public Animator m_Animator;
     public Transform m_CameraObject;
     public Transform m_CharacterModel;
-    public UIManager m_UIManager;
     
+    private UIManager m_UIManager;
     private float timer;
     private int currentTick = 0;
     //private bool isReady = false;
@@ -27,6 +27,10 @@ public class MainCharacter : MonoBehaviour
     private const float SPEED = 0.16f;
 
     private readonly Queue<ClientInput> inputTimeline = new Queue<ClientInput>();
+
+    void Awake() {
+        m_UIManager = GameManager.instance.m_UIManager;
+    }
 
     private void SendMovementDataToServer(ClientInput clientInput) {
         if (m_PlayerManager.m_State == -1) {
@@ -83,7 +87,7 @@ public class MainCharacter : MonoBehaviour
         int vertical_raw;
         Vector3 cam_forward = Vector3.Normalize(new Vector3(m_CameraObject.forward.x, 0, m_CameraObject.forward.z));
 
-        if (m_UIManager.GetWritingChat()) {
+        if (m_UIManager.m_UI_ChatInputField.GetWritingChat()) {
             horizontal_raw = 0;
             vertical_raw = 0;
         }
@@ -109,7 +113,7 @@ public class MainCharacter : MonoBehaviour
         }
 
         //isReady = true; // TEMP
-        if (!m_UIManager.GetWritingChat()) {
+        if (!m_UIManager.m_UI_ChatInputField.GetWritingChat()) {
             SendInputDataToServer();
         }
 

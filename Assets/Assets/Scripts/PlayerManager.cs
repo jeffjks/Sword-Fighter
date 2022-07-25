@@ -10,6 +10,7 @@ public class PlayerManager : MonoBehaviour
     public Transform m_CharacterModel;
     public Collider m_PlayerCollider;
     public Sword m_Sword;
+    public UI_HpBar m_UI_HpBar;
     public bool m_OppositeCharacter;
     public int m_CurrentHp;
     public int m_MaxHp;
@@ -24,6 +25,11 @@ public class PlayerManager : MonoBehaviour
     private bool m_IsRolling = false;
     private const float ROLL_DISTANCE = 5f;
 
+    public void Init() {
+        SetUserName(username);
+        SetCurrentHitPoint(m_CurrentHp);
+    }
+
     void Update()
     {
         if (m_State == -1) {
@@ -35,7 +41,7 @@ public class PlayerManager : MonoBehaviour
             return;
         }
 
-        if (GameManager.instance.m_UIManager.GetWritingChat()) {
+        if (GameManager.instance.m_UIManager.m_UI_ChatInputField.GetWritingChat()) {
             inputVector_raw = Vector2Int.zero;
             inputVector = Vector2.zero;
         }
@@ -158,5 +164,14 @@ public class PlayerManager : MonoBehaviour
             position.y,
             Mathf.Clamp(position.z, -50f, 50f)
         );
+    }
+
+    public void SetCurrentHitPoint(int hitPoints) {
+        m_CurrentHp = hitPoints;
+        m_UI_HpBar.UpdateHpBarFill();
+    }
+
+    public void SetUserName(string username) {
+        m_UI_HpBar.SetUserName(username);
     }
 }

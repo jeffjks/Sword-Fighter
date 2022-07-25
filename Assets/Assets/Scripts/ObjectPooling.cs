@@ -4,18 +4,16 @@ using UnityEngine;
 
 public class ObjectPooling : MonoBehaviour
 {
-    public Queue<PlayerManager> poolingObjectQueue = new Queue<PlayerManager>();
-
     public GameObject oppositePlayerPrefab;
     public MainCharacter m_MainCharacter;
 
-    private void Awake()
-    {
-        Initialize(3);
-    }
+    private Queue<PlayerManager> poolingObjectQueue = new Queue<PlayerManager>();
+    private List<PlayerManager> allPoolingObjectList = new List<PlayerManager>();
+    private const int defaultObjectCount = 3;
 
-    private void Initialize(int count) {
-        for(int i = 0; i < count; i++) {
+    public void Init(int count) {
+        int totalCount = count - poolingObjectQueue.Count;
+        for(int i = 0; i < totalCount; i++) {
             PlayerManager playerManager;
             poolingObjectQueue.Enqueue(playerManager = CreateNewObject());
             playerManager.gameObject.SetActive(false);
@@ -47,6 +45,9 @@ public class ObjectPooling : MonoBehaviour
     }
 
     public void ReturnOppositePlayer(PlayerManager obj) {
+        if (!obj.gameObject.activeSelf) {
+            return;
+        }
         poolingObjectQueue.Enqueue(obj);
         obj.gameObject.SetActive(false);
         //obj.transform.SetParent(transform);

@@ -14,7 +14,7 @@ public class ChatClient : MonoBehaviour
     //public int myId = 0;
     public TCP tcp;
 
-    public ChatMessageWindow m_ChatMessageWindow;
+    public UI_ChatWindow m_UI_ChatWindow;
 
     private bool isConnected = false;
     private delegate void PacketHandler(Packet packet);
@@ -189,6 +189,6 @@ public class ChatClient : MonoBehaviour
     }
 
     public void GetTextMessage(int fromId, string message) {
-        m_ChatMessageWindow.PushTextMessage(fromId, message);
+        m_UI_ChatWindow.PushTextMessage(fromId, message);
     }
 }

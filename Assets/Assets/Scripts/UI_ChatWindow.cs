@@ -4,7 +4,7 @@ using UnityEngine.UI;
 using UnityEngine;
 using System.Text;
 
-public class ChatMessageWindow : MonoBehaviour
+public class UI_ChatWindow : MonoBehaviour
 {
     const int SERVER_MESSAGE = 127;
     const int ADMIN_MESSAGE = 126;
@@ -49,7 +49,7 @@ public class ChatMessageWindow : MonoBehaviour
         }
     }
 
-    public void ClearChatMessageWindow() {
+    public void ClearChatWindow() {
         sb.Clear();
         messageCount = 0;
         messageLengthQueue.Clear();

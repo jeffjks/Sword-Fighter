@@ -8,8 +8,8 @@ public class GameManager : MonoBehaviour
 
     public static Dictionary<int, PlayerManager> players = new Dictionary<int, PlayerManager>();
 
-    public GameObject localPlayerPrefab;
-    public GameObject playerPrefab;
+    //public GameObject localPlayerPrefab;
+    //public GameObject playerPrefab;
     public UIManager m_UIManager;
     public ObjectPooling m_ObjectPooling;
 
@@ -34,14 +34,10 @@ public class GameManager : MonoBehaviour
         Quaternion rot = Quaternion.LookRotation(direction);
 
         if (id == Client.instance.myId) {
-            //player = Instantiate(localPlayerPrefab, position, rot);
-            //m_MainCharacter = player.GetComponent<MainCharacter>();
             m_MainCharacter = m_ObjectPooling.GetLocalPlayer();
             playerManager = m_MainCharacter.m_PlayerManager;
         }
         else {
-            //Client.instance.oppositeId = id;
-            //player = Instantiate(playerPrefab, position, rot);
             playerManager = m_ObjectPooling.GetOppositePlayer();
         }
 
@@ -49,8 +45,20 @@ public class GameManager : MonoBehaviour
         playerManager.username = username;
         playerManager.m_CurrentHp = hp;
         playerManager.m_State = state;
+        playerManager.Init();
         players.Add(id, playerManager);
+    }
 
-        //ClientSend.PlayerReady(); // 캐릭터 생성 시 해당 플레이어의 PlayerReady 패킷 전송
+    public void Reset() {
+        foreach (KeyValuePair<int, PlayerManager> playerManager in GameManager.players) {
+            if (playerManager.Value.id == Client.instance.myId) {
+                playerManager.Value.gameObject.SetActive(false);
+                continue;
+            }
+            else {
+                GameManager.instance.m_ObjectPooling.ReturnOppositePlayer(playerManager.Value);
+            }
+        }
+        GameManager.players.Clear();
     }
 }

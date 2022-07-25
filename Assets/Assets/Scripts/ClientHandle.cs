@@ -70,7 +70,7 @@ public class ClientHandle : MonoBehaviour
         int hitPoints = packet.ReadInt();
         
         if (GameManager.players.ContainsKey(id)) {
-            GameManager.players[id].m_CurrentHp = hitPoints;
+            GameManager.players[id].SetCurrentHitPoint(hitPoints);
         }
     }
 
@@ -81,7 +81,7 @@ public class ClientHandle : MonoBehaviour
             //Destroy(GameManager.players[id].gameObject);
             GameManager.instance.m_ObjectPooling.ReturnOppositePlayer(GameManager.players[id]);
             GameManager.players.Remove(id);
-            GameManager.instance.m_UIManager.DestroyUI(id);
+            //GameManager.instance.m_UIManager.DestroyUI(id);
         }
     }
 }
