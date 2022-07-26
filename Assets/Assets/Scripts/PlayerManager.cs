@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerManager : MonoBehaviour
+public abstract class PlayerManager : MonoBehaviour
 {
     public Animator m_Animator;
     public int id;
@@ -11,15 +11,13 @@ public class PlayerManager : MonoBehaviour
     public Collider m_PlayerCollider;
     public Sword m_Sword;
     public UI_HpBar m_UI_HpBar;
-    public bool m_OppositeCharacter;
     public int m_CurrentHp;
     public int m_MaxHp;
 
+    [HideInInspector] public Vector2Int m_MovementRaw = Vector2Int.zero;
     [HideInInspector] public Vector2 m_Movement = Vector2.zero;
     [HideInInspector] public Vector3 direction = Vector3.forward;
     [HideInInspector] public int m_State = 0;
-    [HideInInspector] public Vector2Int inputVector_raw;
-    [HideInInspector] public Vector2 inputVector;
 
     private bool m_CanMove = true;
     private bool m_IsRolling = false;
@@ -30,50 +28,32 @@ public class PlayerManager : MonoBehaviour
         SetCurrentHitPoint(m_CurrentHp);
     }
 
-    void Update()
-    {
+    public bool IsDead() {
         if (m_State == -1) {
             m_CanMove = false;
             m_PlayerCollider.enabled = false;
             m_Animator.SetInteger("State", m_State);
-            inputVector_raw = Vector2Int.zero;
-            inputVector = Vector2.zero;
+            m_MovementRaw = Vector2Int.zero;
+            m_Movement = Vector2.zero;
+            return true;
+        }
+        return false;
+    }
+
+    protected virtual void Update()
+    {
+        if (IsDead()) {
             return;
         }
 
-        if (GameManager.instance.m_UIManager.m_UI_ChatInputField.GetWritingChat()) {
-            inputVector_raw = Vector2Int.zero;
-            inputVector = Vector2.zero;
-        }
-        else {
-            inputVector_raw = new Vector2Int((int) Input.GetAxisRaw("Horizontal"), (int) Input.GetAxisRaw("Vertical"));
-            inputVector = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
-        }
-
-        SetRotation();
-
-        if (m_OppositeCharacter) {
-            if (m_State <= 1) {
-                if (m_Movement != Vector2.zero) {
-                    if (m_CanMove) {
-                        m_State = 1;
-                    }
-                }
-                else {
-                    m_State = 0;
+        if (m_State <= 1) {
+            if (m_Movement != Vector2.zero) {
+                if (m_CanMove) {
+                    m_State = 1;
                 }
             }
-        }
-        else {
-            if (m_State <= 1) {
-                if (inputVector_raw != Vector2Int.zero) {
-                    if (m_CanMove) {
-                        m_State = 1;
-                    }
-                }
-                else {
-                    m_State = 0;
-                }
+            else {
+                m_State = 0;
             }
         }
 
@@ -87,14 +67,8 @@ public class PlayerManager : MonoBehaviour
             m_IsRolling = false;
         }
 
-        if (m_OppositeCharacter) {
-            m_Animator.SetFloat("MovementHorizontal", m_Movement.x);
-            m_Animator.SetFloat("MovementVertical", m_Movement.y);
-        }
-        else {
-            m_Animator.SetFloat("MovementHorizontal", inputVector.x);
-            m_Animator.SetFloat("MovementVertical", inputVector.y);
-        }
+        m_Animator.SetFloat("MovementHorizontal", m_Movement.x);
+        m_Animator.SetFloat("MovementVertical", m_Movement.y);
         m_Animator.SetInteger("State", m_State);
 
         if (m_State != 3) {
@@ -123,13 +97,6 @@ public class PlayerManager : MonoBehaviour
         yield break;
     }
 
-    public void SetRotation() {
-        if (!m_OppositeCharacter) {
-            return;
-        }
-        m_CharacterModel.rotation = Quaternion.LookRotation(direction);
-    }
-
     void ReleaseBlock() {
         //m_State = 0;
     }
@@ -142,19 +109,9 @@ public class PlayerManager : MonoBehaviour
         //m_State = 0;
     }
 
-    void Start_DealDamage_Attack1() {
-        if (m_OppositeCharacter) {
-            return;
-        }
-        m_Sword.StartDeal();
-    }
+    public abstract void Start_DealDamage_Attack1();
 
-    void Finish_DealDamage_Attack1() {
-        if (m_OppositeCharacter) {
-            return;
-        }
-        m_Sword.FinishDeal();
-    }
+    public abstract void Finish_DealDamage_Attack1();
 
     public Vector3 ClampPosition(Vector3 position)
     {

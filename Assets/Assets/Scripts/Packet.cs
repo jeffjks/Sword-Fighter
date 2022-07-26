@@ -23,6 +23,7 @@ public enum ServerPackets
 public enum ClientPackets
 {
     welcomeReceived = 1,
+    spawnPlayerReceived,
     playerInput,
     playerMovement,
     changeHp

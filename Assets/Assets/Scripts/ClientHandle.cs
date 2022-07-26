@@ -24,6 +24,8 @@ public class ClientHandle : MonoBehaviour
         //Quaternion rotation = packet.ReadQuaternion();
         
         GameManager.instance.SpawnPlayer(id, username, position, direction, hp, state);
+
+        ClientSend.SpawnPlayerReceived(id);
     }
 
     public static void PlayerMovement(Packet packet) {
@@ -37,16 +39,16 @@ public class ClientHandle : MonoBehaviour
 
         //Debug.Log(id);
         if (Client.instance.myId == id) { // 자신 플레이어
-            GameManager.instance.m_MainCharacter.OnStateReceived(seqNum, position);
+            GameManager.instance.m_PlayerController.OnStateReceived(seqNum, position);
         }
         else { // 다른 플레이어
-            if (GameManager.players.ContainsKey(id)) {
+            try {
                 GameManager.players[id].m_Movement = movement;
                 GameManager.players[id].transform.position = position;
                 GameManager.players[id].direction = direction;
             }
-            else {
-                Debug.Log("XXX: " + id);
+            catch (KeyNotFoundException e) {
+                Debug.Log(e);
             }
         }
     }
@@ -56,11 +58,11 @@ public class ClientHandle : MonoBehaviour
 
         int state = packet.ReadInt();
         
-        if (GameManager.players.ContainsKey(id)) {
+        try {
             GameManager.players[id].m_State = state;
         }
-        else {
-            Debug.Log("YYY: " + id);
+        catch (KeyNotFoundException e) {
+            Debug.Log(e);
         }
     }
 

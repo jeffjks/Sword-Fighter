@@ -5,7 +5,7 @@ using UnityEngine;
 public class ObjectPooling : MonoBehaviour
 {
     public GameObject oppositePlayerPrefab;
-    public MainCharacter m_MainCharacter;
+    public PlayerController m_PlayerController;
 
     private Queue<PlayerManager> poolingObjectQueue = new Queue<PlayerManager>();
     private List<PlayerManager> allPoolingObjectList = new List<PlayerManager>();
@@ -39,9 +39,9 @@ public class ObjectPooling : MonoBehaviour
         }
     }
 
-    public MainCharacter GetLocalPlayer() {
-        m_MainCharacter.gameObject.SetActive(true);
-        return m_MainCharacter;
+    public PlayerController GetPlayerController() {
+        m_PlayerController.gameObject.SetActive(true);
+        return m_PlayerController;
     }
 
     public void ReturnOppositePlayer(PlayerManager obj) {

@@ -10,12 +10,15 @@ public struct ClientInput // 클라이언트측 예측 방식
     public Vector3 cam_forward;
 }
 
-public class MainCharacter : MonoBehaviour
+public class PlayerController : MonoBehaviour
 {
     public PlayerManager m_PlayerManager;
     //public Animator m_Animator;
     public Transform m_CameraObject;
     public Transform m_CharacterModel;
+    
+    private Vector2Int inputVector_raw;
+    private Vector2 inputVector;
     
     private UIManager m_UIManager;
     private float timer;
@@ -36,7 +39,6 @@ public class MainCharacter : MonoBehaviour
         if (m_PlayerManager.m_State == -1) {
             return;
         }
-        Vector2 movement = m_PlayerManager.inputVector;
 
         if (m_PlayerManager.m_State > 1) {
             clientInput.horizontal_raw = 0;
@@ -44,7 +46,7 @@ public class MainCharacter : MonoBehaviour
         }
         transform.position = ProcessMovement(transform.position, clientInput);
 
-        ClientSend.PlayerMovement(movement, clientInput);
+        ClientSend.PlayerMovement(inputVector, clientInput);
         //StartCoroutine(PlayerMovementDelay(movement, clientInput));
         
         this.inputTimeline.Enqueue(clientInput);
@@ -81,25 +83,19 @@ public class MainCharacter : MonoBehaviour
         }
     }
 
+    private void ControlPlayerMovement() {
+        m_PlayerManager.m_Movement = inputVector;
+        m_PlayerManager.m_MovementRaw = inputVector_raw;
+    }
+
     void FixedUpdate() // Camera
     {
-        int horizontal_raw;
-        int vertical_raw;
         Vector3 cam_forward = Vector3.Normalize(new Vector3(m_CameraObject.forward.x, 0, m_CameraObject.forward.z));
-
-        if (m_UIManager.m_UI_ChatInputField.GetWritingChat()) {
-            horizontal_raw = 0;
-            vertical_raw = 0;
-        }
-        else {
-            horizontal_raw = (int) m_PlayerManager.inputVector_raw.x;
-            vertical_raw = (int) m_PlayerManager.inputVector_raw.y;
-        }
 
         ClientInput clientInput = new ClientInput {
             seqNum = this.currentTick++,
-            horizontal_raw = horizontal_raw,
-            vertical_raw = vertical_raw,
+            horizontal_raw = inputVector_raw.x,
+            vertical_raw = inputVector_raw.y,
             cam_forward = cam_forward
         };
 
@@ -108,6 +104,18 @@ public class MainCharacter : MonoBehaviour
 
     void Update()
     {
+        if (GameManager.instance.m_UIManager.m_UI_ChatInputField.GetWritingChat()) {
+            inputVector_raw = Vector2Int.zero;
+            inputVector = Vector2.zero;
+        }
+        else {
+            inputVector_raw = new Vector2Int((int) Input.GetAxisRaw("Horizontal"), (int) Input.GetAxisRaw("Vertical"));
+            inputVector = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
+        }
+
+        ControlPlayerMovement();
+        
+
         if (m_PlayerManager.m_State == -1) {
             return;
         }

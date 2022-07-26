@@ -853,7 +853,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_UIManager: {fileID: 1045295599}
   m_ObjectPooling: {fileID: 1185269212}
-  m_MainCharacter: {fileID: 0}
+  m_PlayerController: {fileID: 0}
+--- !u!114 &701159604 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3308443238430782296, guid: a2bd3d7e3937c4e46af6110cbfcbc1b3,
+    type: 3}
+  m_PrefabInstance: {fileID: 1714096454}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 289b4c0074991c4498fdf7531dae8fd6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &802471393
 GameObject:
   m_ObjectHideFlags: 0
@@ -1575,7 +1587,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d7024263a840ef34192be7bc796424f4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_PlayerManager: {fileID: 1714096456}
+  m_PlayerManager: {fileID: 701159604}
   m_HpBarFillImage: {fileID: 1927840652}
 --- !u!1 &1185269210
 GameObject:
@@ -1623,7 +1635,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   oppositePlayerPrefab: {fileID: 6102899817233482914, guid: 383247c9fa3dd344fad98a2e1548c0c5,
     type: 3}
-  m_MainCharacter: {fileID: 386668329}
+  m_PlayerController: {fileID: 386668329}
 --- !u!1 &1209592241
 GameObject:
   m_ObjectHideFlags: 0
@@ -2458,18 +2470,6 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 1714096454}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &1714096456 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 3378578184601654357, guid: a2bd3d7e3937c4e46af6110cbfcbc1b3,
-    type: 3}
-  m_PrefabInstance: {fileID: 1714096454}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0f121c49d0aba5441af91c5ffa8f5638, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &1715862324
 GameObject:
   m_ObjectHideFlags: 0

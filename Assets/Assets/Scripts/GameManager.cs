@@ -14,7 +14,7 @@ public class GameManager : MonoBehaviour
     public ObjectPooling m_ObjectPooling;
 
     [HideInInspector]
-    public MainCharacter m_MainCharacter;
+    public PlayerController m_PlayerController;
 
     private void Awake() // Singleton
     {
@@ -34,8 +34,8 @@ public class GameManager : MonoBehaviour
         Quaternion rot = Quaternion.LookRotation(direction);
 
         if (id == Client.instance.myId) {
-            m_MainCharacter = m_ObjectPooling.GetLocalPlayer();
-            playerManager = m_MainCharacter.m_PlayerManager;
+            m_PlayerController = m_ObjectPooling.GetPlayerController();
+            playerManager = m_PlayerController.m_PlayerManager;
         }
         else {
             playerManager = m_ObjectPooling.GetOppositePlayer();

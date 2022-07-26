@@ -1984,9 +1984,9 @@ GameObject:
   - component: {fileID: 4309770918851652384}
   - component: {fileID: 486075619493683137}
   - component: {fileID: 8019605307383838337}
-  - component: {fileID: 3378578184601654357}
+  - component: {fileID: 3308443238430782296}
   m_Layer: 0
-  m_Name: LocalPlayer
+  m_Name: PlayerMe
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2069,10 +2069,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 435569bd339117541aa0cbabd925bba4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_PlayerManager: {fileID: 3378578184601654357}
+  m_PlayerManager: {fileID: 3308443238430782296}
   m_CameraObject: {fileID: 8939089762944725779}
   m_CharacterModel: {fileID: 6708934368766509321}
---- !u!114 &3378578184601654357
+--- !u!114 &3308443238430782296
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -2081,24 +2081,23 @@ MonoBehaviour:
   m_GameObject: {fileID: 6102899817233482914}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0f121c49d0aba5441af91c5ffa8f5638, type: 3}
+  m_Script: {fileID: 11500000, guid: 289b4c0074991c4498fdf7531dae8fd6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_Animator: {fileID: 6102899817224009438}
-  id: 1
+  id: 0
   username: 
   m_CharacterModel: {fileID: 6708934368766509321}
   m_PlayerCollider: {fileID: 4309770918851652384}
   m_Sword: {fileID: 1472356315278172450}
   m_UI_HpBar: {fileID: 0}
-  m_OppositeCharacter: 0
   m_CurrentHp: 100
   m_MaxHp: 100
+  m_MovementRaw: {x: 0, y: 0}
   m_Movement: {x: 0, y: 0}
   direction: {x: 0, y: 0, z: 1}
   m_State: 0
-  inputVector_raw: {x: 0, y: 0}
-  inputVector: {x: 0, y: 0}
+  m_MainCharacter: {fileID: 8019605307383838337}
 --- !u!1 &6102899817233482916
 GameObject:
   m_ObjectHideFlags: 0

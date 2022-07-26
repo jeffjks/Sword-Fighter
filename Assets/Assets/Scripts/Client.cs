@@ -136,7 +136,9 @@ public class Client : MonoBehaviour
                     using (Packet packet = new Packet(packetBytes)) {
                         int packetId = packet.ReadInt(); // 패킷 종류 (SpawnPlayer, PlayerMovement 등)
                         //Debug.Log(packetId);
-                        packetHandlers[packetId](packet);
+                        if (Client.instance.IsConnected()) { // 접속 종료 시 패킷 처리 중지
+                            packetHandlers[packetId](packet);
+                        }
                     }
                 });
 

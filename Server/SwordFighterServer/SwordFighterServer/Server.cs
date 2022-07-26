@@ -65,6 +65,7 @@ namespace SwordFighterServer
             packetHandlers = new Dictionary<int, PacketHandler>() // 패킷 종류에 따른 함수 포인터 설정
             {
                 { (int) ClientPackets.welcomeReceived, ServerHandle.WelcomeReceived },
+                { (int) ClientPackets.spawnPlayerReceived, ServerHandle.SpawnPlayerReceived },
                 { (int) ClientPackets.playerInput, ServerHandle.PlayerInput },
                 { (int) ClientPackets.playerMovement, ServerHandle.PlayerMovement },
                 { (int) ClientPackets.changeHp, ServerHandle.ChangeHp },

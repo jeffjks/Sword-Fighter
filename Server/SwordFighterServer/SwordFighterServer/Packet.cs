@@ -20,6 +20,7 @@ namespace SwordFighterServer
     public enum ClientPackets
     {
         welcomeReceived = 1,
+        spawnPlayerReceived,
         playerInput,
         playerMovement,
         changeHp

@@ -20,6 +20,14 @@ public class ClientSend : MonoBehaviour
         Client.instance.ClientReady();
     }
 
+    public static void SpawnPlayerReceived(int id) {
+        using (Packet packet = new Packet((int) ClientPackets.spawnPlayerReceived)) { // 패킷 생성 시 가장 앞 부분에 패킷id(종류) 삽입
+            packet.Write(id);
+
+            SendTCPData(packet);
+        }
+    }
+
     public static void PlayerInput(bool[] inputs) {
         using (Packet packet = new Packet((int) ClientPackets.playerInput)) {
             packet.Write(inputs.Length);

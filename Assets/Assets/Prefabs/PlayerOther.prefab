@@ -1836,7 +1836,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 344406012e181324d8e176054ac58c53, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_PlayerManager: {fileID: 3378578184601654357}
+  m_PlayerManager: {fileID: 2869113670362547089}
   m_HpBarFillImage: {fileID: 2190583052871592068}
   m_UI_UserNameText: {fileID: 1466222272100006125}
   m_MaxDistance: 15
@@ -2121,9 +2121,9 @@ GameObject:
   - component: {fileID: 6102899817224009438}
   - component: {fileID: 4309770918851652384}
   - component: {fileID: 486075619493683137}
-  - component: {fileID: 3378578184601654357}
+  - component: {fileID: 2869113670362547089}
   m_Layer: 0
-  m_Name: Player
+  m_Name: PlayerOther
   m_TagString: Opposite
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2194,7 +2194,7 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!114 &3378578184601654357
+--- !u!114 &2869113670362547089
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -2203,24 +2203,22 @@ MonoBehaviour:
   m_GameObject: {fileID: 6102899817233482914}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0f121c49d0aba5441af91c5ffa8f5638, type: 3}
+  m_Script: {fileID: 11500000, guid: 784e1078e7f3f1045be0a790bd434029, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_Animator: {fileID: 6102899817224009438}
   id: 0
   username: 
   m_CharacterModel: {fileID: 6708934368766509321}
-  m_PlayerCollider: {fileID: 4309770918851652384}
+  m_PlayerCollider: {fileID: 8175596087537603009}
   m_Sword: {fileID: 7804646330452927711}
   m_UI_HpBar: {fileID: 8940025436619616354}
-  m_OppositeCharacter: 1
   m_CurrentHp: 100
   m_MaxHp: 100
+  m_MovementRaw: {x: 0, y: 0}
   m_Movement: {x: 0, y: 0}
   direction: {x: 0, y: 0, z: 1}
   m_State: 0
-  inputVector_raw: {x: 0, y: 0}
-  inputVector: {x: 0, y: 0}
 --- !u!1 &6102899817233482916
 GameObject:
   m_ObjectHideFlags: 0

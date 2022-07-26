@@ -17,11 +17,10 @@ namespace SwordFighterServer
             packet.WriteLength();
             for (int i = 1; i <= Server.MaxPlayers; ++i)
             {
-                if (!Server.clients[i].IsReady(fromId)) // SpawnPlayer 패킷을 보낸 플레이어에게만 전송
+                if (Server.clients[i].IsReady(fromId)) // SpawnPlayer 패킷을 보낸 플레이어에게만 전송
                 {
-                    continue;
+                    Server.clients[i].tcp.SendData(packet);
                 }
-                Server.clients[i].tcp.SendData(packet);
             }
         }
 
@@ -30,14 +29,12 @@ namespace SwordFighterServer
             packet.WriteLength();
             for (int i = 1; i <= Server.MaxPlayers; ++i)
             {
-                if (!Server.clients[i].IsReady(fromId)) // SpawnPlayer 패킷을 보낸 플레이어에게만 전송
+                if (Server.clients[i].IsReady(fromId)) // SpawnPlayer 패킷을 보낸 플레이어에게만 전송
                 {
-                    continue;
-                }
-
-                if (i != exceptClient)
-                {
-                    Server.clients[i].tcp.SendData(packet);
+                    if (i != exceptClient)
+                    {
+                        Server.clients[i].tcp.SendData(packet);
+                    }
                 }
             }
         }

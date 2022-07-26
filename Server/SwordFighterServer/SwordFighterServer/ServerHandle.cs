@@ -23,6 +23,13 @@ namespace SwordFighterServer
             Server.clients[fromClient].SendIntoGame(username);
         }
 
+        public static void SpawnPlayerReceived(int fromClient, Packet packet)
+        {
+            int spawnedPlayerId = packet.ReadInt();
+
+            Server.clients[fromClient].SetReady(spawnedPlayerId);
+        }
+
         public static void PlayerInput(int fromClient, Packet packet) // 플레이어의 스킬 사용 input
         {
             bool[] inputs = new bool[packet.ReadInt()];
