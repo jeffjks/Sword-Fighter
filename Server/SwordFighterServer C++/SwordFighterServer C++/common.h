@@ -21,5 +21,6 @@ struct MessageQueueData {
     }
 };
 
+static unordered_map<int, Client*> clients;
 static queue<MessageQueueData> messageQueue;
 static mutex mtx;

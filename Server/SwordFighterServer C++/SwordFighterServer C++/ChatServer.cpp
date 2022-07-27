@@ -6,26 +6,6 @@ using namespace std;
     Server
 */
 
-void ChatServer::SendTCPData(int clientId, Packet packet) {
-    const char* send_buffer = packet.ToArray();
-    send(clients[clientId]->clientSocket, send_buffer, packet.Length(), 0);
-}
-
-void ChatServer::SendTCPDataToAll(int index, int fromId, Packet packet, bool exceptMe = false) {
-    const char* send_buffer = packet.ToArray();
-
-    for (int i = 1; i <= MAX_PLAYERS; ++i) {
-        if (clients[i]->clientSocket == INVALID_SOCKET) {
-            continue;
-        }
-        if (index == i && exceptMe) {
-            continue;
-        }
-        cout << i << ", " << fromId << ", " << exceptMe << endl;
-        send(clients[i]->clientSocket, send_buffer, packet.Length(), 0);
-    }
-}
-
 void ChatServer::PopMessageQueue() { // Thread
     while (true) {
         if (messageQueue.empty()) {
@@ -34,21 +14,12 @@ void ChatServer::PopMessageQueue() { // Thread
         mtx.lock();
         while (!messageQueue.empty()) {
             MessageQueueData messageQueueData = messageQueue.front();
-            Broadcast(messageQueueData.clientIndex, messageQueueData.fromId, messageQueueData.message);
+            //Broadcast(messageQueueData.clientIndex, messageQueueData.fromId, messageQueueData.message);
+            chatServerSend.SendChatMessageAll(messageQueueData.clientIndex, messageQueueData.fromId, messageQueueData.message);
             messageQueue.pop();
         }
         mtx.unlock();
     }
-}
-
-void ChatServer::Broadcast(int index, int fromId, string str) {
-    Packet packet((int)ChatServerPackets::chatServerMessage); // packet id
-    packet.Write(fromId); // 채팅 주인
-    packet.Write(str); // 채팅 내용
-    packet.WriteLength(); // 패킷 길이
-    cout << fromId << ": " << str << endl;
-
-    SendTCPDataToAll(index, fromId, packet, true);
 }
 
 void ChatServer::InitializeServerData()
@@ -60,7 +31,7 @@ void ChatServer::InitializeServerData()
 }
 
 void ChatServer::AcceptClient(int index) {
-    int key = -1;
+    int currentIndex = -1;
     if (wsaNetEvents.iErrorCode[FD_ACCEPT_BIT] != 0)
     {
         // 에러 로그를 출력하고 다음 순서를 진행한다.
@@ -97,13 +68,12 @@ void ChatServer::AcceptClient(int index) {
 
             WSAEventSelect(acceptClientSocket, wsaEvent, FD_READ | FD_CLOSE);
             total_socket_count++;
-            key = i;
-            cout << "key: " << key << endl;
+            currentIndex = i;
             break;
         }
     }
     
-    if (key == -1) {
+    if (currentIndex == -1) {
         closesocket(acceptClientSocket);
         cout << "Server is full!" << endl;
         return;
@@ -126,18 +96,7 @@ void ChatServer::AcceptClient(int index) {
         cout << host << " connected on port " << ntohs(acceptClientSockaddr.sin_port) << endl;
     }
 
-
-    Packet packet((int)ChatServerPackets::chatServerMessage); // packet id
-    string str = string(u8"환영합니다.");
-
-    packet.Write(SERVER_MESSAGE);
-    packet.Write(str);
-    packet.WriteLength();
-
-    const char* send_buffer = packet.ToArray();
-
-    send(clients[key]->clientSocket, send_buffer, packet.Length(), 0);
-
+    chatServerSend.WelcomeMessage(currentIndex); // Send Welcome Message
 }
 
 void ChatServer::ReceiveClientsData(int index) {
