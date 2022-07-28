@@ -1,3 +1,4 @@
+#pragma once
 #include "ChatServer.h"
 
 using namespace std;
@@ -14,19 +15,10 @@ void ChatServer::PopMessageQueue() { // Thread
         mtx.lock();
         while (!messageQueue.empty()) {
             MessageQueueData messageQueueData = messageQueue.front();
-            //Broadcast(messageQueueData.clientIndex, messageQueueData.fromId, messageQueueData.message);
             chatServerSend.SendChatMessageAll(messageQueueData.clientIndex, messageQueueData.fromId, messageQueueData.message);
             messageQueue.pop();
         }
         mtx.unlock();
-    }
-}
-
-void ChatServer::InitializeServerData()
-{
-    for (int i = 1; i <= MAX_PLAYERS; i++) // 최대 플레이어 수 만큼 미리 clients 생성
-    {
-        clients[i] = new Client(i, this);
     }
 }
 
@@ -72,29 +64,21 @@ void ChatServer::AcceptClient(int index) {
             break;
         }
     }
-    
+
+    int clientPort = acceptClientSockaddr.sin_port;
+    char clientAddress[INET_ADDRSTRLEN];
+    inet_ntop(AF_INET, &(acceptClientSockaddr.sin_addr), clientAddress, INET_ADDRSTRLEN);
+
     if (currentIndex == -1) {
         closesocket(acceptClientSocket);
-        cout << "Server is full!" << endl;
+        printf("%s:%d failed to connect: Server full!\n", clientAddress, clientPort);
         return;
     }
 
-    char host[NI_MAXHOST];             // 클라이언트의 host 이름
-    char service[NI_MAXHOST];        // 클라이언트의 PORT 번호
-    ZeroMemory(host, NI_MAXHOST);    // memset(host, 0, NI_MAXHOST)와 동일
-    ZeroMemory(service, NI_MAXHOST);
+    strcpy_s(clients[currentIndex]->ip_address, clientAddress);
+    clients[currentIndex]->port = clientPort;
 
-    // clientAddr에 저장된 IP 주소를 통해 도메인 정보를 얻습니다. host 이름은 host에, 포트 번호는 service에 저장됩니다.
-    // getnameinfo()는 성공 시 0을 반환합니다. 실패 시 0이 아닌 값을 반환합니다.
-    if (getnameinfo((const SOCKADDR*)&acceptClientSockaddr, sizeof(SOCKADDR_IN), host, NI_MAXHOST, service, NI_MAXSERV, 0) == 0)
-    {
-        cout << host << " connected on port " << service << endl;
-    }
-    else
-    {
-        inet_ntop(AF_INET, &acceptClientSockaddr.sin_addr, host, NI_MAXHOST);
-        cout << host << " connected on port " << ntohs(acceptClientSockaddr.sin_port) << endl;
-    }
+    printf("Incoming connection from %s:%d\n", clientAddress, clientPort);
 
     chatServerSend.WelcomeMessage(currentIndex); // Send Welcome Message
 }
@@ -160,6 +144,7 @@ int ChatServer::Start() {
 
     thread(&ChatServer::PopMessageQueue, this).detach();
 
+    printf("Chat Server started on %d.\n", PORT);
 
     while (true) {
         memset(&handle_array, 0, sizeof(handle_array));
@@ -205,7 +190,21 @@ int ChatServer::Start() {
     return 0;
 }
 
+void ChatServer::InitializeServerData() {
+    for (int i = 1; i <= MAX_PLAYERS; i++) // 최대 플레이어 수 만큼 미리 clients 생성
+    {
+        clients[i] = new Client(i, this);
+    }
+
+    packetHandlers[ChatClientPackets::sendUserId] = &ChatServerHandle::GetUserId;
+    packetHandlers[ChatClientPackets::chatClientMessage] = &ChatServerHandle::MessageReceived;
+
+    cout << "Initialized packets." << endl;
+}
+
 void ChatServer::DisconnectClient(int index) {
+    printf("%s:%d has disconnected.\n", clients[index]->ip_address, clients[index]->port);
+
     closesocket(clients[index]->clientSocket);
     clients[index]->clientSocket = INVALID_SOCKET;
     clients[index]->evnt = NULL;

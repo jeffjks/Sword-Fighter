@@ -1,4 +1,5 @@
-﻿#include "ChatServer.h"
+﻿#pragma once
+#include "ChatServer.h"
 
 using namespace std;
 

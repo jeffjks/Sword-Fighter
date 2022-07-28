@@ -1,14 +1,21 @@
-#pragma once
-#include "common.h"
-#include <winsock2.h>
+
+
+class ChatServer;
 
 class ChatServerSend {
 private:
+    unordered_map<int, Client*> *clients;
+
     void SendData(int clientId, Packet packet);
     void SendTCPData(int toClient, Packet packet);
-    void SendTCPDataToAll(Packet packet, int fromIndex, bool exceptMe = false);
+    void SendTCPDataToAll(Packet packet, int fromIndex, bool exceptMe);
 
 public:
+    ChatServerSend() {
+    }
+    ChatServerSend(unordered_map<int, Client*> *_clients) {
+        clients = _clients;
+    }
     void WelcomeMessage(int toClient);
     void SendChatMessageAll(int fromIndex, int fromId, string msg);
 };

@@ -1,3 +1,4 @@
+#pragma once
 #include "ChatServer.h"
 
 using namespace std;
@@ -12,18 +13,6 @@ void Client::ReceiveData() {
     ZeroMemory(buf, dataBufferSize);
 
     int bytesReceived = recv(clientSocket, buf, dataBufferSize, 0);
-    if (bytesReceived == SOCKET_ERROR)
-    {
-        cerr << "Error in recv(). Quitting" << endl;
-        Disconnect();
-        return;
-    }
-    else if (bytesReceived == 0)
-    {
-        cerr << "Client disconnected " << endl;
-        Disconnect();
-        return;
-    }
 
     Packet packet = receivedData;
     packet.Reset(HandleData(buf, bytesReceived));
@@ -47,9 +36,12 @@ bool Client::HandleData(char* data, int length) {
 
         Packet packet(packetBytes, length);
 
-        int packetId = packet.ReadInt() - 1;
+        int packetId = packet.ReadInt();
         try {
-            fp[packetId](index, packet);
+            // Pointer
+            (chatServer->chatServerHandle.*(chatServer->packetHandlers[packetId]))(index, packet);
+
+            //chatServer->*packetHandlers[packetId](index, packet);
         }
         catch (exception e) {
             cout << "Unknown packet id" << endl;
@@ -72,8 +64,4 @@ bool Client::HandleData(char* data, int length) {
     }
 
     return false;
-}
-
-void Client::Disconnect() {
-    chatServer->DisconnectClient(index);
 }

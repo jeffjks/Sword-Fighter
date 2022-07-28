@@ -27,6 +27,9 @@
     <ClCompile Include="Client.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="ChatServerHandle.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="common.h">
@@ -42,6 +45,9 @@
       <Filter>소스 파일</Filter>
     </ClInclude>
     <ClInclude Include="ChatServerSend.h">
+      <Filter>소스 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ChatServerHandle.h">
       <Filter>소스 파일</Filter>
     </ClInclude>
   </ItemGroup>

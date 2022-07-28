@@ -1,3 +1,4 @@
+#pragma once
 #include <vector>
 #include <string>
 #include <iostream>
@@ -26,7 +27,7 @@ class Packet
 private:
 	vector<uint8_t> buffer;
 	//char *readableBuffer;
-	int readPos;
+	unsigned int readPos;
 
 	vector<uint8_t> intToBytesVector(int paramInt)
 	{
@@ -151,7 +152,7 @@ public:
 	void Write(long _value)
 	{
 		for (int i = 0; i < sizeof(_value); ++i) {
-			buffer.push_back(_value >> ((sizeof(_value) - 1 - i) * 8));
+			buffer.push_back((uint8_t) _value >> ((sizeof(_value) - 1 - i) * 8));
 		}
 	}
 	/// <summary>Adds a bool to the packet.</summary>

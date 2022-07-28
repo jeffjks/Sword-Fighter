@@ -154,12 +154,14 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="ChatServer.cpp" />
+    <ClCompile Include="ChatServerHandle.cpp" />
     <ClCompile Include="ChatServerSend.cpp" />
     <ClCompile Include="Client.cpp" />
     <ClCompile Include="Program.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ChatServer.h" />
+    <ClInclude Include="ChatServerHandle.h" />
     <ClInclude Include="ChatServerSend.h" />
     <ClInclude Include="Client.h" />
     <ClInclude Include="common.h" />

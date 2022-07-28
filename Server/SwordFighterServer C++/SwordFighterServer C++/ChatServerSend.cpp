@@ -1,14 +1,12 @@
-
-#include "ChatServerSend.h"
+#pragma once
 #include "ChatServer.h"
-
 
 // index : 채팅 주인 client의 index
 // fromId : 채팅 주인 유저 id
 
 void ChatServerSend::SendData(int toIndex, Packet packet) {
     const char* send_buffer = packet.ToArray();
-    send(clients[toIndex]->clientSocket, send_buffer, packet.Length(), 0);
+    send((*clients)[toIndex]->clientSocket, send_buffer, packet.Length(), 0);
 }
 
 
@@ -21,7 +19,7 @@ void ChatServerSend::SendTCPDataToAll(Packet packet, int fromIndex, bool exceptM
     packet.WriteLength();
 
     for (int i = 1; i <= MAX_PLAYERS; ++i) {
-        if (clients[i]->clientSocket == INVALID_SOCKET) {
+        if ((*clients)[i]->clientSocket == INVALID_SOCKET) {
             continue;
         }
         if (fromIndex == i && exceptMe) {
