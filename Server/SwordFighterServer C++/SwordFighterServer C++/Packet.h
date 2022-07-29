@@ -9,14 +9,14 @@ using namespace std;
 /// <summary>Sent from server to client.</summary>
 enum ChatServerPackets
 {
-    getUserId = 1,
+    welcomeMessage = 1,
     chatServerMessage
 };
 
 /// <summary>Sent from client to server.</summary>
 enum ChatClientPackets
 {
-    sendUserId = 1,
+    welcomeMessageReceived = 1,
     chatClientMessage
 };
 

@@ -11,8 +11,6 @@ private:
     void SendTCPDataToAll(Packet packet, int fromIndex, bool exceptMe);
 
 public:
-    ChatServerSend() {
-    }
     ChatServerSend(unordered_map<int, Client*> *_clients) {
         clients = _clients;
     }

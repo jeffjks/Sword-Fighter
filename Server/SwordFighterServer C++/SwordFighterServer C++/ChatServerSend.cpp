@@ -33,7 +33,7 @@ void ChatServerSend::SendTCPDataToAll(Packet packet, int fromIndex, bool exceptM
 
 // Packets
 void ChatServerSend::WelcomeMessage(int toIndex) {
-    Packet packet = Packet(ChatServerPackets::chatServerMessage);
+    Packet packet = Packet(ChatServerPackets::welcomeMessage);
 
     string msg = string(u8"환영합니다.");
 
@@ -44,7 +44,6 @@ void ChatServerSend::WelcomeMessage(int toIndex) {
 }
 
 void ChatServerSend::SendChatMessageAll(int fromIndex, int fromId, string msg) {
-
     Packet packet((int)ChatServerPackets::chatServerMessage); // packet id
 
     packet.Write(fromId); // 채팅 주인

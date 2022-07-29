@@ -26,14 +26,20 @@ private:
     WSAEVENT handle_array[MAX_PLAYERS + 1];
     DWORD index;
     WSANETWORKEVENTS wsaNetEvents;
-    ChatServerSend chatServerSend;
+    ChatServerSend *chatServerSend;
 
 public:
     fmap packetHandlers;
-    ChatServerHandle chatServerHandle;
+    ChatServerHandle *chatServerHandle;
 
     ChatServer() {
-        chatServerSend = ChatServerSend(&clients);
+        chatServerSend = new ChatServerSend(&clients);
+        chatServerHandle = new ChatServerHandle(&clients);
+    }
+
+    ~ChatServer() {
+        delete chatServerSend;
+        delete chatServerHandle;
     }
 
     int Start();

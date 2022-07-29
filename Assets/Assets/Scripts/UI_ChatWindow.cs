@@ -53,5 +53,6 @@ public class UI_ChatWindow : MonoBehaviour
         sb.Clear();
         messageCount = 0;
         messageLengthQueue.Clear();
+        chatText.text = string.Empty;
     }
 }

@@ -32,14 +32,14 @@ public enum ClientPackets
 /// <summary>Chat from server to client.</summary>
 public enum ChatServerPackets
 {
-    getUserId = 1,
+    welcomeMessage = 1,
     chatServerMessage
 }
 
 /// <summary>Chat from client to server.</summary>
 public enum ChatClientPackets
 {
-    sendUserId = 1,
+    welcomeMessageReceived = 1,
     chatClientMessage
 }
 

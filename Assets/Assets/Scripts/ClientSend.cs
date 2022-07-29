@@ -17,7 +17,6 @@ public class ClientSend : MonoBehaviour
 
             SendTCPData(packet);
         }
-        Client.instance.ClientReady();
     }
 
     public static void SpawnPlayerReceived(int id) {

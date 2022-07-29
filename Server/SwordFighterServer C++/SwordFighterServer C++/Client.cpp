@@ -39,7 +39,7 @@ bool Client::HandleData(char* data, int length) {
         int packetId = packet.ReadInt();
         try {
             // Pointer
-            (chatServer->chatServerHandle.*(chatServer->packetHandlers[packetId]))(index, packet);
+            (chatServer->chatServerHandle->*(chatServer->packetHandlers[packetId]))(index, packet);
 
             //chatServer->*packetHandlers[packetId](index, packet);
         }

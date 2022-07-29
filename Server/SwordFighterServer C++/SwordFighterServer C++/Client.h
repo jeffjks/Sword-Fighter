@@ -19,13 +19,10 @@ private:
 public:
     SOCKET clientSocket = INVALID_SOCKET;
     HANDLE evnt;
-    ChatServerHandle chatServerHandle;
+    //ChatServerHandle *chatServerHandle;
     char ip_address[INET_ADDRSTRLEN];
     int port;
     int id;
-
-    Client() : index(0) {
-    }
 
     Client(int _index, ChatServer *_chatServer) : index(_index) {
         chatServer = _chatServer;

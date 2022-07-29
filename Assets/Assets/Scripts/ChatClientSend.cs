@@ -10,8 +10,8 @@ public class ChatClientSend : MonoBehaviour
     }
 
     #region Packets
-    public static void SendUserId() { // Unused
-        using (Packet packet = new Packet((int) ChatClientPackets.sendUserId)) { // 패킷 생성 시 가장 앞 부분에 패킷id(종류) 삽입
+    public static void WelcomeMessageReceived() { // Unused
+        using (Packet packet = new Packet((int) ChatClientPackets.welcomeMessageReceived)) { // 패킷 생성 시 가장 앞 부분에 패킷id(종류) 삽입
             packet.Write(Client.instance.myId);
 
             SendTCPData(packet);

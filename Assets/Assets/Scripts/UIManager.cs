@@ -39,16 +39,29 @@ public class UIManager : MonoBehaviour
         m_IpAdressField.text = ChatClient.instance.defaultIp;
     }
 
-    private void ConnectToServer() {
-        if (m_UsernameField.text.Length < 4) {
-            m_ErrorText.text = "Username is too short!";
-            return;
-        }
-
+    private bool TryConnect() {
         try {
             if (Client.instance.enabled) {
                 Client.instance.ConnectToServer(m_IpAdressField.text);
             }
+        }
+        catch (FormatException e) {
+            m_ErrorText.text = "Invalid IP Adress!";
+            Debug.LogError(e);
+            return false;
+        }
+        catch (TimeoutException e) {
+            m_ErrorText.text = "Failed to connect server.";
+            Debug.LogError(e);
+            return false;
+        }
+        catch (Exception e) {
+            m_ErrorText.text = "Unknown error has occured";
+            Debug.LogError(e);
+            return false;
+        }
+
+        try {
             if (ChatClient.instance.enabled) {
                 ChatClient.instance.ConnectToServer(m_IpAdressField.text);
             }
@@ -56,18 +69,31 @@ public class UIManager : MonoBehaviour
         catch (FormatException e) {
             m_ErrorText.text = "Invalid IP Adress!";
             Debug.LogError(e);
-            return;
+            return false;
         }
         catch (TimeoutException e) {
-            m_ErrorText.text = "Failed to connect server.";
+            m_ErrorText.text = "Failed to connect chat server.";
             Debug.LogError(e);
-            return;
+            return false;
         }
         catch (Exception e) {
             m_ErrorText.text = "Unknown error has occured";
             Debug.LogError(e);
+            return false;
+        }
+        return true;
+    }
+
+    public void ButtonConnectToServer() {
+        if (m_UsernameField.text.Length < 4) {
+            m_ErrorText.text = "Username is too short!";
             return;
         }
+
+        if (!TryConnect()) {
+            return;
+        }
+        
         m_StartMenu.SetActive(false);
         m_InGameMenu.SetActive(true);
         m_UsernameField.interactable = false;

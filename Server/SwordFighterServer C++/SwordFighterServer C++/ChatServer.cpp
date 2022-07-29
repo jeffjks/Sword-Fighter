@@ -15,7 +15,7 @@ void ChatServer::PopMessageQueue() { // Thread
         mtx.lock();
         while (!messageQueue.empty()) {
             MessageQueueData messageQueueData = messageQueue.front();
-            chatServerSend.SendChatMessageAll(messageQueueData.clientIndex, messageQueueData.fromId, messageQueueData.message);
+            chatServerSend->SendChatMessageAll(messageQueueData.clientIndex, messageQueueData.fromId, messageQueueData.message);
             messageQueue.pop();
         }
         mtx.unlock();
@@ -80,7 +80,7 @@ void ChatServer::AcceptClient(int index) {
 
     printf("Incoming connection from %s:%d\n", clientAddress, clientPort);
 
-    chatServerSend.WelcomeMessage(currentIndex); // Send Welcome Message
+    chatServerSend->WelcomeMessage(currentIndex); // Send Welcome Message
 }
 
 void ChatServer::ReceiveClientsData(int index) {
@@ -196,7 +196,7 @@ void ChatServer::InitializeServerData() {
         clients[i] = new Client(i, this);
     }
 
-    packetHandlers[ChatClientPackets::sendUserId] = &ChatServerHandle::GetUserId;
+    packetHandlers[ChatClientPackets::welcomeMessageReceived] = &ChatServerHandle::WelcomeMessageReceived;
     packetHandlers[ChatClientPackets::chatClientMessage] = &ChatServerHandle::MessageReceived;
 
     cout << "Initialized packets." << endl;

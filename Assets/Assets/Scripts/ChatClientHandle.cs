@@ -4,16 +4,18 @@ using UnityEngine;
 
 public class ChatClientHandle : MonoBehaviour
 {
-    // Unused
-    public static void GetUserId(Packet packet) {
-        ChatClientSend.SendUserId();
+    public static void WelcomeMessage(Packet packet) {
+        int id = packet.ReadInt();
+        //ChatServerMessage(packet);
+        
+        ChatClientSend.WelcomeMessageReceived();
     }
     
-    public static void MessageReceived(Packet packet) { // msg 후 toClient 읽기
+    public static void ChatServerMessage(Packet packet) { // msg 후 toClient 읽기
         int id = packet.ReadInt();
         string msg = packet.ReadString();
 
-        //Debug.Log($"Message from {id}: {msg}");
+        Debug.Log($"Message from {id}: {msg}");
         //Client.instance.myId = id;
 
         //ClientSend.WelcomeReceived();

@@ -14,7 +14,7 @@ public class UI_ChatInputField : MonoBehaviour
         if (message == string.Empty) {
             return;
         }
-        if (!Client.instance.IsClientReady()) {
+        if (!Client.instance.IsConnected()) {
             return;
         }
         int fromId = Client.instance.myId;
