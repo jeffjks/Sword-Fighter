@@ -5,8 +5,7 @@ using UnityEngine;
 public class ChatClientHandle : MonoBehaviour
 {
     public static void WelcomeMessage(Packet packet) {
-        int id = packet.ReadInt();
-        //ChatServerMessage(packet);
+        ChatServerMessage(packet);
         
         ChatClientSend.WelcomeMessageReceived();
     }
@@ -15,10 +14,8 @@ public class ChatClientHandle : MonoBehaviour
         int id = packet.ReadInt();
         string msg = packet.ReadString();
 
-        Debug.Log($"Message from {id}: {msg}");
-        //Client.instance.myId = id;
-
-        //ClientSend.WelcomeReceived();
+        //Debug.Log($"Message from {id}: {msg}");
+        
         ChatClient.instance.GetTextMessage(id, msg);
     }
 }

@@ -24,30 +24,27 @@ void ChatServer::PopMessageQueue() { // Thread
 
 void ChatServer::AcceptClient(int index) {
     int currentIndex = -1;
-    if (wsaNetEvents.iErrorCode[FD_ACCEPT_BIT] != 0)
-    {
-        // 에러 로그를 출력하고 다음 순서를 진행한다.
-        cout << "Accept Error !!" << endl;
+    if (wsaNetEvents.iErrorCode[FD_ACCEPT_BIT] != 0) {
+        cout << "Accept Error!" << endl;
         return;
     }
     if (total_socket_count == FD_SETSIZE) {
+        cout << "Total socket counts are max!" << endl;
         return;
     }
 
     SOCKADDR_IN acceptClientSockaddr;
     int clientSize = sizeof(SOCKADDR_IN);
-    // connection queue의 가장 앞에 있는 클라이언트 요청을 accept하고, client 소켓을 반환합니다.
+
     SOCKET acceptClientSocket = accept(listenSocket, (SOCKADDR*)& acceptClientSockaddr, &clientSize); // accept한 클라이언트는 clientSocket으로 통신
 
     if (acceptClientSocket == INVALID_SOCKET)
     {
-        cerr << "Can't accept a socket! Quitting" << endl;
+        cerr << "Can't accept a socket!" << endl;
         closesocket(listenSocket);
         WSACleanup();
         return;
     }
-
-
 
     for (int i = 1; i <= MAX_PLAYERS; i++) // 비어있는 가장 첫 clients Dictionary에 배정
     {
@@ -65,9 +62,9 @@ void ChatServer::AcceptClient(int index) {
         }
     }
 
-    int clientPort = acceptClientSockaddr.sin_port;
+    int clientPort = acceptClientSockaddr.sin_port; // port 저장
     char clientAddress[INET_ADDRSTRLEN];
-    inet_ntop(AF_INET, &(acceptClientSockaddr.sin_addr), clientAddress, INET_ADDRSTRLEN);
+    inet_ntop(AF_INET, &(acceptClientSockaddr.sin_addr), clientAddress, INET_ADDRSTRLEN); // ip 저장
 
     if (currentIndex == -1) {
         closesocket(acceptClientSocket);
@@ -83,10 +80,10 @@ void ChatServer::AcceptClient(int index) {
     chatServerSend->WelcomeMessage(currentIndex); // Send Welcome Message
 }
 
-void ChatServer::ReceiveClientsData(int index) {
+void ChatServer::ReceiveClientsData(int index) { // RECV
     if (wsaNetEvents.iErrorCode[FD_READ_BIT] != 0)
     {
-        cout << "Recv Error !!" << endl;
+        cout << "Recv Error!" << endl;
         return;
     }
     clients[index]->ReceiveData();
@@ -95,25 +92,25 @@ void ChatServer::ReceiveClientsData(int index) {
 
 int ChatServer::Start() {
     WSADATA wsaData;
-    int iniResult = WSAStartup(MAKEWORD(2, 2), &wsaData);
+    int iniResult = WSAStartup(MAKEWORD(2, 2), &wsaData); // Winsock2 초기화
     if (iniResult != 0)
     {
-        cerr << "Can't Initialize winsock! Quitiing" << endl;
+        cerr << "Can't Initialize winsock!" << endl;
         return -1;
     }
 
     listenSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP); // 리스닝 모드 소켓
     if (listenSocket == INVALID_SOCKET)
     {
-        cerr << "Can't create a socket! Quitting" << endl;
+        cerr << "Can't create a socket!" << endl;
         WSACleanup();
-        return -1;
+        return -2;
     }
 
-    SOCKADDR_IN servAddr; // 기본 초기화 권장
+    SOCKADDR_IN servAddr;
     servAddr.sin_family = AF_INET;
     servAddr.sin_addr.S_un.S_addr = htonl(INADDR_ANY);
-    servAddr.sin_port = htons(PORT); // short 자료형을 네트워크 byte order로 변경 (Big Endian)
+    servAddr.sin_port = htons(PORT); // int 자료형을 네트워크 byte order로 변경 (Big Endian)
 
     int bindResult = ::bind(listenSocket, reinterpret_cast<sockaddr*>(&servAddr), sizeof(servAddr));
     if (bindResult == SOCKET_ERROR)
@@ -121,7 +118,7 @@ int ChatServer::Start() {
         cerr << "Can't bind a socket! Quitting" << endl;
         closesocket(listenSocket);
         WSACleanup();
-        return -2;
+        return -3;
     }
 
     cout << "Starting Server..." << endl;
@@ -131,11 +128,11 @@ int ChatServer::Start() {
         cerr << "Can't listen a socket! Quitting" << endl;
         closesocket(listenSocket);
         WSACleanup();
-        return -3;
+        return -4;
     }
 
     WSAEVENT wsaEvent = WSACreateEvent();
-    clients[0] = new Client(listenSocket, wsaEvent, this);
+    clients[0] = new Client(listenSocket, wsaEvent, this); // 리스닝 전용 소켓은 clients 0번에 배정
 
     WSAEventSelect(listenSocket, wsaEvent, FD_ACCEPT);
     total_socket_count++;
@@ -146,7 +143,7 @@ int ChatServer::Start() {
 
     printf("Chat Server started on %d.\n", PORT);
 
-    while (true) {
+    while (true) { // WSA Event로 비동기 구현
         memset(&handle_array, 0, sizeof(handle_array));
         int num = 0;
         for (int i = 0; i <= MAX_PLAYERS; i++) {
@@ -157,23 +154,23 @@ int ChatServer::Start() {
             num++;
         }
 
-        index = WSAWaitForMultipleEvents(total_socket_count, handle_array, false, INFINITE, false);
+        wsaIndex = WSAWaitForMultipleEvents(total_socket_count, handle_array, false, INFINITE, false);
 
-        if ((index != WSA_WAIT_FAILED) && (index != WSA_WAIT_TIMEOUT))
+        if ((wsaIndex != WSA_WAIT_FAILED) && (wsaIndex != WSA_WAIT_TIMEOUT))
         {
-            WSAEnumNetworkEvents(clients[index]->clientSocket, clients[index]->evnt, &wsaNetEvents);
+            WSAEnumNetworkEvents(clients[wsaIndex]->clientSocket, clients[wsaIndex]->evnt, &wsaNetEvents);
             if (wsaNetEvents.lNetworkEvents == FD_ACCEPT)
-                AcceptClient(index);
+                AcceptClient(wsaIndex);
             else if (wsaNetEvents.lNetworkEvents == FD_READ)
-                ReceiveClientsData(index);
+                ReceiveClientsData(wsaIndex);
             else if (wsaNetEvents.lNetworkEvents == FD_CLOSE)
-                DisconnectClient(index);
+                DisconnectClient(wsaIndex);
         }
     }
-    closesocket(listenSocket);
 
+    closesocket(listenSocket); // 리스닝 소켓 종료
 
-    // Close the client socket
+    // 클라이언트 소켓 종료
     for (int i = 1; i <= MAX_PLAYERS; ++i) {
         if (clients[i]->clientSocket != INVALID_SOCKET) {
             closesocket(clients[i]->clientSocket);

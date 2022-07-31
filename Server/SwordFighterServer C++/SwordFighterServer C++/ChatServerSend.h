@@ -1,4 +1,6 @@
-
+/*
+    패킷 전송
+*/
 
 class ChatServer;
 

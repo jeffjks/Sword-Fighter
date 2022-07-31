@@ -39,7 +39,7 @@ public class UIManager : MonoBehaviour
         m_IpAdressField.text = ChatClient.instance.defaultIp;
     }
 
-    private bool TryConnect() {
+    private bool ConnetcToServer() {
         try {
             if (Client.instance.enabled) {
                 Client.instance.ConnectToServer(m_IpAdressField.text);
@@ -60,24 +60,27 @@ public class UIManager : MonoBehaviour
             Debug.LogError(e);
             return false;
         }
+        return true;
+    }
 
+    private bool ConnetcToChatServer() {
         try {
             if (ChatClient.instance.enabled) {
                 ChatClient.instance.ConnectToServer(m_IpAdressField.text);
             }
         }
         catch (FormatException e) {
-            m_ErrorText.text = "Invalid IP Adress!";
+            //m_ErrorText.text = "Invalid IP Adress!";
             Debug.LogError(e);
             return false;
         }
         catch (TimeoutException e) {
-            m_ErrorText.text = "Failed to connect chat server.";
+            //m_ErrorText.text = "Failed to connect chat server.";
             Debug.LogError(e);
             return false;
         }
         catch (Exception e) {
-            m_ErrorText.text = "Unknown error has occured";
+            //m_ErrorText.text = "Unknown error has occured";
             Debug.LogError(e);
             return false;
         }
@@ -90,19 +93,22 @@ public class UIManager : MonoBehaviour
             return;
         }
 
-        if (!TryConnect()) {
+        if (!ConnetcToServer()) {
+            Client.instance.Disconnect();
             return;
         }
-        
         m_StartMenu.SetActive(false);
         m_InGameMenu.SetActive(true);
         m_UsernameField.interactable = false;
         m_UI_HpBarMain.FillMainHpBar(1f);
-        //m_OppositeHpBar.fillAmount = 1f;
         m_ErrorText.text = string.Empty;
         m_Ingame = true;
-        
         m_ObjectPooling.Init(3);
+
+        if (!ConnetcToChatServer()) {
+            ChatClient.instance.Disconnect();
+            m_UI_ChatWindow.PushTextMessage(-1, "채팅 서버에 접속할 수 없습니다.");
+        }
     }
 
     private void ReturnToMainMenu() {

@@ -4,11 +4,7 @@
 using namespace std;
 
 void Client::ReceiveData() {
-    // While loop: 클라이언트의 메세지를 받아서 출력 후 클라이언트에 다시 보냅니다.
     char buf[dataBufferSize];
-
-    // Wait for client to send data
-    // 메세지를 성공적으로 받으면 recv 함수는 메세지의 크기를 반환한다.
 
     ZeroMemory(buf, dataBufferSize);
 
@@ -22,7 +18,7 @@ bool Client::HandleData(char* data, int length) {
     int packetLength = 0;
     receivedData.SetBytes(data, length);
 
-    if (receivedData.UnreadLength() >= 4) {
+    if (receivedData.UnreadLength() >= 4) { // 패킷 총 길이 읽기
         packetLength = receivedData.ReadInt();
         if (packetLength <= 0)
         {
@@ -38,10 +34,8 @@ bool Client::HandleData(char* data, int length) {
 
         int packetId = packet.ReadInt();
         try {
-            // Pointer
+            // 함수 포인터를 사용하여 packetId에 따라 chatServer의 적절한 함수 실행
             (chatServer->chatServerHandle->*(chatServer->packetHandlers[packetId]))(index, packet);
-
-            //chatServer->*packetHandlers[packetId](index, packet);
         }
         catch (exception e) {
             cout << "Unknown packet id" << endl;

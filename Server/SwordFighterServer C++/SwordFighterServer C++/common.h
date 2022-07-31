@@ -7,10 +7,10 @@
 #pragma comment(lib,"ws2_32")
 #pragma warning(disable:4996)
 
-struct MessageQueueData {
-    int clientIndex;
-    int fromId;
-    string message;
+struct MessageQueueData { // 채팅 메시지 구성
+    int clientIndex; // 보낸 클라이언트의 index
+    int fromId; // 보낸 클라이언트의 id
+    string message; // 메세지 내용
 
     MessageQueueData(int _clientIndex, int _fromId, string _message) {
         clientIndex = _clientIndex;
@@ -19,5 +19,5 @@ struct MessageQueueData {
     }
 };
 
-static queue<MessageQueueData> messageQueue;
-static mutex mtx;
+static queue<MessageQueueData> messageQueue; // 메시지 처리용 큐
+static mutex mtx; // 스레드 충돌 방지용

@@ -1,7 +1,7 @@
 #pragma once
 #include "ChatServer.h"
 
-// Packet id = 1
+// Packet id = 1 : 클라이언트 id 획득
 void ChatServerHandle::WelcomeMessageReceived(int index, Packet packet) {
     int id = packet.ReadInt();
     (*clients)[index]->id = id;
@@ -9,7 +9,7 @@ void ChatServerHandle::WelcomeMessageReceived(int index, Packet packet) {
     printf("%s:%d connected successfully and is now player %d.\n", (*clients)[index]->ip_address, (*clients)[index]->port, (*clients)[index]->id);
 }
 
-// Packet id = 2
+// Packet id = 2 : 클라이언트 채팅 메세지
 void ChatServerHandle::MessageReceived(int index, Packet packet) {
     int fromId = packet.ReadInt();
     string message = packet.ReadString();

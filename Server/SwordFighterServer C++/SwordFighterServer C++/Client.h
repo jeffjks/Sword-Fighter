@@ -14,15 +14,13 @@ private:
     const int index;
     Packet receivedData;
     ChatServer *chatServer;
-    //void(*fp[2]) (int, Packet) = { GetUserId, MessageReceived }; // void 반환값, int, Packet 매개변수의 함수 포인터 선언
 
 public:
     SOCKET clientSocket = INVALID_SOCKET;
     HANDLE evnt;
-    //ChatServerHandle *chatServerHandle;
     char ip_address[INET_ADDRSTRLEN];
     int port;
-    int id;
+    int id; // 클라이언트의 id
 
     Client(int _index, ChatServer *_chatServer) : index(_index) {
         chatServer = _chatServer;
@@ -34,7 +32,6 @@ public:
         chatServer = _chatServer;
     }
 
-    //void MessageReceived(int fromClient, Packet packet);
     void ReceiveData();
     bool HandleData(char* data, int length);
 };

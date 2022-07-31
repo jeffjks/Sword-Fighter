@@ -11,20 +11,18 @@ const int PORT = 26960;
 const int SERVER_MESSAGE = 127;
 const int ADMIN_MESSAGE = 126;
 
-//typedef void(ChatServerHandle::*MemFuncPtr) (int, Packet);
-
-typedef void (ChatServerHandle::*MemFuncPtr)(int, Packet); // readability
+typedef void (ChatServerHandle::*MemFuncPtr)(int, Packet); // 함수 포인터
 typedef unordered_map<int, MemFuncPtr> fmap;
 
 class ChatServer
 {
 private:
     SOCKET listenSocket;
-    unordered_map<int, Client*> clients;
+    unordered_map<int, Client*> clients; // 접속한 클라이언트 목록 (0 = 리스닝 소켓)
 
-    int total_socket_count = 0;// 바인딩된 소켓과 이벤트의 종류가 지정된 이벤트 객체를 소켓 배열에 넣어준다.
+    int total_socket_count = 0; // 활성화된 소켓 수
     WSAEVENT handle_array[MAX_PLAYERS + 1];
-    DWORD index;
+    DWORD wsaIndex;
     WSANETWORKEVENTS wsaNetEvents;
     ChatServerSend *chatServerSend;
 

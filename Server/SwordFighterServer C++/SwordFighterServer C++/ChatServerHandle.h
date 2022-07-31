@@ -1,6 +1,10 @@
 #pragma once
 #include "common.h"
 
+/*
+    받은 패킷 처리
+*/
+
 class Client;
 
 class ChatServerHandle {
