@@ -7,7 +7,8 @@ using namespace std;
     Server
 */
 
-void ChatServer::PopMessageQueue() { // Thread
+// 스레드를 사용한 메세지 큐에 담긴 메세지 Broadcast
+void ChatServer::PopMessageQueue() {
     while (true) {
         if (messageQueue.empty()) {
             continue;
@@ -22,6 +23,7 @@ void ChatServer::PopMessageQueue() { // Thread
     }
 }
 
+// listen 소켓으로부터 클라이언트 Accept
 void ChatServer::AcceptClient(int index) {
     int currentIndex = -1;
     if (wsaNetEvents.iErrorCode[FD_ACCEPT_BIT] != 0) {
@@ -50,7 +52,7 @@ void ChatServer::AcceptClient(int index) {
     {
         if (clients[i]->clientSocket == INVALID_SOCKET)
         {
-            HANDLE wsaEvent = WSACreateEvent();
+            HANDLE wsaEvent = WSACreateEvent(); // 새로운 클라이언트 이벤트 등록
 
             clients[i]->clientSocket = acceptClientSocket;
             clients[i]->evnt = wsaEvent;
@@ -80,7 +82,8 @@ void ChatServer::AcceptClient(int index) {
     chatServerSend->WelcomeMessage(currentIndex); // Send Welcome Message
 }
 
-void ChatServer::ReceiveClientsData(int index) { // RECV
+// RECV
+void ChatServer::ReceiveClientsData(int index) {
     if (wsaNetEvents.iErrorCode[FD_READ_BIT] != 0)
     {
         cout << "Recv Error!" << endl;
@@ -187,6 +190,7 @@ int ChatServer::Start() {
     return 0;
 }
 
+// clients, packetHandlers의 함수 포인터 초기화
 void ChatServer::InitializeServerData() {
     for (int i = 1; i <= MAX_PLAYERS; i++) // 최대 플레이어 수 만큼 미리 clients 생성
     {

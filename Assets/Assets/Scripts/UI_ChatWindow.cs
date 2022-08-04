@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using UnityEngine;
 using System.Text;
+using TMPro;
 
 struct MessageInfo {
     public string messageType;
@@ -20,7 +21,7 @@ public class UI_ChatWindow : MonoBehaviour
     const int SERVER_MESSAGE = 127;
     const int ADMIN_MESSAGE = 126;
     
-    public Text chatText;
+    public TextMeshProUGUI chatText;
     public ScrollRect scrollRect;
     public ContentSizeFitter contentSizeFitter;
 
@@ -58,11 +59,11 @@ public class UI_ChatWindow : MonoBehaviour
         }
 
         if (isSpecialMessage) {
-            sb.Append($"<color={defaultColor}>{userName}: {message}</color>");
+            sb.Append($"<color={defaultColor}>{userName}: <noparse>{message}</noparse></color>");
         } else { // Disable Rich Text
-            sb.Append($"<color={defaultColor}>{userName}: {message}</color>");
+            sb.Append($"<color={defaultColor}>{userName}: <noparse>{message}</noparse></color>");
         }
-
+        
         chatText.text = sb.ToString();
         LayoutRebuilder.ForceRebuildLayoutImmediate((RectTransform) contentSizeFitter.transform);
         scrollRect.verticalNormalizedPosition = 0f;

@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using UnityEngine.UI;
 using UnityEngine;
 
@@ -22,9 +23,16 @@ public class UI_ChatInputField : MonoBehaviour
         ChatClientSend.SendChatMessage(fromId, message);
     }
 
+    // Remove All Tag (Unused)
+    private string Strip(string text) {
+        return Regex.Replace(text, @"<(.|\n)*?>", string.Empty);
+    }
+
     public void ToggleWritingChat() {
         if (m_WritingChat) {
-            SendChatMessage(m_UI_ChatInputField.text);
+            string chatText = m_UI_ChatInputField.text;
+            //string chatText = Strip(m_UI_ChatInputField.text);
+            SendChatMessage(chatText);
         }
         m_WritingChat = !m_WritingChat;
         m_UI_ChatInputField.text = string.Empty;

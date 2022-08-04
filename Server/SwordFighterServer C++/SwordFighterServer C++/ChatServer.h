@@ -27,7 +27,7 @@ private:
     ChatServerSend *chatServerSend;
 
 public:
-    fmap packetHandlers;
+    fmap packetHandlers; // 함수 포인터를 활용한 packetId 작업
     ChatServerHandle *chatServerHandle;
 
     ChatServer() {

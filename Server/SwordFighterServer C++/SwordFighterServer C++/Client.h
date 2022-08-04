@@ -11,7 +11,7 @@ class ChatServer;
 class Client
 {
 private:
-    const int index;
+    const int index; // clients unordered_map¿¡¼­ÀÇ index (key)
     Packet receivedData;
     ChatServer *chatServer;
 

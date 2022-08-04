@@ -3,6 +3,7 @@
 
 using namespace std;
 
+// ÆÐÅ¶ RECV
 void Client::ReceiveData() {
     char buf[dataBufferSize];
 

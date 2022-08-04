@@ -20,12 +20,11 @@ enum ChatClientPackets
     chatClientMessage
 };
 
-// https://sanghun219.tistory.com/192?category=894929
 
 class Packet
 {
 private:
-	vector<uint8_t> buffer;
+	vector<uint8_t> buffer; // 요소 추가/삭제가 용이한 vector 사용
 	//char *readableBuffer;
 	unsigned int readPos;
 
