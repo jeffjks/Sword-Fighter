@@ -38,13 +38,11 @@ public class UI_ChatWindow : MonoBehaviour
 
     public void PushTextMessage(int fromId, string message) {
         string userName, defaultColor;
-        bool isSpecialMessage = true;
         if (specialMessage.ContainsKey(fromId)) {
             userName = specialMessage[fromId].messageType;
             defaultColor = specialMessage[fromId].colorCode;
         }
         else {
-            isSpecialMessage = false;
             try {
                 userName = GameManager.players[fromId].username;
             }
@@ -58,11 +56,7 @@ public class UI_ChatWindow : MonoBehaviour
             sb.Append("\n");
         }
 
-        if (isSpecialMessage) {
-            sb.Append($"<color={defaultColor}>{userName}: <noparse>{message}</noparse></color>");
-        } else { // Disable Rich Text
-            sb.Append($"<color={defaultColor}>{userName}: <noparse>{message}</noparse></color>");
-        }
+        sb.Append($"<color={defaultColor}>{userName}: {message}</color>");
         
         chatText.text = sb.ToString();
         LayoutRebuilder.ForceRebuildLayoutImmediate((RectTransform) contentSizeFitter.transform);

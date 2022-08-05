@@ -30,7 +30,7 @@ public class UI_ChatInputField : MonoBehaviour
 
     public void ToggleWritingChat() {
         if (m_WritingChat) {
-            string chatText = m_UI_ChatInputField.text;
+            string chatText = $"<noparse>{m_UI_ChatInputField.text}</noparse>";
             //string chatText = Strip(m_UI_ChatInputField.text);
             SendChatMessage(chatText);
         }
