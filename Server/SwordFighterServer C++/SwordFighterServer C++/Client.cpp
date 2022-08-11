@@ -1,7 +1,6 @@
 #pragma once
-#include "ChatServer.h"
-
-using namespace std;
+#include "Client.h"
+#include "ChatServerHandle.h"
 
 // 패킷 RECV
 void Client::ReceiveData() {
@@ -36,7 +35,8 @@ bool Client::HandleData(char* data, int length) {
         int packetId = packet.ReadInt();
         try {
             // 함수 포인터를 사용하여 packetId에 따라 chatServer의 적절한 함수 실행
-            (chatServer->chatServerHandle->*(chatServer->packetHandlers[packetId]))(index, packet);
+            chatServerHandle->HandlePacketId(packetId, index, packet);
+            //(chatServerHandle->*(chatServerHandle->packetHandlers[packetId]))(index, packet);
         }
         catch (exception e) {
             cout << "Unknown packet id" << endl;

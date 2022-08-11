@@ -5,14 +5,7 @@
 #include "Client.h"
 #include "ChatServerSend.h"
 #include "ChatServerHandle.h"
-
-const int MAX_PLAYERS = 4;
-const int PORT = 26960;
-const int SERVER_MESSAGE = 127;
-const int ADMIN_MESSAGE = 126;
-
-typedef void (ChatServerHandle::*MemFuncPtr)(int, Packet); // 함수 포인터
-typedef unordered_map<int, MemFuncPtr> fmap;
+#include "common.h"
 
 class ChatServer
 {
@@ -25,19 +18,21 @@ private:
     DWORD wsaIndex;
     WSANETWORKEVENTS wsaNetEvents;
     ChatServerSend *chatServerSend;
+    //MessageQueueManager *messageQueueManager;
 
 public:
-    fmap packetHandlers; // 함수 포인터를 활용한 packetId 작업
     ChatServerHandle *chatServerHandle;
 
     ChatServer() {
         chatServerSend = new ChatServerSend(&clients);
-        chatServerHandle = new ChatServerHandle(&clients);
+        chatServerHandle = new ChatServerHandle(&clients, chatServerSend);
+        //messageQueueManager = new MessageQueueManager(chatServerSend);
     }
 
     ~ChatServer() {
         delete chatServerSend;
         delete chatServerHandle;
+        //delete messageQueueManager;
     }
 
     int Start();

@@ -131,7 +131,7 @@ GameObject:
   - component: {fileID: 202219510}
   - component: {fileID: 202219512}
   - component: {fileID: 202219511}
-  m_Layer: 5
+  m_Layer: 8
   m_Name: Content
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -208,7 +208,7 @@ GameObject:
   - component: {fileID: 210193155}
   - component: {fileID: 210193154}
   - component: {fileID: 210193153}
-  m_Layer: 5
+  m_Layer: 8
   m_Name: Placeholder
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -287,7 +287,7 @@ GameObject:
   - component: {fileID: 289305303}
   - component: {fileID: 289305305}
   - component: {fileID: 289305304}
-  m_Layer: 5
+  m_Layer: 8
   m_Name: ErrorText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -366,7 +366,7 @@ GameObject:
   - component: {fileID: 311863545}
   - component: {fileID: 311863547}
   - component: {fileID: 311863546}
-  m_Layer: 5
+  m_Layer: 8
   m_Name: Text
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -457,7 +457,7 @@ GameObject:
   - component: {fileID: 402481348}
   - component: {fileID: 402481350}
   - component: {fileID: 402481349}
-  m_Layer: 5
+  m_Layer: 8
   m_Name: StartMenuUI
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -536,7 +536,7 @@ GameObject:
   - component: {fileID: 411837638}
   - component: {fileID: 411837637}
   - component: {fileID: 411837636}
-  m_Layer: 5
+  m_Layer: 8
   m_Name: InputField
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -628,7 +628,7 @@ MonoBehaviour:
   m_SelectionColor: {r: 0.65882355, g: 0.80784315, b: 1, a: 0.7529412}
   m_Text: 
   m_CaretBlinkRate: 0.85
-  m_CaretWidth: 1
+  m_CaretWidth: 2
   m_ReadOnly: 0
 --- !u!114 &411837637
 MonoBehaviour:
@@ -678,7 +678,7 @@ GameObject:
   - component: {fileID: 507525365}
   - component: {fileID: 507525366}
   - component: {fileID: 507525367}
-  m_Layer: 5
+  m_Layer: 8
   m_Name: Text
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -757,7 +757,7 @@ GameObject:
   - component: {fileID: 550745869}
   - component: {fileID: 550745872}
   - component: {fileID: 550745870}
-  m_Layer: 5
+  m_Layer: 8
   m_Name: ChatWindowText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1044,7 +1044,7 @@ GameObject:
   - component: {fileID: 802471397}
   - component: {fileID: 802471396}
   - component: {fileID: 802471395}
-  m_Layer: 5
+  m_Layer: 8
   m_Name: Viewport
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1313,7 +1313,7 @@ GameObject:
   m_Component:
   - component: {fileID: 956849069}
   - component: {fileID: 956849070}
-  m_Layer: 5
+  m_Layer: 8
   m_Name: ChatWindow
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1368,7 +1368,7 @@ GameObject:
   - component: {fileID: 1045295601}
   - component: {fileID: 1045295600}
   - component: {fileID: 1045295599}
-  m_Layer: 5
+  m_Layer: 8
   m_Name: UI
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1561,7 +1561,7 @@ GameObject:
   - component: {fileID: 1080206181}
   - component: {fileID: 1080206180}
   - component: {fileID: 1080206182}
-  m_Layer: 5
+  m_Layer: 8
   m_Name: IpAdress
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1704,7 +1704,7 @@ GameObject:
   - component: {fileID: 1091303694}
   - component: {fileID: 1091303695}
   - component: {fileID: 1091303696}
-  m_Layer: 5
+  m_Layer: 8
   m_Name: HpBarMain
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1813,7 +1813,7 @@ GameObject:
   - component: {fileID: 1209592245}
   - component: {fileID: 1209592244}
   - component: {fileID: 1209592243}
-  m_Layer: 5
+  m_Layer: 8
   m_Name: ChatScrollView
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1932,7 +1932,7 @@ GameObject:
   - component: {fileID: 1291450590}
   - component: {fileID: 1291450592}
   - component: {fileID: 1291450591}
-  m_Layer: 5
+  m_Layer: 8
   m_Name: HpBarMain_Glass
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2006,7 +2006,7 @@ GameObject:
   - component: {fileID: 1321471350}
   - component: {fileID: 1321471352}
   - component: {fileID: 1321471351}
-  m_Layer: 5
+  m_Layer: 8
   m_Name: Text
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2086,7 +2086,7 @@ GameObject:
   - component: {fileID: 1437222654}
   - component: {fileID: 1437222653}
   - component: {fileID: 1437222652}
-  m_Layer: 5
+  m_Layer: 8
   m_Name: Button
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2306,7 +2306,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1623081306}
-  m_Layer: 5
+  m_Layer: 8
   m_Name: Sliding Area
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2344,7 +2344,7 @@ GameObject:
   - component: {fileID: 1625991986}
   - component: {fileID: 1625991988}
   - component: {fileID: 1625991987}
-  m_Layer: 5
+  m_Layer: 8
   m_Name: Placeholder
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2424,7 +2424,7 @@ GameObject:
   - component: {fileID: 1687298050}
   - component: {fileID: 1687298049}
   - component: {fileID: 1687298047}
-  m_Layer: 5
+  m_Layer: 8
   m_Name: UserName
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2658,7 +2658,7 @@ GameObject:
   - component: {fileID: 1715862328}
   - component: {fileID: 1715862327}
   - component: {fileID: 1715862326}
-  m_Layer: 5
+  m_Layer: 8
   m_Name: Scrollbar Vertical
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2783,7 +2783,7 @@ GameObject:
   - component: {fileID: 1774851641}
   - component: {fileID: 1774851643}
   - component: {fileID: 1774851642}
-  m_Layer: 5
+  m_Layer: 8
   m_Name: Handle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3014,7 +3014,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1870397194}
   - component: {fileID: 1870397195}
-  m_Layer: 5
+  m_Layer: 8
   m_Name: InGameUI
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3062,7 +3062,7 @@ GameObject:
   - component: {fileID: 1873920175}
   - component: {fileID: 1873920177}
   - component: {fileID: 1873920176}
-  m_Layer: 5
+  m_Layer: 8
   m_Name: TMP SubMeshUI [LiberationSans SDF Material]
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3135,7 +3135,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1887700616}
   - component: {fileID: 1887700617}
-  m_Layer: 5
+  m_Layer: 8
   m_Name: ChatInputField
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3187,7 +3187,7 @@ GameObject:
   - component: {fileID: 1927840651}
   - component: {fileID: 1927840653}
   - component: {fileID: 1927840652}
-  m_Layer: 5
+  m_Layer: 8
   m_Name: HpBarMain_Fill
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3294,7 +3294,7 @@ GameObject:
   - component: {fileID: 2028955737}
   - component: {fileID: 2028955739}
   - component: {fileID: 2028955738}
-  m_Layer: 5
+  m_Layer: 8
   m_Name: Text
   m_TagString: Untagged
   m_Icon: {fileID: 0}

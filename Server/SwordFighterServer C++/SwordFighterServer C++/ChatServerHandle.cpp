@@ -1,5 +1,6 @@
 #pragma once
-#include "ChatServer.h"
+#include "ChatServerHandle.h"
+#include "ChatServerSend.h"
 
 // Packet id = 1 : Å¬¶óÀÌ¾ðÆ® id È¹µæ
 void ChatServerHandle::WelcomeMessageReceived(int index, Packet packet) {
@@ -13,8 +14,29 @@ void ChatServerHandle::WelcomeMessageReceived(int index, Packet packet) {
 void ChatServerHandle::MessageReceived(int index, Packet packet) {
     int fromId = packet.ReadInt();
     string message = packet.ReadString();
+
+    chatServerSend->PushMessageQueueData(index, fromId, message);
+
+    /*
     MessageQueueData messageQueueData = MessageQueueData(index, fromId, message);
     mtx.lock();
     messageQueue.push(messageQueueData);
     mtx.unlock();
+    cout << &messageQueue << endl;
+    cout << messageQueue.size() << endl;*/
 }
+
+void ChatServerHandle::HandlePacketId(int packetId, int index, Packet packet) {
+    (this->*(this->packetHandlers[packetId]))(index, packet);
+    //(packetHandlers[packetId])(index, packet);
+    //(*(packetHandlers[packetId]))(index, packet);
+}
+
+void ChatServerHandle::InitializePacketHandlers() {
+    packetHandlers.emplace(ChatClientPackets::welcomeMessageReceived, &ChatServerHandle::WelcomeMessageReceived);
+    packetHandlers.emplace(ChatClientPackets::chatClientMessage, &ChatServerHandle::MessageReceived);
+    //packetHandlers[ChatClientPackets::welcomeMessageReceived] = &ChatServerHandle::WelcomeMessageReceived;
+    //packetHandlers[ChatClientPackets::chatClientMessage] = &ChatServerHandle::MessageReceived;
+}
+
+

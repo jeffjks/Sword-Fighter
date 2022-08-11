@@ -9,18 +9,7 @@ using namespace std;
 
 // 스레드를 사용한 메세지 큐에 담긴 메세지 Broadcast
 void ChatServer::PopMessageQueue() {
-    while (true) {
-        if (messageQueue.empty()) {
-            continue;
-        }
-        mtx.lock();
-        while (!messageQueue.empty()) {
-            MessageQueueData messageQueueData = messageQueue.front();
-            chatServerSend->SendChatMessageAll(messageQueueData.clientIndex, messageQueueData.fromId, messageQueueData.message);
-            messageQueue.pop();
-        }
-        mtx.unlock();
-    }
+    chatServerSend->PopMessageQueueData();
 }
 
 // listen 소켓으로부터 클라이언트 Accept
@@ -135,7 +124,7 @@ int ChatServer::Start() {
     }
 
     WSAEVENT wsaEvent = WSACreateEvent();
-    clients[0] = new Client(listenSocket, wsaEvent, this); // 리스닝 전용 소켓은 clients 0번에 배정
+    clients[0] = new Client(listenSocket, wsaEvent, chatServerHandle); // 리스닝 전용 소켓은 clients 0번에 배정
 
     WSAEventSelect(listenSocket, wsaEvent, FD_ACCEPT);
     total_socket_count++;
@@ -194,11 +183,10 @@ int ChatServer::Start() {
 void ChatServer::InitializeServerData() {
     for (int i = 1; i <= MAX_PLAYERS; i++) // 최대 플레이어 수 만큼 미리 clients 생성
     {
-        clients[i] = new Client(i, this);
+        clients[i] = new Client(i, chatServerHandle);
     }
 
-    packetHandlers[ChatClientPackets::welcomeMessageReceived] = &ChatServerHandle::WelcomeMessageReceived;
-    packetHandlers[ChatClientPackets::chatClientMessage] = &ChatServerHandle::MessageReceived;
+    chatServerHandle->InitializePacketHandlers();
 
     cout << "Initialized packets." << endl;
 }

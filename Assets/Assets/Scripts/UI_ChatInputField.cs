@@ -11,13 +11,14 @@ public class UI_ChatInputField : MonoBehaviour
 
     private bool m_WritingChat = false;
 
-    public void SendChatMessage(string message) {
-        if (message == string.Empty) {
+    public void SubmitChatMessage(string chatText) {
+        if (chatText == string.Empty) {
             return;
         }
         if (!ChatClient.instance.IsConnected()) {
             return;
         }
+        string message = $"<noparse>{chatText}</noparse>";
         int fromId = Client.instance.myId;
         m_UI_ChatWindow.PushTextMessage(fromId, message);
         ChatClientSend.SendChatMessage(fromId, message);
@@ -30,9 +31,8 @@ public class UI_ChatInputField : MonoBehaviour
 
     public void ToggleWritingChat() {
         if (m_WritingChat) {
-            string chatText = $"<noparse>{m_UI_ChatInputField.text}</noparse>";
             //string chatText = Strip(m_UI_ChatInputField.text);
-            SendChatMessage(chatText);
+            SubmitChatMessage(m_UI_ChatInputField.text);
         }
         m_WritingChat = !m_WritingChat;
         m_UI_ChatInputField.text = string.Empty;

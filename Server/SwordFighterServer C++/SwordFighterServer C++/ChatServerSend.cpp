@@ -1,5 +1,5 @@
 #pragma once
-#include "ChatServer.h"
+#include "ChatServerSend.h"
 
 // index : 채팅 주인 client의 index
 // fromId : 채팅 주인 유저 id
@@ -55,4 +55,28 @@ void ChatServerSend::SendChatMessageAll(int fromIndex, int fromId, string msg) {
     packet.Write(msg); // 채팅 내용
 
     SendTCPDataToAll(packet, fromIndex, true);
+}
+
+
+
+void ChatServerSend::PushMessageQueueData(int index, int fromId, string message) {
+    MessageQueueData messageQueueData = MessageQueueData(index, fromId, message);
+    mtx.lock();
+    messageQueue.push(messageQueueData);
+    mtx.unlock();
+}
+
+void ChatServerSend::PopMessageQueueData() {
+    while (true) {
+        if (messageQueue.empty()) {
+            continue;
+        }
+        mtx.lock();
+        while (!messageQueue.empty()) {
+            MessageQueueData messageQueueData = messageQueue.front();
+            SendChatMessageAll(messageQueueData.clientIndex, messageQueueData.fromId, messageQueueData.message);
+            messageQueue.pop();
+        }
+        mtx.unlock();
+    }
 }
