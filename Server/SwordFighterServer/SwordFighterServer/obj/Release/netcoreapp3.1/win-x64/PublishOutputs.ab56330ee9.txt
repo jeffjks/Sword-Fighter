@@ -1,0 +1,2 @@
+D:\Unity\Project\Sword Fighter\Server\SwordFighterServer\SwordFighterServer\bin\Release\netcoreapp2.2\publish\SwordFighterServer.pdb
+D:\Unity\Project\Sword Fighter\Server\SwordFighterServer\SwordFighterServer\bin\Release\netcoreapp2.2\publish\SwordFighterServer.exe

@@ -25,7 +25,6 @@ class Packet
 {
 private:
 	vector<uint8_t> buffer; // 요소 추가/삭제가 용이한 vector 사용
-	//char *readableBuffer;
 	unsigned int readPos;
 
 	vector<uint8_t> intToBytesVector(int paramInt)
@@ -73,7 +72,7 @@ public:
 	/// <summary>Inserts the length of the packet's content at the start of the buffer.</summary>
 	void WriteLength()
 	{
-		vector<uint8_t> length_vec = intToBytesVector(buffer.size());
+		vector<uint8_t> length_vec = intToBytesVector((int) buffer.size());
 		buffer.insert(buffer.begin(), length_vec.begin(), length_vec.end());
 		//buffer.InsertRange(0, BitConverter.GetBytes(buffer.Count)); // Insert the byte length of the packet at the very beginning
 	}
@@ -89,7 +88,7 @@ public:
 	/// <summary>Gets the length of the packet's content.</summary>
 	int Length()
 	{
-		return buffer.size(); // Return the length of buffer
+		return (int) buffer.size(); // Return the length of buffer
 	}
 
 	/// <summary>Gets the length of the unread data contained in the packet.</summary>

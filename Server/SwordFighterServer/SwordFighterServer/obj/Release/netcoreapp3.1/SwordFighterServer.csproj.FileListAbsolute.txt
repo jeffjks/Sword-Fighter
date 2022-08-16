@@ -1,0 +1,14 @@
+D:\Unity\Project\Sword Fighter\Server\SwordFighterServer\SwordFighterServer\bin\Release\netcoreapp3.1\SwordFighterServer.exe
+D:\Unity\Project\Sword Fighter\Server\SwordFighterServer\SwordFighterServer\bin\Release\netcoreapp3.1\SwordFighterServer.deps.json
+D:\Unity\Project\Sword Fighter\Server\SwordFighterServer\SwordFighterServer\bin\Release\netcoreapp3.1\SwordFighterServer.runtimeconfig.json
+D:\Unity\Project\Sword Fighter\Server\SwordFighterServer\SwordFighterServer\bin\Release\netcoreapp3.1\SwordFighterServer.runtimeconfig.dev.json
+D:\Unity\Project\Sword Fighter\Server\SwordFighterServer\SwordFighterServer\bin\Release\netcoreapp3.1\SwordFighterServer.dll
+D:\Unity\Project\Sword Fighter\Server\SwordFighterServer\SwordFighterServer\bin\Release\netcoreapp3.1\SwordFighterServer.pdb
+D:\Unity\Project\Sword Fighter\Server\SwordFighterServer\SwordFighterServer\obj\Release\netcoreapp3.1\SwordFighterServer.csproj.AssemblyReference.cache
+D:\Unity\Project\Sword Fighter\Server\SwordFighterServer\SwordFighterServer\obj\Release\netcoreapp3.1\SwordFighterServer.GeneratedMSBuildEditorConfig.editorconfig
+D:\Unity\Project\Sword Fighter\Server\SwordFighterServer\SwordFighterServer\obj\Release\netcoreapp3.1\SwordFighterServer.AssemblyInfoInputs.cache
+D:\Unity\Project\Sword Fighter\Server\SwordFighterServer\SwordFighterServer\obj\Release\netcoreapp3.1\SwordFighterServer.AssemblyInfo.cs
+D:\Unity\Project\Sword Fighter\Server\SwordFighterServer\SwordFighterServer\obj\Release\netcoreapp3.1\SwordFighterServer.csproj.CoreCompileInputs.cache
+D:\Unity\Project\Sword Fighter\Server\SwordFighterServer\SwordFighterServer\obj\Release\netcoreapp3.1\SwordFighterServer.dll
+D:\Unity\Project\Sword Fighter\Server\SwordFighterServer\SwordFighterServer\obj\Release\netcoreapp3.1\SwordFighterServer.pdb
+D:\Unity\Project\Sword Fighter\Server\SwordFighterServer\SwordFighterServer\obj\Release\netcoreapp3.1\SwordFighterServer.genruntimeconfig.cache

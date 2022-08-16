@@ -41,12 +41,11 @@ void ChatServer::AcceptClient(int index) {
     {
         if (clients[i]->clientSocket == INVALID_SOCKET)
         {
-            HANDLE wsaEvent = WSACreateEvent(); // 새로운 클라이언트 이벤트 등록
-
             clients[i]->clientSocket = acceptClientSocket;
-            clients[i]->evnt = wsaEvent;
 
-            WSAEventSelect(acceptClientSocket, wsaEvent, FD_READ | FD_CLOSE);
+            handle_array[i] = WSACreateEvent();
+
+            WSAEventSelect(acceptClientSocket, handle_array[i], FD_READ | FD_CLOSE);
             total_socket_count++;
             currentIndex = i;
             break;
@@ -123,10 +122,11 @@ int ChatServer::Start() {
         return -4;
     }
 
-    WSAEVENT wsaEvent = WSACreateEvent();
-    clients[0] = new Client(listenSocket, wsaEvent, chatServerHandle); // 리스닝 전용 소켓은 clients 0번에 배정
+    //WSAEVENT wsaEvent = WSACreateEvent();
+    handle_array[0] = WSACreateEvent();
+    clients[0] = new Client(listenSocket, chatServerHandle); // 리스닝 전용 소켓은 clients 0번에 배정
 
-    WSAEventSelect(listenSocket, wsaEvent, FD_ACCEPT);
+    WSAEventSelect(listenSocket, handle_array[0], FD_ACCEPT);
     total_socket_count++;
 
     InitializeServerData();
@@ -136,21 +136,11 @@ int ChatServer::Start() {
     printf("Chat Server started on %d.\n", PORT);
 
     while (true) { // WSA Event로 비동기 구현
-        memset(&handle_array, 0, sizeof(handle_array));
-        int num = 0;
-        for (int i = 0; i <= MAX_PLAYERS; i++) {
-            if (clients[i]->evnt == NULL) {
-                continue;
-            }
-            handle_array[num] = clients[i]->evnt;
-            num++;
-        }
-
-        wsaIndex = WSAWaitForMultipleEvents(total_socket_count, handle_array, false, INFINITE, false);
+        wsaIndex = WSAWaitForMultipleEvents(total_socket_count, handle_array, false, 5000, false);
 
         if ((wsaIndex != WSA_WAIT_FAILED) && (wsaIndex != WSA_WAIT_TIMEOUT))
         {
-            WSAEnumNetworkEvents(clients[wsaIndex]->clientSocket, clients[wsaIndex]->evnt, &wsaNetEvents);
+            WSAEnumNetworkEvents(clients[wsaIndex]->clientSocket, handle_array[wsaIndex], &wsaNetEvents);
             if (wsaNetEvents.lNetworkEvents == FD_ACCEPT)
                 AcceptClient(wsaIndex);
             else if (wsaNetEvents.lNetworkEvents == FD_READ)
@@ -196,8 +186,12 @@ void ChatServer::DisconnectClient(int index) {
 
     closesocket(clients[index]->clientSocket);
     clients[index]->clientSocket = INVALID_SOCKET;
-    clients[index]->evnt = NULL;
-    WSACloseEvent(clients[index]->evnt);
+    WSACloseEvent(handle_array[index]);
+
+    if (index < total_socket_count - 1) // 이벤트 배열 정리
+    {
+        handle_array[index] = handle_array[total_socket_count - 1];
+    }
 
     total_socket_count--;
 }

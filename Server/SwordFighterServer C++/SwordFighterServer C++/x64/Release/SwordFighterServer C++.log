@@ -1,12 +1,9 @@
-﻿  ChatServer.cpp
-d:\unity\project\sword fighter\server\swordfighterserver c++\swordfighterserver c++\packet.h(76): warning C4267: '인수': 'size_t'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-d:\unity\project\sword fighter\server\swordfighterserver c++\swordfighterserver c++\packet.h(92): warning C4267: 'return': 'size_t'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-  ChatServerHandle.cpp
-d:\unity\project\sword fighter\server\swordfighterserver c++\swordfighterserver c++\packet.h(76): warning C4267: '인수': 'size_t'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-d:\unity\project\sword fighter\server\swordfighterserver c++\swordfighterserver c++\packet.h(92): warning C4267: 'return': 'size_t'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+﻿  Program.cpp
+D:\Unity\Project\Sword Fighter\Server\SwordFighterServer C++\SwordFighterServer C++\Packet.h(76,1): warning C4267: '인수': 'size_t'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+D:\Unity\Project\Sword Fighter\Server\SwordFighterServer C++\SwordFighterServer C++\Packet.h(92,1): warning C4267: 'return': 'size_t'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
   코드를 생성하고 있습니다.
-  8 of 981 functions ( 0.8%) were compiled, the rest were copied from previous compilation.
-    0 functions were new in current compilation
-    7 functions had inline decision re-evaluated but remain unchanged
+  2 of 746 functions ( 0.3%) were compiled, the rest were copied from previous compilation.
+    1 functions were new in current compilation
+    3 functions had inline decision re-evaluated but remain unchanged
   코드를 생성했습니다.
   SwordFighterServer C++.vcxproj -> D:\Unity\Project\Sword Fighter\Server\SwordFighterServer C++\x64\Release\SwordFighterServer C++.exe

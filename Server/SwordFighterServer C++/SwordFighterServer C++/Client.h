@@ -15,7 +15,6 @@ private:
 
 public:
     SOCKET clientSocket = INVALID_SOCKET;
-    HANDLE evnt;
     char ip_address[INET_ADDRSTRLEN];
     int port;
     int id; // 클라이언트의 id
@@ -24,9 +23,8 @@ public:
         chatServerHandle = _chatServerHandle;
     }
 
-    Client(SOCKET _clientSocket, HANDLE _evnt, ChatServerHandle *_chatServerHandle) : index(0) {
+    Client(SOCKET _clientSocket, ChatServerHandle *_chatServerHandle) : index(0) {
         clientSocket = _clientSocket;
-        evnt = _evnt;
         chatServerHandle = _chatServerHandle;
     }
 

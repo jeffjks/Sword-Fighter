@@ -8,6 +8,8 @@ int main() {
         SetConsoleOutputCP(CP_UTF8); // 한글 깨짐 방지
     #endif
 
+    printf("Chat Server ver %s\n", VERSION.c_str());
+
     ChatServer chatServer;
     chatServer.Start();
 }
