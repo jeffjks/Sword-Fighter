@@ -30,7 +30,8 @@ private:
     void SendData(int clientId, Packet packet);
     void SendTCPData(int toClient, Packet packet);
     void SendTCPDataToAll(Packet packet, int fromIndex, bool exceptMe);
-    mutex mtx; // 스레드 충돌 방지용
+    mutex mtx_messageQueue; // 스레드 충돌 방지용
+    condition_variable ctrl_var;
 
 public:
     queue<MessageQueueData> messageQueue; // 메시지 처리용 큐

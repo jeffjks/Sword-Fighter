@@ -136,7 +136,7 @@ int ChatServer::Start() {
     printf("Chat Server started on %d.\n", PORT);
 
     while (true) { // WSA Event로 비동기 구현
-        wsaIndex = WSAWaitForMultipleEvents(total_socket_count, handle_array, false, 5000, false);
+        wsaIndex = WSAWaitForMultipleEvents(total_socket_count, handle_array, false, WSA_INFINITE, false);
 
         if ((wsaIndex != WSA_WAIT_FAILED) && (wsaIndex != WSA_WAIT_TIMEOUT))
         {

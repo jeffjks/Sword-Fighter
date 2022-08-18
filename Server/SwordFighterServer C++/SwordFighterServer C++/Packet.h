@@ -168,14 +168,6 @@ public:
 		Write((int)_value.length());
 		vector<uint8_t> vec(_value.begin(), _value.end());
 		buffer.insert(buffer.end(), vec.begin(), vec.end());
-		/*
-		Write(_value.Length); // Add the length of the string to the packet
-		buffer.AddRange(Encoding.ASCII.GetBytes(_value)); // Add the string itself
-
-		std::string str = "hello";
-		BYTE byte[6];   // null terminated string;
-		strcpy(byte, str.c_str());  // copy from str to byte[]
-		*/
 	}
 
 	/// <summary>Reads a byte from the packet.</summary>

@@ -59,24 +59,30 @@ void ChatServerSend::SendChatMessageAll(int fromIndex, int fromId, string msg) {
 
 
 
-void ChatServerSend::PushMessageQueueData(int index, int fromId, string message) {
+void ChatServerSend::PushMessageQueueData(int index, int fromId, string message) { // Producer
     MessageQueueData messageQueueData = MessageQueueData(index, fromId, message);
-    mtx.lock();
+
+    // Critical Section
+    mtx_messageQueue.lock();
     messageQueue.push(messageQueueData);
-    mtx.unlock();
+    mtx_messageQueue.unlock();
+
+    ctrl_var.notify_one(); // Consumer에게 알림
 }
 
-void ChatServerSend::PopMessageQueueData() {
+void ChatServerSend::PopMessageQueueData() { // Consumer
     while (true) {
-        if (messageQueue.empty()) {
-            continue;
-        }
-        mtx.lock();
-        while (!messageQueue.empty()) {
+        unique_lock<mutex> lock(mtx_messageQueue);
+
+        ctrl_var.wait(lock, [&]() { return !messageQueue.empty(); }); // Block 상태로 돌입. Block 해제 시 mutex lock 후 진행
+        // queue에 메세지가 존재하면 wait 하지 않고 mutex lock 후 진행
+
+        while (!messageQueue.empty()) { // 큐에 쌓인 모든 메세지 처리
             MessageQueueData messageQueueData = messageQueue.front();
             SendChatMessageAll(messageQueueData.clientIndex, messageQueueData.fromId, messageQueueData.message);
             messageQueue.pop();
         }
-        mtx.unlock();
+        lock.unlock();
+        this_thread::sleep_for(chrono::milliseconds(MS_BROADCASTING)); // 최소 대기 시간
     }
 }
