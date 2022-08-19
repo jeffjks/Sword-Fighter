@@ -15,12 +15,14 @@ struct MessageInfo {
     }
 };
 
+enum MessageType {
+    ERROR_MESSAGE = -1,
+    SYSTEM_MESSAGE = 126,
+    SERVER_MESSAGE = 127,
+};
+
 public class UI_ChatWindow : MonoBehaviour
 {
-    const int ERROR_MESSAGE = -1;
-    const int SERVER_MESSAGE = 127;
-    const int ADMIN_MESSAGE = 126;
-    
     public TextMeshProUGUI chatText;
     public ScrollRect scrollRect;
     public ContentSizeFitter contentSizeFitter;
@@ -31,9 +33,9 @@ public class UI_ChatWindow : MonoBehaviour
     private Dictionary<int, MessageInfo> specialMessage = new Dictionary<int, MessageInfo>();
 
     UI_ChatWindow() {
-        specialMessage[ERROR_MESSAGE] = new MessageInfo("[오류]", "#FF0000FF"); // Red
-        specialMessage[SERVER_MESSAGE] = new MessageInfo("[공지]", "#DF7401FF"); // Dark Orange
-        specialMessage[ADMIN_MESSAGE] = new MessageInfo("[관리자]", "#DF7401FF"); // Dark Orange
+        specialMessage[(int) MessageType.ERROR_MESSAGE] = new MessageInfo("[오류]", "#FF0000FF"); // Red
+        specialMessage[(int) MessageType.SYSTEM_MESSAGE] = new MessageInfo("[시스템]", "#DF7401FF"); // Dark Orange
+        specialMessage[(int) MessageType.SERVER_MESSAGE] = new MessageInfo("[공지]", "#DF7401FF"); // Dark Orange
     }
 
     public void PushTextMessage(int fromId, string message) {
@@ -43,12 +45,7 @@ public class UI_ChatWindow : MonoBehaviour
             defaultColor = specialMessage[fromId].colorCode;
         }
         else {
-            try {
-                userName = GameManager.players[fromId].username;
-            }
-            catch (KeyNotFoundException) {
-                userName = "(Unknown)";
-            }
+            userName = GameManager.instance.GetUserNameWithId(fromId);
             defaultColor = "#000000FF"; // Black
         }
 

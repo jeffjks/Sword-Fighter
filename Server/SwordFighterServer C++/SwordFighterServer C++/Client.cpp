@@ -2,6 +2,11 @@
 #include "Client.h"
 #include "ChatServerHandle.h"
 
+void Client::SetUserData(int _id, string _username) {
+    id = _id;
+    username = _username;
+}
+
 // ÆÐÅ¶ RECV
 void Client::ReceiveData() {
     char buf[dataBufferSize];

@@ -30,6 +30,7 @@ public class ChatClient : ClientBase
         {
             { (int) ChatServerPackets.welcomeMessage, ChatClientHandle.WelcomeMessage },
             { (int) ChatServerPackets.chatServerMessage, ChatClientHandle.ChatServerMessage },
+            { (int) ChatServerPackets.clientStateNotice, ChatClientHandle.ClientStateMessage },
         };
         Debug.Log("Initialize packets.");
     }
@@ -43,7 +44,7 @@ public class ChatClient : ClientBase
         Debug.Log("Disconnceted from chat server.");
     }
 
-    public void GetTextMessage(int fromId, string message) {
+    public void GetMessageFromServer(int fromId, string message) {
         m_UI_ChatWindow.PushTextMessage(fromId, message);
     }
 }

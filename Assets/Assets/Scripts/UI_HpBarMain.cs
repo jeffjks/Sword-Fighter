@@ -9,7 +9,7 @@ public class UI_HpBarMain : UI_HpBar
         m_HpBarFillImage.fillAmount = value;
     }
 
-    public override void SetUserName(string username)
+    public override void SetUserNameUI(string username)
     {
         return;
     }

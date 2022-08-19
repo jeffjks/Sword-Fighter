@@ -35,16 +35,28 @@ void ChatServerSend::SendTCPDataToAll(Packet packet, int fromIndex, bool exceptM
 
 // Packets
 
-// 최초 접속 시 메시지 전송 + 클라이언트 id 요청
+// 최초 접속 시 메세지 전송 + 클라이언트 id 요청
 void ChatServerSend::WelcomeMessage(int toIndex) {
-    Packet packet = Packet(ChatServerPackets::welcomeMessage);
+    Packet packet((int)ChatServerPackets::welcomeMessage); // packet id
 
     string msg = string(u8"채팅 서버에 접속하셨습니다.");
 
-    packet.Write(SERVER_MESSAGE);
+    packet.Write(MessageType::SERVER_MESSAGE);
     packet.Write(msg);
 
     SendTCPData(toIndex, packet);
+}
+
+// 플레이어 상태 알림 메세지
+void ChatServerSend::SendClientStateNotice(int fromIndex, int fromId, int state) {
+    Packet packet((int)ChatServerPackets::clientStateNotice); // packet id
+    string username = (*clients)[fromIndex]->username;
+
+    packet.Write(fromId); // 대상 클라이언트 id
+    packet.Write(username);
+    packet.Write(state); // 대상 클라이언트 id의 상태
+
+    SendTCPDataToAll(packet, fromIndex, true);
 }
 
 // 채팅 전송

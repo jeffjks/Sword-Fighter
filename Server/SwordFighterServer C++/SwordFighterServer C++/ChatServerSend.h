@@ -39,7 +39,8 @@ public:
     ChatServerSend(unordered_map<int, Client*> *_clients) {
         clients = _clients;
     }
-    void WelcomeMessage(int toClient);
+    void WelcomeMessage(int toIndex);
+    void SendClientStateNotice(int fromIndex, int fromId, int state);
     void SendChatMessageAll(int fromIndex, int fromId, string msg);
 
     void PushMessageQueueData(int index, int fromId, string message);

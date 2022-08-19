@@ -6,7 +6,6 @@ public abstract class PlayerManager : MonoBehaviour
 {
     public Animator m_Animator;
     public int id;
-    public string username;
     public Transform m_CharacterModel;
     public Collider m_PlayerCollider;
     public Sword m_Sword;
@@ -19,12 +18,13 @@ public abstract class PlayerManager : MonoBehaviour
     [HideInInspector] public Vector3 direction = Vector3.forward;
     [HideInInspector] public int m_State = 0;
 
+    private string username;
     private bool m_CanMove = true;
     private bool m_IsRolling = false;
     private const float ROLL_DISTANCE = 5f;
 
     public void Init() {
-        SetUserName(username);
+        SetUserNameUI(username);
         SetCurrentHitPoint(m_CurrentHp);
     }
 
@@ -123,12 +123,20 @@ public abstract class PlayerManager : MonoBehaviour
         );
     }
 
+    public void SetUserName(string username) {
+        this.username = username;
+    }
+
+    public string GetUserName() {
+        return username;
+    }
+
     public void SetCurrentHitPoint(int hitPoints) {
         m_CurrentHp = hitPoints;
         m_UI_HpBar.UpdateHpBarFill();
     }
 
-    public void SetUserName(string username) {
-        m_UI_HpBar.SetUserName(username);
+    public void SetUserNameUI(string username) {
+        m_UI_HpBar.SetUserNameUI(username);
     }
 }

@@ -42,11 +42,22 @@ public class GameManager : MonoBehaviour
         }
 
         playerManager.id = id;
-        playerManager.username = username;
         playerManager.m_CurrentHp = hp;
         playerManager.m_State = state;
+        playerManager.SetUserName(username);
         playerManager.Init();
         players.Add(id, playerManager);
+    }
+
+    public string GetUserNameWithId(int id) {
+        string userName;
+        try {
+            userName = GameManager.players[id].GetUserName();
+        }
+        catch (KeyNotFoundException) {
+            userName = "(Unknown)";
+        }
+        return userName;
     }
 
     public void Reset() {

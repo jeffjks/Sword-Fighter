@@ -11,8 +11,10 @@ public class ChatClientSend : MonoBehaviour
 
     #region Packets
     public static void WelcomeMessageReceived() {
+        int myId = Client.instance.myId;
         using (Packet packet = new Packet((int) ChatClientPackets.welcomeMessageReceived)) { // 패킷 생성 시 가장 앞 부분에 패킷id(종류) 삽입
-            packet.Write(Client.instance.myId);
+            packet.Write(myId);
+            packet.Write(Client.instance.myUsername);
 
             SendTCPData(packet);
         }

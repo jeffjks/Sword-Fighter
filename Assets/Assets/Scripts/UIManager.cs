@@ -43,6 +43,7 @@ public class UIManager : MonoBehaviour
         try {
             if (Client.instance.enabled) {
                 Client.instance.ConnectToServer(m_IpAdressField.text);
+                Client.instance.myUsername = m_UsernameField.text;
             }
         }
         catch (FormatException e) {

@@ -10,7 +10,8 @@ using namespace std;
 enum ChatServerPackets
 {
     welcomeMessage = 1,
-    chatServerMessage
+    chatServerMessage,
+	clientStateNotice
 };
 
 /// <summary>Sent from client to server.</summary>

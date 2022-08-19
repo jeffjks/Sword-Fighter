@@ -8,6 +8,7 @@ public class Client : ClientBase
 {
     public static Client instance;
     public int myId = 0;
+    public string myUsername;
     public override int port { get { return 26950; } }
 
     protected override Dictionary<int, PacketHandler> packetHandlers { get; set; }

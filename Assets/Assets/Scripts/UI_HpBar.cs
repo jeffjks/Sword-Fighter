@@ -15,5 +15,5 @@ public abstract class UI_HpBar : MonoBehaviour
         m_HpBarFillImage.fillAmount = (float) current_hp/max_hp;
     }
 
-    public abstract void SetUserName(string username);
+    public abstract void SetUserNameUI(string username);
 }

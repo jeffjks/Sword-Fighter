@@ -11,12 +11,13 @@ public class UI_HpBarWorld : UI_HpBar
     private const float maxScale = 0.25f;
     private const float minScale = 0.1f;
 
-    void Update()
+    void LateUpdate()
     {
-        transform.position = Camera.main.WorldToScreenPoint(m_PlayerManager.transform.position + new Vector3(0, 2.4f, 0));
+        Vector3 playerPosition = m_PlayerManager.m_CharacterModel.transform.position;
+        transform.position = Camera.main.WorldToScreenPoint(playerPosition + new Vector3(0, 2.4f, 0));
 
         Vector3 localPlayerPosition = GameManager.players[Client.instance.myId].transform.position;
-        float distance = Vector3.Distance(m_PlayerManager.transform.position, localPlayerPosition);
+        float distance = Vector3.Distance(playerPosition, localPlayerPosition);
 
         if (distance < m_MaxDistance) {
             float scale = Mathf.Lerp(maxScale, minScale, distance/m_MaxDistance);
@@ -27,7 +28,7 @@ public class UI_HpBarWorld : UI_HpBar
         }
     }
 
-    public override void SetUserName(string username)
+    public override void SetUserNameUI(string username)
     {
         m_UI_UserNameText.text = username;
     }

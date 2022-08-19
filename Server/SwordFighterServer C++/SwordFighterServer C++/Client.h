@@ -17,7 +17,8 @@ public:
     SOCKET clientSocket = INVALID_SOCKET;
     char ip_address[INET_ADDRSTRLEN];
     int port;
-    int id; // 클라이언트의 id
+    int id = -1; // 클라이언트의 id
+    string username = "(Unknown)";
 
     Client(int _index, ChatServerHandle *_chatServerHandle) : index(_index) {
         chatServerHandle = _chatServerHandle;
@@ -28,6 +29,7 @@ public:
         chatServerHandle = _chatServerHandle;
     }
 
+    void SetUserData(int _id, string _username);
     void ReceiveData();
     bool HandleData(char* data, int length);
 };

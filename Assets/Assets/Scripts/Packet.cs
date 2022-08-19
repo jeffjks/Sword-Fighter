@@ -33,7 +33,8 @@ public enum ClientPackets
 public enum ChatServerPackets
 {
     welcomeMessage = 1,
-    chatServerMessage
+    chatServerMessage,
+    clientStateNotice
 }
 
 /// <summary>Chat from client to server.</summary>

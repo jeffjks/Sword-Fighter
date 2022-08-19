@@ -183,6 +183,7 @@ void ChatServer::InitializeServerData() {
 
 void ChatServer::DisconnectClient(int index) {
     printf("%s:%d has disconnected.\n", clients[index]->ip_address, clients[index]->port);
+    int disconnected_id = clients[index]->id;
 
     closesocket(clients[index]->clientSocket);
     clients[index]->clientSocket = INVALID_SOCKET;
@@ -192,6 +193,7 @@ void ChatServer::DisconnectClient(int index) {
     {
         handle_array[index] = handle_array[total_socket_count - 1];
     }
+    chatServerSend->SendClientStateNotice(index, disconnected_id, ClientState::CLIENT_LEFT);
 
     total_socket_count--;
 }
