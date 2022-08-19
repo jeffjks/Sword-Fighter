@@ -6,5 +6,8 @@ https://drive.google.com/drive/folders/1e99wD5TCw8PYJNwvUCbOKh_AAxnQODET?usp=sha
 클라이언트 코드 위치
 https://github.com/jeffjks/Sword-Fighter/tree/master/Assets/Assets/Scripts
 
-서버 코드 위치
+C# 서버 코드 위치
 https://github.com/jeffjks/Sword-Fighter/tree/master/Server/SwordFighterServer/SwordFighterServer
+
+C++ 채팅 서버 코드 위치
+https://github.com/jeffjks/Sword-Fighter/tree/master/Server/SwordFighterServer%20C%2B%2B/SwordFighterServer%20C%2B%2B
