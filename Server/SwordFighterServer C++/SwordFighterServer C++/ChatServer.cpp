@@ -103,7 +103,7 @@ int ChatServer::Start() {
     servAddr.sin_addr.S_un.S_addr = htonl(INADDR_ANY);
     servAddr.sin_port = htons(PORT); // int 자료형을 네트워크 byte order로 변경 (Big Endian)
 
-    int bindResult = ::bind(listenSocket, reinterpret_cast<sockaddr*>(&servAddr), sizeof(servAddr));
+    int bindResult = bind(listenSocket, reinterpret_cast<sockaddr*>(&servAddr), sizeof(servAddr));
     if (bindResult == SOCKET_ERROR)
     {
         cerr << "Can't bind a socket! Quitting" << endl;

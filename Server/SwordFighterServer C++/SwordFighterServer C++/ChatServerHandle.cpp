@@ -24,12 +24,12 @@ void ChatServerHandle::MessageReceived(int index, Packet packet) {
 }
 
 void ChatServerHandle::HandlePacketId(int packetId, int index, Packet packet) {
-    (this->*(this->packetHandlers[packetId]))(index, packet);
+    (this->*packetHandlers[packetId])(index, packet);
 }
 
 void ChatServerHandle::InitializePacketHandlers() {
-    packetHandlers.emplace(ChatClientPackets::welcomeMessageReceived, &ChatServerHandle::WelcomeMessageReceived);
-    packetHandlers.emplace(ChatClientPackets::chatClientMessage, &ChatServerHandle::MessageReceived);
+    packetHandlers[ChatClientPackets::welcomeMessageReceived] = &ChatServerHandle::WelcomeMessageReceived;
+    packetHandlers[ChatClientPackets::chatClientMessage] = &ChatServerHandle::MessageReceived;
 }
 
 
