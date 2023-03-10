@@ -9,10 +9,11 @@ public class PlayerMe : PlayerManager
     }
 
     public override void Start_DealDamage_Attack1() {
-        m_Sword.StartDeal();
+        //m_Sword.StartDeal();
+        ClientSend.PlayerAttack();
     }
 
     public override void Finish_DealDamage_Attack1() {
-        m_Sword.FinishDeal();
+        //m_Sword.FinishDeal();
     }
 }

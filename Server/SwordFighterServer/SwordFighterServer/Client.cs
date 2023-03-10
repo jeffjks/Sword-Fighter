@@ -9,8 +9,6 @@ namespace SwordFighterServer
 {
     class Client
     {
-        private Dictionary<int, bool> spawnedPlayers = new Dictionary<int, bool>();
-
         public static int dataBufferSize = 4096;
 
         public int id;
@@ -112,11 +110,9 @@ namespace SwordFighterServer
                     byte[] packetBytes = receivedData.ReadBytes(packetLength); // receivedData에서 packetLength만큼 다 읽음
                     ThreadManager.ExecuteOnMainThread(() =>
                     {
-                        using (Packet packet = new Packet(packetBytes))
-                        {
-                            int packetId = packet.ReadInt();
-                            Server.packetHandlers[packetId](id, packet);
-                        }
+                        Packet packet = new Packet(packetBytes);
+                        int packetId = packet.ReadInt();
+                        Server.packetHandlers[packetId](id, packet);
                     });
 
                     packetLength = 0;
@@ -149,20 +145,6 @@ namespace SwordFighterServer
         }
 
 
-        public void SetReady(int playerId) // 플레이어가 준비 완료됨 (SpawnPlayer 패킷을 보냄)
-        {
-            spawnedPlayers[playerId] = true;
-            //Console.WriteLine($"Player {id} Get Ready.");
-        }
-
-        public bool IsReady(int playerId)
-        {
-            if (spawnedPlayers.ContainsKey(playerId))
-            {
-                return spawnedPlayers[playerId];
-            }
-            return false;
-        }
 
         public void SendIntoGame(string username) // 플레이어 접속 시 SpawnPlayer 패킷 전달
         {
@@ -174,7 +156,8 @@ namespace SwordFighterServer
                 {
                     ServerSend.SpawnPlayer(id, client.player);
                     //Console.WriteLine($"SendIntoGame1 - SpawnPlayer: {id}, {client.player.username}");
-                    SetReady(client.player.id);
+                    //client.SetReady(client.player.id);
+                    //SetReady(client.player.id);
                 }
             }
 
@@ -184,7 +167,7 @@ namespace SwordFighterServer
                 {
                     ServerSend.SpawnPlayer(client.id, player);
                     //Console.WriteLine($"SendIntoGame2 - SpawnPlayer: {client.id}, {username}");
-                    client.SetReady(player.id);
+                    //client.SetReady(player.id);
                 }
             }
         }
@@ -195,7 +178,7 @@ namespace SwordFighterServer
 
             player = null;
             tcp.Disconnect();
-            spawnedPlayers.Clear();
+            Server.spawnedPlayers.Remove(id);
 
             ServerSend.PlayerDisconnected(id);
             Server.CurrentPlayers--;

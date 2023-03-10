@@ -23,10 +23,11 @@ namespace SwordFighterServer
         spawnPlayerReceived,
         playerInput,
         playerMovement,
+        playerAttack,
         changeHp
     }
 
-    public class Packet : IDisposable
+    public class Packet
     {
         private List<byte> buffer;
         private byte[] readableBuffer;
@@ -420,28 +421,5 @@ namespace SwordFighterServer
             return new Quaternion(ReadFloat(_moveReadPos), ReadFloat(_moveReadPos), ReadFloat(_moveReadPos), ReadFloat(_moveReadPos));
         }
         #endregion
-
-        private bool disposed = false;
-
-        protected virtual void Dispose(bool _disposing)
-        {
-            if (!disposed)
-            {
-                if (_disposing)
-                {
-                    buffer = null;
-                    readableBuffer = null;
-                    readPos = 0;
-                }
-
-                disposed = true;
-            }
-        }
-
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
     }
 }

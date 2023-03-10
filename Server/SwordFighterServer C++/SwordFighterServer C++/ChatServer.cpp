@@ -122,6 +122,8 @@ int ChatServer::Start() {
         return -4;
     }
 
+    clients = vector<Client*>(MAX_PLAYERS + 1); // 최대 인원수만큼 미리 Client 벡터 할당
+
     //WSAEVENT wsaEvent = WSACreateEvent();
     handle_array[0] = WSACreateEvent();
     clients[0] = new Client(listenSocket, chatServerHandle); // 리스닝 전용 소켓은 clients 0번에 배정
@@ -162,10 +164,15 @@ int ChatServer::Start() {
     // Cleanup winsock <-> WSAStartup
     WSACleanup();
 
+    for (int i = 0; i < clients.size(); ++i) {
+        delete clients[i];
+    }
+
+    /*
     for (auto& it : clients) {
         delete it.second;
         clients.erase(it.first);
-    }
+    }*/
     return 0;
 }
 

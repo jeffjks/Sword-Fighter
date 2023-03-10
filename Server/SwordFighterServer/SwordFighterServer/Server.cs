@@ -17,6 +17,9 @@ namespace SwordFighterServer
         public delegate void PacketHandler(int fromClient, Packet packet);
         public static Dictionary<int, PacketHandler> packetHandlers;
 
+        public static HashSet<int> spawnedPlayers = new HashSet<int>();
+
+
         private static TcpListener tcpListener;
 
         public static void Start(int maxPlayers, int port)
@@ -68,9 +71,22 @@ namespace SwordFighterServer
                 { (int) ClientPackets.spawnPlayerReceived, ServerHandle.SpawnPlayerReceived },
                 { (int) ClientPackets.playerInput, ServerHandle.PlayerInput },
                 { (int) ClientPackets.playerMovement, ServerHandle.PlayerMovement },
+                { (int) ClientPackets.playerAttack, ServerHandle.PlayerAttack },
                 { (int) ClientPackets.changeHp, ServerHandle.ChangeHp },
             };
             Console.WriteLine("Initialized packets.");
+        }
+
+        public static void SetReady(int playerId) // 플레이어가 준비 완료됨 (SpawnPlayer 패킷을 보냄)
+        {
+            //spawnedPlayers[playerId] = true;
+            spawnedPlayers.Add(playerId);
+            //Console.WriteLine($"Player {id} Get Ready.");
+        }
+
+        public static bool IsReady(int playerId)
+        {
+            return spawnedPlayers.Contains(playerId);
         }
     }
 }

@@ -17,7 +17,7 @@ namespace SwordFighterServer
             packet.WriteLength();
             for (int i = 1; i <= Server.MaxPlayers; ++i)
             {
-                if (Server.clients[i].IsReady(fromId)) // SpawnPlayer 패킷을 보낸 플레이어에게만 전송
+                if (Server.IsReady(fromId)) // SpawnPlayer 패킷을 보낸 플레이어에게만 전송
                 {
                     Server.clients[i].tcp.SendData(packet);
                 }
@@ -29,7 +29,7 @@ namespace SwordFighterServer
             packet.WriteLength();
             for (int i = 1; i <= Server.MaxPlayers; ++i)
             {
-                if (Server.clients[i].IsReady(fromId)) // SpawnPlayer 패킷을 보낸 플레이어에게만 전송
+                if (Server.IsReady(fromId)) // SpawnPlayer 패킷을 보낸 플레이어에게만 전송
                 {
                     if (i != exceptClient)
                     {
@@ -41,79 +41,71 @@ namespace SwordFighterServer
 
         #region Packets
         public static void Welcome(int toClient, string msg) {
-            using (Packet packet = new Packet((int) ServerPackets.welcome))
-            {
-                packet.Write(msg);
-                packet.Write(toClient);
+            Packet packet = new Packet((int)ServerPackets.welcome);
 
-                SendTCPData(toClient, packet);
-            }
+            packet.Write(msg);
+            packet.Write(toClient);
+
+            SendTCPData(toClient, packet);
         }
 
         public static void SpawnPlayer(int toClient, Player player) // 플레이어 최초 생성 패킷 전달
         {
-            using (Packet packet = new Packet((int) ServerPackets.spawnPlayer))
-            {
-                packet.Write(player.id);
-                packet.Write(player.username);
-                packet.Write(player.position);
-                packet.Write(player.direction);
-                packet.Write(player.hitPoints);
-                packet.Write(player.state);
-                //packet.Write(Server.CurrentPlayers);
+            Packet packet = new Packet((int)ServerPackets.spawnPlayer);
 
-                SendTCPData(toClient, packet);
-            }
+            packet.Write(player.id);
+            packet.Write(player.username);
+            packet.Write(player.position);
+            packet.Write(player.direction);
+            packet.Write(player.hitPoints);
+            packet.Write(player.state);
+            //packet.Write(Server.CurrentPlayers);
+
+            SendTCPData(toClient, packet);
         }
 
         public static void PlayerMovement(Player player, ClientInput clientInput) // 플레이어 움직임, 좌표, 방향 패킷 전달
         {
-            using (Packet packet = new Packet((int) ServerPackets.playerMovement))
-            {
-                packet.Write(player.id);
+            Packet packet = new Packet((int)ServerPackets.playerMovement);
 
-                packet.Write(player.movement);
-                packet.Write(clientInput.seqNum);
-                packet.Write(player.position);
-                packet.Write(player.direction);
+            packet.Write(player.id);
 
-                SendTCPDataToAll(player.id, packet);
-                //SendTCPDataToAll(player.id, packet); // except
-            }
+            packet.Write(player.movement);
+            packet.Write(clientInput.seqNum);
+            packet.Write(player.position);
+            packet.Write(player.direction);
+
+            SendTCPDataToAll(player.id, packet);
+            //SendTCPDataToAll(player.id, packet); // except
         }
 
         public static void PlayerState(Player player) // 플레이어 스킬 상태 패킷 전달
         {
-            using (Packet packet = new Packet((int) ServerPackets.playerState))
-            {
-                packet.Write(player.id);
+            Packet packet = new Packet((int)ServerPackets.playerState);
 
-                packet.Write(player.state);
+            packet.Write(player.id);
+            packet.Write(player.state);
 
-                SendTCPDataToAll(player.id, packet);
-            }
+            SendTCPDataToAll(player.id, packet);
         }
 
         public static void PlayerHp(Player player) // 플레이어 체력 패킷 전달
         {
-            using (Packet packet = new Packet((int) ServerPackets.playerHp))
-            {
-                packet.Write(player.id);
+            Packet packet = new Packet((int)ServerPackets.playerHp);
 
-                packet.Write(player.hitPoints);
+            packet.Write(player.id);
+            packet.Write(player.hitPoints);
 
-                SendTCPDataToAll(player.id, packet);
-            }
+            SendTCPDataToAll(player.id, packet);
         }
 
         public static void PlayerDisconnected(int playerId) // 연결 끊김 패킷 전달
         {
-            using (Packet packet = new Packet((int) ServerPackets.playerDisconnected))
-            {
-                packet.Write(playerId);
+            Packet packet = new Packet((int)ServerPackets.playerDisconnected);
 
-                SendTCPDataToAll(playerId, packet);
-            }
+            packet.Write(playerId);
+
+            SendTCPDataToAll(playerId, packet);
         }
         #endregion
     }

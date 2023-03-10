@@ -25,7 +25,7 @@ struct MessageQueueData { // 채팅 메시지 구성
 
 class ChatServerSend {
 private:
-    unordered_map<int, Client*> *clients;
+    vector<Client*> *clients;
 
     void SendData(int clientId, Packet packet);
     void SendTCPData(int toClient, Packet packet);
@@ -36,7 +36,7 @@ private:
 public:
     queue<MessageQueueData> messageQueue; // 메시지 처리용 큐
 
-    ChatServerSend(unordered_map<int, Client*> *_clients) {
+    ChatServerSend(vector<Client*> *_clients) {
         clients = _clients;
     }
     void WelcomeMessage(int toIndex);

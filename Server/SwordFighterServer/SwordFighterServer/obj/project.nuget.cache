@@ -1,14 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "bSZM/CF6TH3cqLilPPigsrU/PTK4PZZYAmRyx9V9R5wtIBHWZufH0RB9EBXDQN6dCs/iy0DIU/3I4sEVWPnpAg==",
+  "dgSpecHash": "42j4+DiE9yXdmruV1RHKIToAm7wZED+9avAIgFRJg07RjXJNBKFG8qb0OhIWrPhuvuf0tMMbtdPVoOJfEp6wSA==",
   "success": true,
   "projectFilePath": "D:\\Unity\\Project\\Sword Fighter\\Server\\SwordFighterServer\\SwordFighterServer\\SwordFighterServer.csproj",
   "expectedPackageFiles": [
-    "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder\\system.numerics.vectors\\4.5.0\\system.numerics.vectors.4.5.0.nupkg.sha512",
-    "C:\\Users\\강낭땅콩\\.nuget\\packages\\microsoft.netcore.app.host.win-x64\\3.1.27\\microsoft.netcore.app.host.win-x64.3.1.27.nupkg.sha512",
-    "C:\\Users\\강낭땅콩\\.nuget\\packages\\microsoft.aspnetcore.app.ref\\3.1.10\\microsoft.aspnetcore.app.ref.3.1.10.nupkg.sha512",
-    "C:\\Users\\강낭땅콩\\.nuget\\packages\\microsoft.windowsdesktop.app.ref\\3.1.0\\microsoft.windowsdesktop.app.ref.3.1.0.nupkg.sha512",
-    "C:\\Users\\강낭땅콩\\.nuget\\packages\\microsoft.netcore.app.ref\\3.1.0\\microsoft.netcore.app.ref.3.1.0.nupkg.sha512"
+    "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder\\system.numerics.vectors\\4.5.0\\system.numerics.vectors.4.5.0.nupkg.sha512"
   ],
   "logs": []
 }

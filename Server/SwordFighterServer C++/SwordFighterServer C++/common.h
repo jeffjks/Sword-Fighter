@@ -1,7 +1,6 @@
 //common.h
 #pragma once
 #pragma comment(lib,"ws2_32")
-#pragma warning(disable:4996)
 
 enum MessageType {
     ERROR_MESSAGE = -1,

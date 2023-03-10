@@ -52,6 +52,12 @@ public class ClientSend : MonoBehaviour
         }
     }
 
+    public static void PlayerAttack() {
+        using (Packet packet = new Packet((int) ClientPackets.playerAttack)) {
+            SendTCPData(packet);
+        }
+    }
+
     public static void ChangeHp(int hitPoints, int targetPlayer) {
         using (Packet packet = new Packet((int) ClientPackets.changeHp)) {
             packet.Write(hitPoints);

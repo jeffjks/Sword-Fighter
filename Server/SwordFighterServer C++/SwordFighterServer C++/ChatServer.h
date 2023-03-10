@@ -11,7 +11,8 @@ class ChatServer
 {
 private:
     SOCKET listenSocket;
-    unordered_map<int, Client*> clients; // 접속한 클라이언트 목록 (0 = 리스닝 소켓)
+    //unordered_map<int, Client*> clients; // 접속한 클라이언트 목록 (0 = 리스닝 소켓)
+    vector<Client*> clients;
 
     int total_socket_count = 0; // 활성화된 소켓 수
     WSAEVENT handle_array[MAX_PLAYERS + 1] = {};

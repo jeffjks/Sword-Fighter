@@ -217,17 +217,14 @@ namespace SwordFighterServer
             return position;
         }
 
-        public void ChangePlayerHp(int fromClient, int hitPoints) // 데미지 판정
+        public void ChangePlayerHp(int fromClient, int hitPoints) // 데미지 판정 (hitPoints : 체력 변화량)
         {
             if (hitPoints <= 0)
             {
                 if (state != 5 && !IsBlocking(fromClient))
                 {
-                    if (CheckDistance(fromClient))
-                    {
-                        this.hitPoints += hitPoints;
-                        ServerSend.PlayerHp(this);
-                    }
+                    this.hitPoints += hitPoints;
+                    ServerSend.PlayerHp(this);
                 }
             }
 
