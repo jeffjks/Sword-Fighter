@@ -36,16 +36,19 @@ public class ClientHandle : MonoBehaviour
         Vector3 position = packet.ReadVector3();
         Vector3 direction = packet.ReadVector3();
         //Quaternion rotation = packet.ReadQuaternion();
+        Vector3 deltaPos = packet.ReadVector3();
 
         //Debug.Log(id);
         if (Client.instance.myId == id) { // 자신 플레이어
             GameManager.instance.m_PlayerController.OnStateReceived(seqNum, position);
+            //Debug.Log(position);
         }
         else { // 다른 플레이어
             try {
                 GameManager.players[id].m_Movement = movement;
-                GameManager.players[id].transform.position = position;
+                GameManager.players[id].realPosition = position;
                 GameManager.players[id].direction = direction;
+                GameManager.players[id].deltaPos = deltaPos;
             }
             catch (KeyNotFoundException e) {
                 Debug.Log(e);

@@ -12,11 +12,13 @@ public abstract class PlayerManager : MonoBehaviour
     public UI_HpBar m_UI_HpBar;
     public int m_CurrentHp;
     public int m_MaxHp;
+    public Vector3 deltaPos;
 
     [HideInInspector] public Vector2Int m_MovementRaw = Vector2Int.zero;
     [HideInInspector] public Vector2 m_Movement = Vector2.zero;
     [HideInInspector] public Vector3 direction = Vector3.forward;
     [HideInInspector] public int m_State = 0;
+    [HideInInspector] public Vector3 realPosition;
 
     private string username;
     private bool m_CanMove = true;
@@ -74,22 +76,24 @@ public abstract class PlayerManager : MonoBehaviour
         if (m_State != 3) {
             Finish_DealDamage_Attack1();
         }
+        
+        InterpolatePosition();
 
         //Debug.Log(m_State);
     }
 
     private IEnumerator StartRoll() {
         Vector3 character_forward = Vector3.Normalize(new Vector3(m_CharacterModel.forward.x, 0, m_CharacterModel.forward.z));
-        Vector3 start_pos = transform.position;
-        Vector3 target_pos = transform.position + character_forward*ROLL_DISTANCE;
+        Vector3 start_pos = realPosition;
+        Vector3 target_pos = realPosition + character_forward*ROLL_DISTANCE;
         float ctime = 0f;
         float roll_time = 1f;
         Vector3 vel = Vector3.zero;
 
         while (ctime < roll_time) {
             float dt = (1f - Mathf.Cos(ctime*180f*Mathf.Deg2Rad)) / 2f;
-            transform.position = Vector3.Lerp(start_pos, target_pos, dt/roll_time);
-            transform.position = ClampPosition(transform.position);
+            realPosition = Vector3.Lerp(start_pos, target_pos, dt/roll_time);
+            realPosition = ClampPosition(realPosition);
 
             ctime += Time.deltaTime;
             yield return null;
@@ -138,5 +142,9 @@ public abstract class PlayerManager : MonoBehaviour
 
     public void SetUserNameUI(string username) {
         m_UI_HpBar.SetUserNameUI(username);
+    }
+
+    private void InterpolatePosition() {
+        transform.position = Vector3.Slerp(transform.position, realPosition, 0.15f);
     }
 }

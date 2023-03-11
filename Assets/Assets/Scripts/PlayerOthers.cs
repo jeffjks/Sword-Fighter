@@ -20,4 +20,20 @@ public class PlayerOthers : PlayerManager
     public override void Finish_DealDamage_Attack1() {
         return;
     }
+
+    void FixedUpdate() // Camera
+    {
+        ProcessMovement();
+    }
+
+    private Vector3 ProcessMovement() { // deltaPos에 기반한 이동
+        realPosition += deltaPos;
+        realPosition = ClampPosition(realPosition);
+        //transform.position = realPosition;
+
+        if (deltaPos == Vector3.zero) {
+            m_Movement = Vector2.zero;
+        }
+        return deltaPos;
+    }
 }

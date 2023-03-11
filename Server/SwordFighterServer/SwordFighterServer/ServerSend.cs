@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using static SwordFighterServer.Client;
 
 namespace SwordFighterServer
 {
@@ -29,7 +30,7 @@ namespace SwordFighterServer
             packet.WriteLength();
             for (int i = 1; i <= Server.MaxPlayers; ++i)
             {
-                if (Server.IsReady(fromId)) // SpawnPlayer 패킷을 보낸 플레이어에게만 전송
+                if (Server.IsReady(i)) // SpawnPlayer 패킷을 보낸 플레이어에게만 전송
                 {
                     if (i != exceptClient)
                     {
@@ -74,6 +75,7 @@ namespace SwordFighterServer
             packet.Write(clientInput.seqNum);
             packet.Write(player.position);
             packet.Write(player.direction);
+            packet.Write(clientInput.deltaPos);
 
             SendTCPDataToAll(player.id, packet);
             //SendTCPDataToAll(player.id, packet); // except
@@ -105,7 +107,7 @@ namespace SwordFighterServer
 
             packet.Write(playerId);
 
-            SendTCPDataToAll(playerId, packet);
+            SendTCPDataToAll(playerId, playerId, packet);
         }
         #endregion
     }

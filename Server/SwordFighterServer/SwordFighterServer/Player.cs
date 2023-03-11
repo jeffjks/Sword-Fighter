@@ -8,6 +8,7 @@ public struct ClientInput
     public int horizontal_raw;
     public int vertical_raw;
     public Vector3 cam_forward;
+    public Vector3 deltaPos;
 }
 
 // 서버 내 캐릭터 시뮬레이션
@@ -29,9 +30,14 @@ namespace SwordFighterServer
         public int state;
 
         private Queue<ClientInput> clientInputs = new Queue<ClientInput>();
+        private Vector3 currentDeltaPos;
+        private Vector3 previousDeltaPos;
+
         private LinkedList<DateTime> stateLinkedList = new LinkedList<DateTime>(); // 스킬 사용 후 종료 시점 기록용
         private int[] duration;
         private int[] input_state;
+
+        private bool tempFlag = false;
 
         public Player(int id, string username, Vector3 spawnPosition)
         {
@@ -44,7 +50,7 @@ namespace SwordFighterServer
             hitPoints = hitPoints_max;
             state = 0;
 
-            movement = new Vector2(0, 0);
+            movement = new Vector2(0, 0); // for animation
             inputs = new bool[4];
             duration = new int[4] { 1500, 800, 800, 1000 };
             input_state = new int[4] { 2, 3, 4, 5 };
@@ -67,21 +73,6 @@ namespace SwordFighterServer
                     ServerSend.PlayerState(this);
                 }
             }
-        }
-
-        private void Move()
-        {
-            while (clientInputs.Count > 0)
-            {
-                ClientInput clientInput = clientInputs.Peek();
-                position = ProcessMovement(position, clientInput);
-                if (clientInputs.Count == 1)
-                {
-                    ServerSend.PlayerMovement(this, clientInput);
-                }
-                clientInputs.Dequeue();
-            }
-            //ServerSend.PlayerRotation(this);
         }
 
         private void InputToState() // 클라이언트의 input을 감지하면 스킬 사용
@@ -157,37 +148,72 @@ namespace SwordFighterServer
             return (dot < 0); // 캐릭터의 방향을 계산하여 막기 판정
         }
 
-        private bool CheckDistance(int fromId) // 최소한의 피격 판정 검증
-        {
-            float distance = Vector3.Distance(Server.clients[fromId].player.position, position);
-            return (distance < 2.5f);
-        }
-
         public void SetInput(bool[] inputs)
         {
             this.inputs = inputs;
             InputToState();
         }
 
-        public void SetMovement(Vector2 movement, ClientInput clientInput, Vector3 direction)
+        private void Move()
+        {
+            while (clientInputs.Count > 0)
+            {
+                ClientInput clientInput = clientInputs.Peek();
+                currentDeltaPos = ProcessMovement(clientInput);
+                /*
+                if (Math.Abs(Vector3.Distance(clientInput.deltaPos, previousDeltaPos)) > 0f)
+                {
+                    ServerSend.PlayerMovement(this, clientInput);
+                    // Console.WriteLine(position);
+                }*/
+                ServerSend.PlayerMovement(this, clientInput);
+
+                clientInputs.Dequeue();
+                previousDeltaPos = clientInput.deltaPos;
+            }
+
+            position += currentDeltaPos;
+            position = ClampPosition(position);
+
+            if (currentDeltaPos == Vector3.Zero)
+            {
+                if (!tempFlag)
+                {
+                    tempFlag = true;
+
+                    //Console.WriteLine("Special: " + position);
+                }
+            }
+            else
+            {
+                tempFlag = false;
+            }
+            //Console.WriteLine(position);
+            //ServerSend.PlayerRotation(this);
+        }
+
+        public void SetMovement(Vector2 movement, ClientInput clientInput, Vector3 position, Vector3 direction)
         {
             this.movement = movement;
+            this.position = position;
             clientInputs.Enqueue(clientInput);
             this.direction = direction;
         }
 
-        private Vector3 ProcessMovement(Vector3 pos, ClientInput clientInput)
+        private Vector3 ProcessMovement(ClientInput clientInput)
         {
+            /*
             if ((clientInput.horizontal_raw == 0 && clientInput.vertical_raw == 0))
             {
-                return pos;
-            }
-            
-            Vector3 cam_right = Vector3.Cross(clientInput.cam_forward, new Vector3(0, -1, 0));
-            pos += (cam_right * clientInput.horizontal_raw + clientInput.cam_forward * clientInput.vertical_raw) * Constants.SPEED;
+                return Vector3.Zero;
+            }*/
 
-            pos = ClampPosition(pos);
-            return pos;
+            //Vector3 cam_right = Vector3.Cross(clientInput.cam_forward, new Vector3(0, -1, 0));
+
+            //Vector3 deltaPos = (cam_right * clientInput.horizontal_raw + clientInput.cam_forward * clientInput.vertical_raw) * Constants.SPEED;
+            Vector3 deltaPos = clientInput.deltaPos;
+
+            return deltaPos;
         }
 
         private Vector3 GetRollDestination(Vector3 position)

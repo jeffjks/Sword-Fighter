@@ -44,6 +44,7 @@ public class GameManager : MonoBehaviour
         playerManager.id = id;
         playerManager.m_CurrentHp = hp;
         playerManager.m_State = state;
+        playerManager.realPosition = position;
         playerManager.SetUserName(username);
         playerManager.Init();
         players.Add(id, playerManager);
