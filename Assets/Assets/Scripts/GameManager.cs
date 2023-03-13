@@ -35,7 +35,7 @@ public class GameManager : MonoBehaviour
 
         if (id == Client.instance.myId) {
             m_PlayerController = m_ObjectPooling.GetPlayerController();
-            playerManager = m_PlayerController.m_PlayerManager;
+            playerManager = m_PlayerController.m_PlayerMe;
         }
         else {
             playerManager = m_ObjectPooling.GetOppositePlayer();
@@ -45,6 +45,7 @@ public class GameManager : MonoBehaviour
         playerManager.m_CurrentHp = hp;
         playerManager.m_State = state;
         playerManager.realPosition = position;
+        playerManager.transform.position = position;
         playerManager.SetUserName(username);
         playerManager.Init();
         players.Add(id, playerManager);

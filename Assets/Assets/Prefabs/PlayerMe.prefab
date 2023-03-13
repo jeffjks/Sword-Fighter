@@ -2069,7 +2069,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 435569bd339117541aa0cbabd925bba4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_PlayerManager: {fileID: 3308443238430782296}
+  m_PlayerMe: {fileID: 3308443238430782296}
   m_CameraObject: {fileID: 8939089762944725779}
   m_CharacterModel: {fileID: 6708934368766509321}
 --- !u!114 &3308443238430782296

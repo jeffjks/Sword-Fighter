@@ -117,6 +117,8 @@ public abstract class PlayerManager : MonoBehaviour
 
     public abstract void Finish_DealDamage_Attack1();
 
+    public abstract void OnStateReceived(int seqNum, Vector2 movement, Vector3 position, Vector3 direction, Vector3 deltaPos);
+
     public Vector3 ClampPosition(Vector3 position)
     {
         return new Vector3

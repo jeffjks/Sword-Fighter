@@ -38,7 +38,7 @@ public class ClientSend : MonoBehaviour
         }
     }
 
-    public static void PlayerMovement(Vector2 movement, ClientInput clientInput) { // 움직임에 관련된 키 입력에 대한 패킷
+    public static void PlayerMovement(Vector2 movement, ClientInput clientInput, Vector3 position) { // 움직임에 관련된 키 입력에 대한 패킷
         using (Packet packet = new Packet((int) ClientPackets.playerMovement)) {
             packet.Write(movement);
             packet.Write(clientInput.seqNum);
@@ -46,8 +46,8 @@ public class ClientSend : MonoBehaviour
             packet.Write(clientInput.vertical_raw);
             packet.Write(clientInput.cam_forward);
             packet.Write(clientInput.deltaPos);
-            packet.Write(GameManager.players[Client.instance.myId].realPosition);
-            packet.Write(GameManager.players[Client.instance.myId].m_CharacterModel.forward);
+            packet.Write(position);
+            packet.Write(clientInput.cam_forward);
 
             SendTCPData(packet);
         }

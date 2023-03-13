@@ -2208,17 +2208,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Animator: {fileID: 6102899817224009438}
   id: 0
-  username: 
   m_CharacterModel: {fileID: 6708934368766509321}
   m_PlayerCollider: {fileID: 8175596087537603009}
   m_Sword: {fileID: 7804646330452927711}
   m_UI_HpBar: {fileID: 8940025436619616354}
   m_CurrentHp: 100
   m_MaxHp: 100
+  deltaPos: {x: 0, y: 0, z: 0}
   m_MovementRaw: {x: 0, y: 0}
   m_Movement: {x: 0, y: 0}
   direction: {x: 0, y: 0, z: 1}
   m_State: 0
+  realPosition: {x: 0, y: 0, z: 0}
 --- !u!1 &6102899817233482916
 GameObject:
   m_ObjectHideFlags: 0

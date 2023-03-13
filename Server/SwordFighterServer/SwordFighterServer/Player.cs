@@ -160,12 +160,7 @@ namespace SwordFighterServer
             {
                 ClientInput clientInput = clientInputs.Peek();
                 currentDeltaPos = ProcessMovement(clientInput);
-                /*
-                if (Math.Abs(Vector3.Distance(clientInput.deltaPos, previousDeltaPos)) > 0f)
-                {
-                    ServerSend.PlayerMovement(this, clientInput);
-                    // Console.WriteLine(position);
-                }*/
+
                 ServerSend.PlayerMovement(this, clientInput);
 
                 clientInputs.Dequeue();
@@ -202,15 +197,6 @@ namespace SwordFighterServer
 
         private Vector3 ProcessMovement(ClientInput clientInput)
         {
-            /*
-            if ((clientInput.horizontal_raw == 0 && clientInput.vertical_raw == 0))
-            {
-                return Vector3.Zero;
-            }*/
-
-            //Vector3 cam_right = Vector3.Cross(clientInput.cam_forward, new Vector3(0, -1, 0));
-
-            //Vector3 deltaPos = (cam_right * clientInput.horizontal_raw + clientInput.cam_forward * clientInput.vertical_raw) * Constants.SPEED;
             Vector3 deltaPos = clientInput.deltaPos;
 
             return deltaPos;

@@ -40,15 +40,12 @@ public class ClientHandle : MonoBehaviour
 
         //Debug.Log(id);
         if (Client.instance.myId == id) { // 자신 플레이어
-            GameManager.instance.m_PlayerController.OnStateReceived(seqNum, position);
+            GameManager.players[id].OnStateReceived(seqNum, movement, position, direction, deltaPos);
             //Debug.Log(position);
         }
         else { // 다른 플레이어
             try {
-                GameManager.players[id].m_Movement = movement;
-                GameManager.players[id].realPosition = position;
-                GameManager.players[id].direction = direction;
-                GameManager.players[id].deltaPos = deltaPos;
+                GameManager.players[id].OnStateReceived(seqNum, movement, position, direction, deltaPos);
             }
             catch (KeyNotFoundException e) {
                 Debug.Log(e);
