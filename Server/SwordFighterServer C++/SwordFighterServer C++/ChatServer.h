@@ -12,7 +12,7 @@ class ChatServer
 private:
     SOCKET listenSocket;
     //unordered_map<int, Client*> clients; // 접속한 클라이언트 목록 (0 = 리스닝 소켓)
-    vector<Client*> clients;
+    vector<Client*> clients = vector<Client*>(MAX_PLAYERS + 1); // 최대 인원수만큼 미리 Client 벡터 할당
 
     int total_socket_count = 0; // 활성화된 소켓 수
     WSAEVENT handle_array[MAX_PLAYERS + 1] = {};

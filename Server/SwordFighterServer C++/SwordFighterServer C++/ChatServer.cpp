@@ -37,7 +37,7 @@ void ChatServer::AcceptClient(int index) {
         return;
     }
 
-    for (int i = 1; i <= MAX_PLAYERS; i++) // 비어있는 가장 첫 clients Dictionary에 배정
+    for (int i = 1; i <= MAX_PLAYERS; i++) // 비어있는 가장 첫 clients vector에 배정
     {
         if (clients[i]->clientSocket == INVALID_SOCKET)
         {
@@ -121,8 +121,6 @@ int ChatServer::Start() {
         WSACleanup();
         return -4;
     }
-
-    clients = vector<Client*>(MAX_PLAYERS + 1); // 최대 인원수만큼 미리 Client 벡터 할당
 
     //WSAEVENT wsaEvent = WSACreateEvent();
     handle_array[0] = WSACreateEvent();
