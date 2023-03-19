@@ -22,13 +22,11 @@ public:
 
     Client(int _index, ChatServerHandle *_chatServerHandle) : index(_index) {
         chatServerHandle = _chatServerHandle;
-        cout << "Client Init 2" << endl;
     }
 
     Client(SOCKET _clientSocket, ChatServerHandle *_chatServerHandle) : index(0) {
         clientSocket = _clientSocket;
         chatServerHandle = _chatServerHandle;
-        cout << "Client Init 3" << endl;
     }
 
     void SetUserData(int _id, string _username);
