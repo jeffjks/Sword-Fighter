@@ -62,8 +62,8 @@ public class PlayerController : MonoBehaviour
 
     private IEnumerator PlayerMovementDelay(Vector2 movement, ClientInput clientInput, Vector3 realPosition) {
         float randomNum = 0f;
-        if (clientInput.deltaPos == Vector3.zero) {
-            randomNum = 1f;
+        if (clientInput.deltaPos == Vector3.zero) { // 핑 테스트용
+            randomNum = 0.5f;
         }
         yield return new WaitForSeconds(randomNum);
         ClientSend.PlayerMovement(movement, clientInput, realPosition);
