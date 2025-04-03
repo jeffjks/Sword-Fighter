@@ -12,3 +12,17 @@ D:\Unity\Project\Sword Fighter\Server\SwordFighterServer\SwordFighterServer\obj\
 D:\Unity\Project\Sword Fighter\Server\SwordFighterServer\SwordFighterServer\obj\Debug\netcoreapp3.1\SwordFighterServer.dll
 D:\Unity\Project\Sword Fighter\Server\SwordFighterServer\SwordFighterServer\obj\Debug\netcoreapp3.1\SwordFighterServer.pdb
 D:\Unity\Project\Sword Fighter\Server\SwordFighterServer\SwordFighterServer\obj\Debug\netcoreapp3.1\SwordFighterServer.genruntimeconfig.cache
+C:\Program Files\Unity\Project\Sword-Fighter\Server\SwordFighterServer\SwordFighterServer\bin\Debug\netcoreapp3.1\SwordFighterServer.exe
+C:\Program Files\Unity\Project\Sword-Fighter\Server\SwordFighterServer\SwordFighterServer\bin\Debug\netcoreapp3.1\SwordFighterServer.deps.json
+C:\Program Files\Unity\Project\Sword-Fighter\Server\SwordFighterServer\SwordFighterServer\bin\Debug\netcoreapp3.1\SwordFighterServer.runtimeconfig.json
+C:\Program Files\Unity\Project\Sword-Fighter\Server\SwordFighterServer\SwordFighterServer\bin\Debug\netcoreapp3.1\SwordFighterServer.runtimeconfig.dev.json
+C:\Program Files\Unity\Project\Sword-Fighter\Server\SwordFighterServer\SwordFighterServer\bin\Debug\netcoreapp3.1\SwordFighterServer.dll
+C:\Program Files\Unity\Project\Sword-Fighter\Server\SwordFighterServer\SwordFighterServer\bin\Debug\netcoreapp3.1\SwordFighterServer.pdb
+C:\Program Files\Unity\Project\Sword-Fighter\Server\SwordFighterServer\SwordFighterServer\obj\Debug\netcoreapp3.1\SwordFighterServer.GeneratedMSBuildEditorConfig.editorconfig
+C:\Program Files\Unity\Project\Sword-Fighter\Server\SwordFighterServer\SwordFighterServer\obj\Debug\netcoreapp3.1\SwordFighterServer.AssemblyInfoInputs.cache
+C:\Program Files\Unity\Project\Sword-Fighter\Server\SwordFighterServer\SwordFighterServer\obj\Debug\netcoreapp3.1\SwordFighterServer.AssemblyInfo.cs
+C:\Program Files\Unity\Project\Sword-Fighter\Server\SwordFighterServer\SwordFighterServer\obj\Debug\netcoreapp3.1\SwordFighterServer.csproj.CoreCompileInputs.cache
+C:\Program Files\Unity\Project\Sword-Fighter\Server\SwordFighterServer\SwordFighterServer\obj\Debug\netcoreapp3.1\SwordFighterServer.sourcelink.json
+C:\Program Files\Unity\Project\Sword-Fighter\Server\SwordFighterServer\SwordFighterServer\obj\Debug\netcoreapp3.1\SwordFighterServer.dll
+C:\Program Files\Unity\Project\Sword-Fighter\Server\SwordFighterServer\SwordFighterServer\obj\Debug\netcoreapp3.1\SwordFighterServer.pdb
+C:\Program Files\Unity\Project\Sword-Fighter\Server\SwordFighterServer\SwordFighterServer\obj\Debug\netcoreapp3.1\SwordFighterServer.genruntimeconfig.cache

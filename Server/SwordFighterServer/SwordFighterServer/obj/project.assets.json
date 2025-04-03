@@ -75,11 +75,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\Unity\\Project\\Sword Fighter\\Server\\SwordFighterServer\\SwordFighterServer\\SwordFighterServer.csproj",
+      "projectUniqueName": "C:\\Program Files\\Unity\\Project\\Sword-Fighter\\Server\\SwordFighterServer\\SwordFighterServer\\SwordFighterServer.csproj",
       "projectName": "SwordFighterServer",
-      "projectPath": "D:\\Unity\\Project\\Sword Fighter\\Server\\SwordFighterServer\\SwordFighterServer\\SwordFighterServer.csproj",
+      "projectPath": "C:\\Program Files\\Unity\\Project\\Sword-Fighter\\Server\\SwordFighterServer\\SwordFighterServer\\SwordFighterServer.csproj",
       "packagesPath": "C:\\Users\\강낭땅콩\\.nuget\\packages\\",
-      "outputPath": "D:\\Unity\\Project\\Sword Fighter\\Server\\SwordFighterServer\\SwordFighterServer\\obj\\",
+      "outputPath": "C:\\Program Files\\Unity\\Project\\Sword-Fighter\\Server\\SwordFighterServer\\SwordFighterServer\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "D:\\Microsoft Visual Studio\\Shared\\NuGetPackages",
@@ -135,7 +135,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.102\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.100\\RuntimeIdentifierGraph.json"
       }
     }
   }
