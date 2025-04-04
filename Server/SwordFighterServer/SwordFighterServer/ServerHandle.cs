@@ -40,6 +40,8 @@ namespace SwordFighterServer
 
         public static void PlayerInput(int fromClient, Packet packet) // 플레이어의 스킬 사용 input
         {
+            var timestamp = packet.ReadFloat();
+
             bool[] inputs = new bool[packet.ReadInt()];
             for (int i = 0; i < inputs.Length; ++i)
             {
@@ -48,14 +50,12 @@ namespace SwordFighterServer
 
             if (Server.clients[fromClient].player != null)
             {
-                Server.clients[fromClient].player.SetInput(inputs);
+                Server.clients[fromClient].player.SetInput(timestamp, inputs);
             }
         }
 
         public static void PlayerMovement(int fromClient, Packet packet) // 플레이어의 움직임, 좌표, 방향 벡터
         {
-            Vector2 movement = packet.ReadVector2();
-
             ClientInput clientInput = new ClientInput()
             {
                 timestamp = packet.ReadFloat(),
@@ -71,7 +71,7 @@ namespace SwordFighterServer
 
             if (Server.clients[fromClient].player != null)
             {
-                Server.clients[fromClient].player.SetMovement(movement, clientInput, position, direction);
+                Server.clients[fromClient].player.SetMovement(clientInput, position, direction);
             }
         }
         public static void PlayerAttack(int fromClient, Packet packet) // 피격 판정 (반경 2.5의 반원 범위)

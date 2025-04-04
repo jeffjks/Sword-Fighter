@@ -36,23 +36,21 @@ public class ClientHandle : MonoBehaviour
         ClientSend.SpawnPlayerReceived(id);
     }
 
-    public static void PlayerMovement(Packet packet) {
+    public static void UpdatePlayer(Packet packet) {
         int id = packet.ReadInt();
 
-        Vector2 movement = packet.ReadVector2();
         float timestamp = packet.ReadFloat();
         Vector3 position = packet.ReadVector3();
         Vector3 direction = packet.ReadVector3();
-        //Quaternion rotation = packet.ReadQuaternion();
         Vector3 deltaPos = packet.ReadVector3();
 
         //Debug.Log(id);
         if (Client.instance.myId == id) { // 자신 플레이어
-            GameManager.players[id].OnStateReceived(timestamp, movement, position, direction, deltaPos);
+            GameManager.players[id].OnStateReceived(timestamp, position, direction, deltaPos);
         }
         else { // 다른 플레이어
             try {
-                GameManager.players[id].OnStateReceived(timestamp, movement, position, direction, deltaPos);
+                GameManager.players[id].OnStateReceived(timestamp, position, direction, deltaPos);
             }
             catch (KeyNotFoundException e) {
                 Debug.Log(e);

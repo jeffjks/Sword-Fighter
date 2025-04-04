@@ -32,7 +32,7 @@ public class Client : ClientBase
             { (int) ServerPackets.welcome, ClientHandle.Welcome },
             { (int) ServerPackets.requestServerTime, ClientHandle.RequestServerTime },
             { (int) ServerPackets.spawnPlayer, ClientHandle.SpawnPlayer },
-            { (int) ServerPackets.playerMovement, ClientHandle.PlayerMovement },
+            { (int) ServerPackets.updatePlayer, ClientHandle.UpdatePlayer },
             { (int) ServerPackets.playerState, ClientHandle.PlayerState },
             { (int) ServerPackets.playerHp, ClientHandle.PlayerHp },
             { (int) ServerPackets.playerDisconnected, ClientHandle.PlayerDisconnected },

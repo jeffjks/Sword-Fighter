@@ -31,8 +31,6 @@ public class PlayerController : MonoBehaviour
     private const int BUFFER_SIZE = 1024;
     private const float SPEED = 4.8f;
 
-    private string _filePath = "Assets/Resources/inputLog.txt";
-
     void Awake() {
         m_UIManager = GameManager.instance.m_UIManager;
     }
@@ -47,31 +45,27 @@ public class PlayerController : MonoBehaviour
             clientInput.vertical_raw = 0;
         }
 
-        m_PlayerMe.deltaPos = ProcessMovement(clientInput);
-        clientInput.deltaPos = m_PlayerMe.deltaPos;
-        Vector3 realPosition = m_PlayerMe.realPosition;
+        var deltaPos = GetDeltaPosition(clientInput);
+        m_PlayerMe.deltaPos = deltaPos;
+        clientInput.deltaPos = deltaPos;
 
-        using (StreamWriter writer = new StreamWriter(_filePath, append: true))
-        {
-            writer.WriteLine($"{clientInput.timestamp}: {clientInput.deltaPos}");
-        }
-
-        if (Mathf.Abs(Vector3.Distance(clientInput.deltaPos, previousDeltaPos)) > 0f) { // 변화가 있을때만 전송
-            //ClientSend.PlayerMovement(inputVector, clientInput, realPosition);
-            StartCoroutine(PlayerMovementDelay(inputVector, clientInput, realPosition));
+        if (Mathf.Abs(Vector3.Distance(deltaPos, previousDeltaPos)) > 0f) { // 변화가 있을때만 전송
+            //ClientSend.PlayerMovement(clientInput, realPosition);
+            StartCoroutine(PlayerMovementDelay(clientInput, m_PlayerMe.realPosition));
 
             previousDeltaPos = clientInput.deltaPos;
         }
         
         m_PlayerMe.q_inputTimeline.Enqueue(clientInput);
+        
+        ProcessMovement(clientInput, m_PlayerMe.deltaPos);
     }
 
-    private IEnumerator PlayerMovementDelay(Vector2 movement, ClientInput clientInput, Vector3 realPosition) {
+    private IEnumerator PlayerMovementDelay(ClientInput clientInput, Vector3 realPosition) {
         int randomNum = Random.Range(GameManager.instance.m_PingMin, GameManager.instance.m_PingMax); // 핑 테스트용
         if (randomNum > 0)
             yield return new WaitForSeconds(randomNum / 1000f);
-        ClientSend.PlayerMovement(movement, clientInput, realPosition);
-        //Debug.Log("B");
+        ClientSend.PlayerMovement(clientInput, realPosition);
         yield break;
     }
 
@@ -95,7 +89,8 @@ public class PlayerController : MonoBehaviour
             }
         }
         if (tmp) {
-            ClientSend.PlayerInput(inputs);
+            var timestamp = TimeSync.GetSyncTime();
+            ClientSend.PlayerInput(timestamp, inputs);
         }
 
         if (Input.GetButtonDown("Jump"))
@@ -153,7 +148,7 @@ public class PlayerController : MonoBehaviour
         //Debug.Log(m_State);
     }
 
-    private Vector3 ProcessMovement(ClientInput clientInput) { // 이동벡터 반환 및 이동
+    private Vector3 GetDeltaPosition(ClientInput clientInput) { // 이동벡터 반환 및 이동
         if ((clientInput.horizontal_raw == 0 && clientInput.vertical_raw == 0)) {
             return Vector3.zero;
         }
@@ -162,12 +157,16 @@ public class PlayerController : MonoBehaviour
         Vector3 cam_right = Vector3.Cross(clientInput.cam_forward, Vector3.down);
         Vector3 deltaPos = (cam_right*clientInput.horizontal_raw + clientInput.cam_forward*clientInput.vertical_raw)*SPEED / 30f;
         
+        return deltaPos;
+    }
+
+    private void ProcessMovement(ClientInput clientInput, Vector3 deltaPos)
+    {
         Quaternion rot = Quaternion.LookRotation(clientInput.cam_forward);
         m_CharacterModel.rotation = rot;
-        
+
         m_PlayerMe.realPosition += deltaPos;
         m_PlayerMe.realPosition = m_PlayerMe.ClampPosition(m_PlayerMe.realPosition);
         transform.position = m_PlayerMe.realPosition;
-        return deltaPos;
     }
 }

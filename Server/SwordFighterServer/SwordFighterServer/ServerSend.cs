@@ -74,17 +74,16 @@ namespace SwordFighterServer
             SendTCPData(toClient, packet);
         }
 
-        public static void PlayerMovement(Player player, ClientInput clientInput) // 플레이어 움직임, 좌표, 방향 패킷 전달
+        public static void UpdatePlayer(Player player, float timestamp) // 플레이어 움직임, 좌표, 방향 패킷 전달
         {
-            Packet packet = new Packet((int)ServerPackets.playerMovement);
+            Packet packet = new Packet((int)ServerPackets.updatePlayer);
 
             packet.Write(player.id);
 
-            packet.Write(player.movement);
-            packet.Write(clientInput.timestamp);
+            packet.Write(timestamp);
             packet.Write(player.position);
             packet.Write(player.direction);
-            packet.Write(clientInput.deltaPos);
+            packet.Write(player.deltaPos);
 
             SendTCPDataToAll(player.id, packet);
             //SendTCPDataToAll(player.id, packet); // except

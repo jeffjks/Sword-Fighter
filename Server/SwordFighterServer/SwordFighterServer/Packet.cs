@@ -11,7 +11,7 @@ namespace SwordFighterServer
         welcome = 1,
         requestServerTime,
         spawnPlayer,
-        playerMovement,
+        updatePlayer,
         playerState,
         playerHp,
         playerDisconnected

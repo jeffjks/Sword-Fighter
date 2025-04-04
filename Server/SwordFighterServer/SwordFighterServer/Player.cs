@@ -20,10 +20,10 @@ namespace SwordFighterServer
         public int id;
         public string username;
 
-        public Vector2 movement;
         public bool[] inputs;
         public Vector3 position;
         public Vector3 direction; // 방향 벡터
+        public Vector3 deltaPos;
         //public Quaternion rotation;
         public int hitPoints_max;
         public int hitPoints;
@@ -33,7 +33,6 @@ namespace SwordFighterServer
 
         private ClientInput lastClientInput;
         private Vector3 lastPosition;
-        private Vector3 currentDeltaPos;
 
         private LinkedList<DateTime> stateLinkedList = new LinkedList<DateTime>(); // 스킬 사용 후 종료 시점 기록용
         private int[] duration;
@@ -50,7 +49,6 @@ namespace SwordFighterServer
             hitPoints = hitPoints_max;
             state = 0;
 
-            movement = new Vector2(0, 0); // for animation
             inputs = new bool[4];
             duration = new int[4] { 1500, 800, 800, 1000 };
             input_state = new int[4] { 2, 3, 4, 5 };
@@ -75,11 +73,11 @@ namespace SwordFighterServer
             }
         }
 
-        private void InputToState() // 클라이언트의 input을 감지하면 스킬 사용
+        private void InputToState(float timestamp) // 클라이언트의 input을 감지하면 스킬 사용
         {
             if (0 <= state && state <= 1)
             {
-                SetState(inputs);
+                SetState(timestamp, inputs);
 
                 if (state > 1)
                 {
@@ -118,7 +116,7 @@ namespace SwordFighterServer
             }
         }
 
-        private void SetState(bool[] inputs) { // input에 따라 스킬 사용
+        private void SetState(float timestamp, bool[] inputs) { // input에 따라 스킬 사용
             for (int i = 0; i < inputs.Length; ++i)
             {
                 if (inputs[i])
@@ -131,6 +129,8 @@ namespace SwordFighterServer
                     if (i == 3) // Roll
                     {
                         position = GetRollDestination(position);
+                        lastPosition = position;
+                        ServerSend.UpdatePlayer(this, timestamp);
                     }
                     return;
                 }
@@ -148,10 +148,10 @@ namespace SwordFighterServer
             return (dot < 0); // 캐릭터의 방향을 계산하여 막기 판정
         }
 
-        public void SetInput(bool[] inputs)
+        public void SetInput(float timestamp, bool[] inputs)
         {
             this.inputs = inputs;
-            InputToState();
+            InputToState(timestamp);
         }
 
         private void Move()
@@ -171,10 +171,9 @@ namespace SwordFighterServer
 
                 lastPosition = position;
                 lastClientInput.timestamp = clientInput.timestamp;
+                deltaPos = clientInput.deltaPos;
 
-                ServerSend.PlayerMovement(this, clientInput);
-
-                var timestamp = Server.GetElapsedTimeInSeconds();
+                ServerSend.UpdatePlayer(this, clientInput.timestamp);
 
                 lastClientInput = clientInput;
             }
@@ -185,9 +184,8 @@ namespace SwordFighterServer
             position = ClampPosition(position);
         }
 
-        public void SetMovement(Vector2 movement, ClientInput clientInput, Vector3 position, Vector3 direction)
+        public void SetMovement(ClientInput clientInput, Vector3 position, Vector3 direction)
         {
-            this.movement = movement;
             //this.position = position;
             clientInputs.Enqueue(clientInput);
             this.direction = direction;

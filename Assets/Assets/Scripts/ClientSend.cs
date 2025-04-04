@@ -33,8 +33,9 @@ public class ClientSend : MonoBehaviour
         }
     }
 
-    public static void PlayerInput(bool[] inputs) { // 움직임을 제외한 나머지 키 입력에 대한 패킷 (스킬 등)
+    public static void PlayerInput(float timestamp, bool[] inputs) { // 움직임을 제외한 나머지 키 입력에 대한 패킷 (스킬 등)
         using (Packet packet = new Packet((int) ClientPackets.playerInput)) {
+            packet.Write(timestamp);
             packet.Write(inputs.Length);
             foreach (bool input in inputs) {
                 packet.Write(input);
@@ -44,9 +45,8 @@ public class ClientSend : MonoBehaviour
         }
     }
 
-    public static void PlayerMovement(Vector2 movement, ClientInput clientInput, Vector3 position) { // 움직임에 관련된 키 입력에 대한 패킷
+    public static void PlayerMovement(ClientInput clientInput, Vector3 position) { // 움직임에 관련된 키 입력에 대한 패킷
         using (Packet packet = new Packet((int) ClientPackets.playerMovement)) {
-            packet.Write(movement);
             packet.Write(clientInput.timestamp);
             packet.Write(clientInput.horizontal_raw);
             packet.Write(clientInput.vertical_raw);

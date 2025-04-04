@@ -4,13 +4,11 @@ using UnityEngine;
 
 public struct NextMovement
 {
-    public Vector2 movement;
     public Vector3 nextTarget;
     public Vector3 direction;
     public Vector3 deltaPos;
 
-    public NextMovement(Vector2 movement, Vector3 nextTarget, Vector3 direction, Vector3 deltaPos) {
-        this.movement = movement;
+    public NextMovement(Vector3 nextTarget, Vector3 direction, Vector3 deltaPos) {
         this.nextTarget = nextTarget;
         this.direction = direction;
         this.deltaPos = deltaPos;
@@ -40,12 +38,12 @@ public class PlayerOthers : PlayerManager
         return;
     }
 
-    public override void OnStateReceived(float timestamp, Vector2 movement, Vector3 position, Vector3 direction, Vector3 deltaPos) {
-        StartCoroutine(OnStateReceivedDelay(movement, position, direction, deltaPos));
+    public override void OnStateReceived(float timestamp, Vector3 position, Vector3 direction, Vector3 deltaPos) {
+        StartCoroutine(OnStateReceivedDelay(position, direction, deltaPos));
     }
 
-    private IEnumerator OnStateReceivedDelay(Vector2 movement, Vector3 position, Vector3 direction, Vector3 deltaPos) { // 받은 정보를 다음 예약 지점으로 설정
-        q_nextMovement.Enqueue(new NextMovement(movement, position, direction, deltaPos));
+    private IEnumerator OnStateReceivedDelay(Vector3 position, Vector3 direction, Vector3 deltaPos) { // 받은 정보를 다음 예약 지점으로 설정
+        q_nextMovement.Enqueue(new NextMovement(position, direction, deltaPos));
 
         /*
         if (this.deltaPos != Vector3.zero) {

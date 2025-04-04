@@ -84,11 +84,10 @@ public abstract class PlayerManager : MonoBehaviour
 
     private IEnumerator StartRoll() {
         Vector3 character_forward = Vector3.Normalize(new Vector3(m_CharacterModel.forward.x, 0, m_CharacterModel.forward.z));
-        Vector3 start_pos = realPosition;
-        Vector3 target_pos = realPosition + character_forward*ROLL_DISTANCE;
+        Vector3 start_pos = transform.position;
+        Vector3 target_pos = transform.position + character_forward*ROLL_DISTANCE;
         float ctime = 0f;
         float roll_time = 1f;
-        Vector3 vel = Vector3.zero;
 
         while (ctime < roll_time) {
             float dt = (1f - Mathf.Cos(ctime*180f*Mathf.Deg2Rad)) / 2f;
@@ -117,7 +116,7 @@ public abstract class PlayerManager : MonoBehaviour
 
     public abstract void Finish_DealDamage_Attack1();
 
-    public abstract void OnStateReceived(float timestamp, Vector2 movement, Vector3 position, Vector3 direction, Vector3 deltaPos);
+    public abstract void OnStateReceived(float timestamp, Vector3 position, Vector3 direction, Vector3 deltaPos);
 
     public Vector3 ClampPosition(Vector3 position)
     {

@@ -7,8 +7,6 @@ public class PlayerMe : PlayerManager
 {
     public readonly Queue<ClientInput> q_inputTimeline = new Queue<ClientInput>();
 
-    private string _filePath = "Assets/Resources/receivedLog.txt";
-
     void Awake() {
         m_UI_HpBar = GameManager.instance.m_UIManager.m_UI_HpBarMain;
     }
@@ -22,7 +20,7 @@ public class PlayerMe : PlayerManager
         //m_Sword.FinishDeal();
     }
 
-    public override void OnStateReceived(float timestamp, Vector2 movement, Vector3 position, Vector3 direction, Vector3 deltaPos)
+    public override void OnStateReceived(float timestamp, Vector3 position, Vector3 direction, Vector3 deltaPos)
     {
         while (q_inputTimeline.Count > 0 && q_inputTimeline.Peek().timestamp < timestamp) { // 처리된 요청은 삭제
             q_inputTimeline.Dequeue();
