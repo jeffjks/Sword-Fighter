@@ -1,10 +1,11 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.IO;
 
 public struct ClientInput
 {
-    public int seqNum;
+    public float timestamp;
     public int horizontal_raw;
     public int vertical_raw;
     public Vector3 cam_forward;
@@ -24,13 +25,13 @@ public class PlayerController : MonoBehaviour
     private Vector3 previousDeltaPos;
     
     private UIManager m_UIManager;
-    private float timer;
-    private int currentTick = 0;
     //private bool isReady = false;
     private const float TICKS_PER_SEC = 30f;
     private const float MS_PER_TICK = 1000f / TICKS_PER_SEC;
     private const int BUFFER_SIZE = 1024;
     private const float SPEED = 4.8f;
+
+    private string _filePath = "Assets/Resources/inputLog.txt";
 
     void Awake() {
         m_UIManager = GameManager.instance.m_UIManager;
@@ -50,6 +51,11 @@ public class PlayerController : MonoBehaviour
         clientInput.deltaPos = m_PlayerMe.deltaPos;
         Vector3 realPosition = m_PlayerMe.realPosition;
 
+        using (StreamWriter writer = new StreamWriter(_filePath, append: true))
+        {
+            writer.WriteLine($"{clientInput.timestamp}: {clientInput.deltaPos}");
+        }
+
         if (Mathf.Abs(Vector3.Distance(clientInput.deltaPos, previousDeltaPos)) > 0f) { // 변화가 있을때만 전송
             //ClientSend.PlayerMovement(inputVector, clientInput, realPosition);
             StartCoroutine(PlayerMovementDelay(inputVector, clientInput, realPosition));
@@ -61,11 +67,9 @@ public class PlayerController : MonoBehaviour
     }
 
     private IEnumerator PlayerMovementDelay(Vector2 movement, ClientInput clientInput, Vector3 realPosition) {
-        float randomNum = 0f;
-        if (clientInput.deltaPos == Vector3.zero) { // 핑 테스트용
-            randomNum = 0.5f;
-        }
-        yield return new WaitForSeconds(randomNum);
+        int randomNum = Random.Range(GameManager.instance.m_PingMin, GameManager.instance.m_PingMax); // 핑 테스트용
+        if (randomNum > 0)
+            yield return new WaitForSeconds(randomNum / 1000f);
         ClientSend.PlayerMovement(movement, clientInput, realPosition);
         //Debug.Log("B");
         yield break;
@@ -93,6 +97,11 @@ public class PlayerController : MonoBehaviour
         if (tmp) {
             ClientSend.PlayerInput(inputs);
         }
+
+        if (Input.GetButtonDown("Jump"))
+        {
+            m_PlayerMe.realPosition = new Vector3(m_PlayerMe.realPosition.x + 12f, m_PlayerMe.realPosition.y, m_PlayerMe.realPosition.z);
+        }
     }
 
     private void ControlPlayerMovement() {
@@ -105,7 +114,7 @@ public class PlayerController : MonoBehaviour
         Vector3 cam_forward = Vector3.Normalize(new Vector3(m_CameraObject.forward.x, 0, m_CameraObject.forward.z));
 
         ClientInput clientInput = new ClientInput {
-            seqNum = this.currentTick++,
+            timestamp = TimeSync.GetSyncTime(),
             horizontal_raw = inputVector_raw.x,
             vertical_raw = inputVector_raw.y,
             cam_forward = cam_forward,

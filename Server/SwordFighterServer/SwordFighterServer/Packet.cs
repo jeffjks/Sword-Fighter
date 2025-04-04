@@ -9,6 +9,7 @@ namespace SwordFighterServer
     public enum ServerPackets
     {
         welcome = 1,
+        requestServerTime,
         spawnPlayer,
         playerMovement,
         playerState,
@@ -20,6 +21,7 @@ namespace SwordFighterServer
     public enum ClientPackets
     {
         welcomeReceived = 1,
+        requestServerTime,
         spawnPlayerReceived,
         playerInput,
         playerMovement,

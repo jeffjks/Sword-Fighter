@@ -40,7 +40,7 @@ public class PlayerOthers : PlayerManager
         return;
     }
 
-    public override void OnStateReceived(int seqNum, Vector2 movement, Vector3 position, Vector3 direction, Vector3 deltaPos) {
+    public override void OnStateReceived(float timestamp, Vector2 movement, Vector3 position, Vector3 direction, Vector3 deltaPos) {
         StartCoroutine(OnStateReceivedDelay(movement, position, direction, deltaPos));
     }
 

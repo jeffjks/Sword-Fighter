@@ -48,7 +48,7 @@ namespace SwordFighterServer
 
                 stream.BeginRead(receiveBuffer, 0, dataBufferSize, ReceiveCallback, null);
 
-                ServerSend.Welcome(id, "Welcome to the server!");
+                ServerSend.Welcome(id, "Welcome to the server!", Server.GetElapsedTimeInSeconds());
             }
 
             public void SendData(Packet packet)
@@ -170,6 +170,13 @@ namespace SwordFighterServer
                     //client.SetReady(player.id);
                 }
             }
+        }
+
+        public void SendServerTime()
+        {
+            var serverTime = Server.GetElapsedTimeInSeconds();
+
+            ServerSend.SendServerTime(id, serverTime);
         }
 
         private void Disconnect()

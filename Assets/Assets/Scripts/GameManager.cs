@@ -12,6 +12,7 @@ public class GameManager : MonoBehaviour
     //public GameObject playerPrefab;
     public UIManager m_UIManager;
     public ObjectPooling m_ObjectPooling;
+    public int m_PingMin, m_PingMax;
 
     [HideInInspector]
     public PlayerController m_PlayerController;

@@ -30,6 +30,7 @@ public class Client : ClientBase
         packetHandlers = new Dictionary<int, PacketHandler>()
         {
             { (int) ServerPackets.welcome, ClientHandle.Welcome },
+            { (int) ServerPackets.requestServerTime, ClientHandle.RequestServerTime },
             { (int) ServerPackets.spawnPlayer, ClientHandle.SpawnPlayer },
             { (int) ServerPackets.playerMovement, ClientHandle.PlayerMovement },
             { (int) ServerPackets.playerState, ClientHandle.PlayerState },

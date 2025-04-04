@@ -10,6 +10,8 @@ namespace SwordFighterServer
 {
     class Server
     {
+        public static DateTime serverStartTime = DateTime.UtcNow;
+
         public static int MaxPlayers { get; private set; }
         public static int Port { get; private set; }
         public static int CurrentPlayers;
@@ -68,6 +70,7 @@ namespace SwordFighterServer
             packetHandlers = new Dictionary<int, PacketHandler>() // 패킷 종류에 따른 함수 포인터 설정
             {
                 { (int) ClientPackets.welcomeReceived, ServerHandle.WelcomeReceived },
+                { (int) ClientPackets.requestServerTime, ServerHandle.RequestServerTime },
                 { (int) ClientPackets.spawnPlayerReceived, ServerHandle.SpawnPlayerReceived },
                 { (int) ClientPackets.playerInput, ServerHandle.PlayerInput },
                 { (int) ClientPackets.playerMovement, ServerHandle.PlayerMovement },
@@ -87,6 +90,13 @@ namespace SwordFighterServer
         public static bool IsReady(int playerId)
         {
             return spawnedPlayers.Contains(playerId);
+        }
+
+        public static float GetElapsedTimeInSeconds()
+        {
+            TimeSpan elapsedTime = DateTime.UtcNow - serverStartTime;
+
+            return (float)elapsedTime.TotalSeconds;
         }
     }
 }

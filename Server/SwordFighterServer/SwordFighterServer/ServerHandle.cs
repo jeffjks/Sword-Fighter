@@ -24,6 +24,11 @@ namespace SwordFighterServer
             Server.clients[fromClient].SendIntoGame(username);
         }
 
+        public static void RequestServerTime(int fromClient, Packet packet)
+        {
+            Server.clients[fromClient].SendServerTime();
+        }
+
         public static void SpawnPlayerReceived(int fromClient, Packet packet)
         {
             int spawnedPlayerId = packet.ReadInt();
@@ -53,7 +58,7 @@ namespace SwordFighterServer
 
             ClientInput clientInput = new ClientInput()
             {
-                seqNum = packet.ReadInt(),
+                timestamp = packet.ReadFloat(),
                 horizontal_raw = packet.ReadInt(),
                 vertical_raw = packet.ReadInt(),
                 cam_forward = packet.ReadVector3(),

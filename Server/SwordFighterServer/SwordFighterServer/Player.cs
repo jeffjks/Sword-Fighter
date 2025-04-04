@@ -4,7 +4,7 @@ using System.Numerics;
 
 public struct ClientInput
 {
-    public int seqNum;
+    public float timestamp;
     public int horizontal_raw;
     public int vertical_raw;
     public Vector3 cam_forward;
@@ -30,14 +30,14 @@ namespace SwordFighterServer
         public int state;
 
         private Queue<ClientInput> clientInputs = new Queue<ClientInput>();
+
+        private ClientInput lastClientInput;
+        private Vector3 lastPosition;
         private Vector3 currentDeltaPos;
-        private Vector3 previousDeltaPos;
 
         private LinkedList<DateTime> stateLinkedList = new LinkedList<DateTime>(); // 스킬 사용 후 종료 시점 기록용
         private int[] duration;
         private int[] input_state;
-
-        private bool tempFlag = false;
 
         public Player(int id, string username, Vector3 spawnPosition)
         {
@@ -159,47 +159,38 @@ namespace SwordFighterServer
             while (clientInputs.Count > 0)
             {
                 ClientInput clientInput = clientInputs.Peek();
-                currentDeltaPos = ProcessMovement(clientInput);
+                clientInputs.Dequeue();
+
+                var deltaTime = (clientInput.timestamp - lastClientInput.timestamp);
+                //Console.WriteLine($"[{clientInput.timestamp}] {clientInput.deltaPos}");
+
+                if (deltaTime <= 0)
+                    continue;
+
+                position = lastPosition + lastClientInput.deltaPos * deltaTime * Constants.TICKS_PER_SEC;
+
+                lastPosition = position;
+                lastClientInput.timestamp = clientInput.timestamp;
 
                 ServerSend.PlayerMovement(this, clientInput);
 
-                clientInputs.Dequeue();
-                previousDeltaPos = clientInput.deltaPos;
+                var timestamp = Server.GetElapsedTimeInSeconds();
+
+                lastClientInput = clientInput;
             }
 
-            position += currentDeltaPos;
+            position += lastClientInput.deltaPos;
+            //Console.WriteLine($"{lastClientInput.deltaPos}");
+
             position = ClampPosition(position);
-
-            if (currentDeltaPos == Vector3.Zero)
-            {
-                if (!tempFlag)
-                {
-                    tempFlag = true;
-
-                    //Console.WriteLine("Special: " + position);
-                }
-            }
-            else
-            {
-                tempFlag = false;
-            }
-            //Console.WriteLine(position);
-            //ServerSend.PlayerRotation(this);
         }
 
         public void SetMovement(Vector2 movement, ClientInput clientInput, Vector3 position, Vector3 direction)
         {
             this.movement = movement;
-            this.position = position;
+            //this.position = position;
             clientInputs.Enqueue(clientInput);
             this.direction = direction;
-        }
-
-        private Vector3 ProcessMovement(ClientInput clientInput)
-        {
-            Vector3 deltaPos = clientInput.deltaPos;
-
-            return deltaPos;
         }
 
         private Vector3 GetRollDestination(Vector3 position)

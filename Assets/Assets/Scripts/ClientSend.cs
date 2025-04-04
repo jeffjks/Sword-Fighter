@@ -19,6 +19,12 @@ public class ClientSend : MonoBehaviour
         }
     }
 
+    public static void RequestServerTime() {
+        using (Packet packet = new Packet((int) ClientPackets.requestServerTime)) { // 패킷 생성 시 가장 앞 부분에 패킷id(종류) 삽입
+            SendTCPData(packet);
+        }
+    }
+
     public static void SpawnPlayerReceived(int id) {
         using (Packet packet = new Packet((int) ClientPackets.spawnPlayerReceived)) { // 패킷 생성 시 가장 앞 부분에 패킷id(종류) 삽입
             packet.Write(id);
@@ -41,7 +47,7 @@ public class ClientSend : MonoBehaviour
     public static void PlayerMovement(Vector2 movement, ClientInput clientInput, Vector3 position) { // 움직임에 관련된 키 입력에 대한 패킷
         using (Packet packet = new Packet((int) ClientPackets.playerMovement)) {
             packet.Write(movement);
-            packet.Write(clientInput.seqNum);
+            packet.Write(clientInput.timestamp);
             packet.Write(clientInput.horizontal_raw);
             packet.Write(clientInput.vertical_raw);
             packet.Write(clientInput.cam_forward);

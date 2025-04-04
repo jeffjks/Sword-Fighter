@@ -7,11 +7,19 @@ public class ClientHandle : MonoBehaviour
     public static void Welcome(Packet packet) { // msg 후 toClient 읽기
         string msg = packet.ReadString();
         int myId = packet.ReadInt();
+        float serverTime = packet.ReadFloat();
 
         Debug.Log($"Message from server: {msg}");
         Client.instance.myId = myId;
+        TimeSync.SetServerTime(serverTime);
 
         ClientSend.WelcomeReceived();
+    }
+
+    public static void RequestServerTime(Packet packet) {
+        float serverTime = packet.ReadFloat();
+        
+        TimeSync.SetServerTime(serverTime);
     }
 
     public static void SpawnPlayer(Packet packet) {
@@ -32,7 +40,7 @@ public class ClientHandle : MonoBehaviour
         int id = packet.ReadInt();
 
         Vector2 movement = packet.ReadVector2();
-        int seqNum = packet.ReadInt();
+        float timestamp = packet.ReadFloat();
         Vector3 position = packet.ReadVector3();
         Vector3 direction = packet.ReadVector3();
         //Quaternion rotation = packet.ReadQuaternion();
@@ -40,12 +48,11 @@ public class ClientHandle : MonoBehaviour
 
         //Debug.Log(id);
         if (Client.instance.myId == id) { // 자신 플레이어
-            GameManager.players[id].OnStateReceived(seqNum, movement, position, direction, deltaPos);
-            //Debug.Log(position);
+            GameManager.players[id].OnStateReceived(timestamp, movement, position, direction, deltaPos);
         }
         else { // 다른 플레이어
             try {
-                GameManager.players[id].OnStateReceived(seqNum, movement, position, direction, deltaPos);
+                GameManager.players[id].OnStateReceived(timestamp, movement, position, direction, deltaPos);
             }
             catch (KeyNotFoundException e) {
                 Debug.Log(e);
