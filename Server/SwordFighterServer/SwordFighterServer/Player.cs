@@ -4,7 +4,7 @@ using System.Numerics;
 
 public struct ClientInput
 {
-    public float timestamp;
+    public long timestamp;
     public int horizontal_raw;
     public int vertical_raw;
     public Vector3 cam_forward;
@@ -73,7 +73,7 @@ namespace SwordFighterServer
             }
         }
 
-        private void InputToState(float timestamp) // 클라이언트의 input을 감지하면 스킬 사용
+        private void InputToState(long timestamp) // 클라이언트의 input을 감지하면 스킬 사용
         {
             if (0 <= state && state <= 1)
             {
@@ -116,7 +116,7 @@ namespace SwordFighterServer
             }
         }
 
-        private void SetState(float timestamp, bool[] inputs) { // input에 따라 스킬 사용
+        private void SetState(long timestamp, bool[] inputs) { // input에 따라 스킬 사용
             for (int i = 0; i < inputs.Length; ++i)
             {
                 if (inputs[i])
@@ -148,7 +148,7 @@ namespace SwordFighterServer
             return (dot < 0); // 캐릭터의 방향을 계산하여 막기 판정
         }
 
-        public void SetInput(float timestamp, bool[] inputs)
+        public void SetInput(long timestamp, bool[] inputs)
         {
             this.inputs = inputs;
             InputToState(timestamp);
@@ -158,11 +158,9 @@ namespace SwordFighterServer
         {
             while (clientInputs.Count > 0)
             {
-                ClientInput clientInput = clientInputs.Peek();
-                clientInputs.Dequeue();
+                ClientInput clientInput = clientInputs.Dequeue();
 
                 var deltaTime = (clientInput.timestamp - lastClientInput.timestamp);
-                //Console.WriteLine($"[{clientInput.timestamp}] {clientInput.deltaPos}");
 
                 if (deltaTime <= 0)
                     continue;
@@ -179,7 +177,6 @@ namespace SwordFighterServer
             }
 
             position += lastClientInput.deltaPos;
-            //Console.WriteLine($"{lastClientInput.deltaPos}");
 
             position = ClampPosition(position);
         }

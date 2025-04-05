@@ -5,7 +5,7 @@ using System.IO;
 
 public struct ClientInput
 {
-    public float timestamp;
+    public long timestamp;
     public int horizontal_raw;
     public int vertical_raw;
     public Vector3 cam_forward;

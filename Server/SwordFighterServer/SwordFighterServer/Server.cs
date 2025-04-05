@@ -92,11 +92,11 @@ namespace SwordFighterServer
             return spawnedPlayers.Contains(playerId);
         }
 
-        public static float GetElapsedTimeInSeconds()
+        public static long GetUnixTime()
         {
-            TimeSpan elapsedTime = DateTime.UtcNow - serverStartTime;
+            var unixMs = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
 
-            return (float)elapsedTime.TotalSeconds;
+            return unixMs;
         }
     }
 }

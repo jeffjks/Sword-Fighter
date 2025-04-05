@@ -41,20 +41,21 @@ namespace SwordFighterServer
         }
 
         #region Packets
-        public static void Welcome(int toClient, string msg, float serverTime) {
+        public static void Welcome(int toClient, string msg) {
             Packet packet = new Packet((int)ServerPackets.welcome);
 
             packet.Write(msg);
             packet.Write(toClient);
-            packet.Write(serverTime);
 
             SendTCPData(toClient, packet);
         }
-        public static void SendServerTime(int toClient, float timestamp)
+
+        public static void SendServerTime(int toClient, long serverTime, long clientTime)
         {
             Packet packet = new Packet((int)ServerPackets.requestServerTime);
 
-            packet.Write(timestamp);
+            packet.Write(serverTime);
+            packet.Write(clientTime);
 
             SendTCPData(toClient, packet);
         }
@@ -74,7 +75,7 @@ namespace SwordFighterServer
             SendTCPData(toClient, packet);
         }
 
-        public static void UpdatePlayer(Player player, float timestamp) // 플레이어 움직임, 좌표, 방향 패킷 전달
+        public static void UpdatePlayer(Player player, long timestamp) // 플레이어 움직임, 좌표, 방향 패킷 전달
         {
             Packet packet = new Packet((int)ServerPackets.updatePlayer);
 

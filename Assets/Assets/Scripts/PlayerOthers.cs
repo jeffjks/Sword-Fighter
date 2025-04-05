@@ -38,7 +38,7 @@ public class PlayerOthers : PlayerManager
         return;
     }
 
-    public override void OnStateReceived(float timestamp, Vector3 position, Vector3 direction, Vector3 deltaPos) {
+    public override void OnStateReceived(long timestamp, Vector3 position, Vector3 direction, Vector3 deltaPos) {
         StartCoroutine(OnStateReceivedDelay(position, direction, deltaPos));
     }
 

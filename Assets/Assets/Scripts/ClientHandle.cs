@@ -7,19 +7,19 @@ public class ClientHandle : MonoBehaviour
     public static void Welcome(Packet packet) { // msg 후 toClient 읽기
         string msg = packet.ReadString();
         int myId = packet.ReadInt();
-        float serverTime = packet.ReadFloat();
 
         Debug.Log($"Message from server: {msg}");
         Client.instance.myId = myId;
-        TimeSync.SetServerTime(serverTime);
 
         ClientSend.WelcomeReceived();
+        ClientSend.RequestServerTime();
     }
 
     public static void RequestServerTime(Packet packet) {
-        float serverTime = packet.ReadFloat();
+        long serverTime = packet.ReadLong();
+        long clientTime = packet.ReadLong();
         
-        TimeSync.SetServerTime(serverTime);
+        TimeSync.SetServerTime(serverTime, clientTime);
     }
 
     public static void SpawnPlayer(Packet packet) {
@@ -39,7 +39,7 @@ public class ClientHandle : MonoBehaviour
     public static void UpdatePlayer(Packet packet) {
         int id = packet.ReadInt();
 
-        float timestamp = packet.ReadFloat();
+        var timestamp = packet.ReadLong();
         Vector3 position = packet.ReadVector3();
         Vector3 direction = packet.ReadVector3();
         Vector3 deltaPos = packet.ReadVector3();

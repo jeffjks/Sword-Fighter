@@ -21,6 +21,8 @@ public class ClientSend : MonoBehaviour
 
     public static void RequestServerTime() {
         using (Packet packet = new Packet((int) ClientPackets.requestServerTime)) { // 패킷 생성 시 가장 앞 부분에 패킷id(종류) 삽입
+            long clientTime = TimeSync.GetLocalUnixTime();
+            packet.Write(clientTime);
             SendTCPData(packet);
         }
     }
@@ -33,7 +35,7 @@ public class ClientSend : MonoBehaviour
         }
     }
 
-    public static void PlayerInput(float timestamp, bool[] inputs) { // 움직임을 제외한 나머지 키 입력에 대한 패킷 (스킬 등)
+    public static void PlayerInput(long timestamp, bool[] inputs) { // 움직임을 제외한 나머지 키 입력에 대한 패킷 (스킬 등)
         using (Packet packet = new Packet((int) ClientPackets.playerInput)) {
             packet.Write(timestamp);
             packet.Write(inputs.Length);

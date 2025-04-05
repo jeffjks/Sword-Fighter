@@ -66,7 +66,7 @@ namespace SwordFighterServer
 
         private void ReverseArray(ref byte[] array)
         {
-            Array.Copy(readableBuffer, readPos, array, 0, sizeof(int));
+            Array.Copy(readableBuffer, readPos, array, 0, array.Length);
             Array.Reverse(array);
         }
 

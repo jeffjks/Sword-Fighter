@@ -48,7 +48,7 @@ namespace SwordFighterServer
 
                 stream.BeginRead(receiveBuffer, 0, dataBufferSize, ReceiveCallback, null);
 
-                ServerSend.Welcome(id, "Welcome to the server!", Server.GetElapsedTimeInSeconds());
+                ServerSend.Welcome(id, "Welcome to the server!");
             }
 
             public void SendData(Packet packet)
@@ -172,11 +172,11 @@ namespace SwordFighterServer
             }
         }
 
-        public void SendServerTime()
+        public void SendServerTime(long clientTime)
         {
-            var serverTime = Server.GetElapsedTimeInSeconds();
+            var serverTime = Server.GetUnixTime();
 
-            ServerSend.SendServerTime(id, serverTime);
+            ServerSend.SendServerTime(id, serverTime, clientTime);
         }
 
         private void Disconnect()

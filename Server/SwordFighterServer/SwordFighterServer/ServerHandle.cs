@@ -26,7 +26,9 @@ namespace SwordFighterServer
 
         public static void RequestServerTime(int fromClient, Packet packet)
         {
-            Server.clients[fromClient].SendServerTime();
+            long clientTime = packet.ReadLong();
+
+            Server.clients[fromClient].SendServerTime(clientTime);
         }
 
         public static void SpawnPlayerReceived(int fromClient, Packet packet)
@@ -40,7 +42,7 @@ namespace SwordFighterServer
 
         public static void PlayerInput(int fromClient, Packet packet) // 플레이어의 스킬 사용 input
         {
-            var timestamp = packet.ReadFloat();
+            var timestamp = packet.ReadLong();
 
             bool[] inputs = new bool[packet.ReadInt()];
             for (int i = 0; i < inputs.Length; ++i)
@@ -58,7 +60,7 @@ namespace SwordFighterServer
         {
             ClientInput clientInput = new ClientInput()
             {
-                timestamp = packet.ReadFloat(),
+                timestamp = packet.ReadLong(),
                 horizontal_raw = packet.ReadInt(),
                 vertical_raw = packet.ReadInt(),
                 cam_forward = packet.ReadVector3(),
