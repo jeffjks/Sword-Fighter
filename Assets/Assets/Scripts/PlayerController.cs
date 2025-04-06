@@ -56,15 +56,15 @@ public class PlayerController : MonoBehaviour
             previousDeltaPos = clientInput.deltaPos;
         }
         
-        m_PlayerMe.q_inputTimeline.Enqueue(clientInput);
+        m_PlayerMe._clientInputQueue.Enqueue(clientInput);
         
         ProcessMovement(clientInput, m_PlayerMe.deltaPos);
     }
 
     private IEnumerator PlayerMovementDelay(ClientInput clientInput, Vector3 realPosition) {
-        int randomNum = Random.Range(GameManager.instance.m_PingMin, GameManager.instance.m_PingMax); // 핑 테스트용
-        if (randomNum > 0)
-            yield return new WaitForSeconds(randomNum / 1000f);
+        int ping = Random.Range(GameManager.instance.m_PingMin, GameManager.instance.m_PingMax) / 2;
+        if (ping > 0)
+            yield return new WaitForSeconds(ping / 1000f);
         ClientSend.PlayerMovement(clientInput, realPosition);
         yield break;
     }

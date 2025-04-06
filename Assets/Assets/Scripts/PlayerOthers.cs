@@ -2,14 +2,16 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public struct NextMovement
+public struct PlayerMovement
 {
-    public Vector3 nextTarget;
+    public long timestamp;
+    public Vector3 position;
     public Vector3 direction;
     public Vector3 deltaPos;
 
-    public NextMovement(Vector3 nextTarget, Vector3 direction, Vector3 deltaPos) {
-        this.nextTarget = nextTarget;
+    public PlayerMovement(long timestamp, Vector3 position, Vector3 direction, Vector3 deltaPos) {
+        this.timestamp = timestamp;
+        this.position = position;
         this.direction = direction;
         this.deltaPos = deltaPos;
     }
@@ -17,9 +19,9 @@ public struct NextMovement
 
 public class PlayerOthers : PlayerManager
 {
-    private readonly Queue<NextMovement> q_nextMovement = new Queue<NextMovement>();
+    private readonly Queue<PlayerMovement> _playerMovementQueue = new ();
     private Vector3 nextTargetPosition;
-    private const float DELAY = 0.2f;
+    private const float MaxPredictionTime = 0.5f;
 
     protected override void Update() {
         base.Update();
@@ -39,23 +41,16 @@ public class PlayerOthers : PlayerManager
     }
 
     public override void OnStateReceived(long timestamp, Vector3 position, Vector3 direction, Vector3 deltaPos) {
-        StartCoroutine(OnStateReceivedDelay(position, direction, deltaPos));
+        var playerMovement = new PlayerMovement(timestamp, position, direction, deltaPos);
+        StartCoroutine(OnStateReceivedDelay(playerMovement));
     }
 
-    private IEnumerator OnStateReceivedDelay(Vector3 position, Vector3 direction, Vector3 deltaPos) { // 받은 정보를 다음 예약 지점으로 설정
-        q_nextMovement.Enqueue(new NextMovement(position, direction, deltaPos));
+    private IEnumerator OnStateReceivedDelay(PlayerMovement playerMovement) {
+        int ping = Random.Range(GameManager.instance.m_PingMin, GameManager.instance.m_PingMax) / 2; // 핑 테스트용
+        if (ping > 0)
+            yield return new WaitForSeconds(ping / 1000f);
 
-        /*
-        if (this.deltaPos != Vector3.zero) {
-            q_nextMovement.Enqueue(new NextMovement(position, deltaPos));
-        }
-        else {
-            yield return new WaitForSeconds(randomNum);
-            m_Movement = movement;
-            this.direction = direction;
-            this.deltaPos = deltaPos;
-        }*/
-        yield break;
+        _playerMovementQueue.Enqueue(playerMovement);
     }
 
     private bool CheckFront(Vector3 direction, Vector3 target_pos) {
@@ -68,31 +63,22 @@ public class PlayerOthers : PlayerManager
         ProcessMovement();
     }
 
-    private void ProcessMovement() { // deltaPos에 기반한 이동
-        if (q_nextMovement.Count > 0) {
-            Vector3 r_deltaPos = q_nextMovement.Peek().deltaPos;
-            float sec = 0f;
+    private void ProcessMovement()
+    {
+        if (_playerMovementQueue.Count > 0)
+        {
+            var playerMovement = _playerMovementQueue.Dequeue();
 
-            if (r_deltaPos == Vector3.zero) { // 멈추는 명령이면 즉시 적용
-                sec = 0f;
-            }
-            else { // 이외의 명령이면 딜레이 적용
-                sec = DELAY;
-            }
-            StartCoroutine(SetMovement(q_nextMovement.Peek(), sec));
-            q_nextMovement.Dequeue();
+            long clientTime = TimeSync.GetSyncTime();
+            
+            direction = playerMovement.direction;
+            deltaPos = playerMovement.deltaPos;
+
+            float delaySec = Mathf.Clamp((clientTime - playerMovement.timestamp) / 1000f, 0f, MaxPredictionTime);
+            realPosition = playerMovement.position + deltaPos * delaySec;
         }
 
         realPosition += deltaPos;
-    }
-
-    private IEnumerator SetMovement(NextMovement nextMovement, float sec) { // 좌표 받으면 앞에 있을 경우 다음 예약 지점으로 설정
-        int time = (int) (sec*1000f);
-        yield return new WaitForSeconds(sec);
-        m_Movement = nextMovement.deltaPos;
-        this.realPosition = nextMovement.nextTarget;
-        this.direction = nextMovement.direction;
-        this.deltaPos = nextMovement.deltaPos;
-        yield break;
+        m_Movement = deltaPos;
     }
 }

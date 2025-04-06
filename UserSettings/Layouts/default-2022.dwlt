@@ -19,7 +19,7 @@ MonoBehaviour:
     width: 2560
     height: 1349
   m_ShowMode: 4
-  m_Title: Console
+  m_Title: Game
   m_RootView: {fileID: 7}
   m_MinSize: {x: 875, y: 300}
   m_MaxSize: {x: 10000, y: 10000}
@@ -366,9 +366,9 @@ MonoBehaviour:
     m_IsLocked: 0
   m_FolderTreeState:
     scrollPos: {x: 0, y: 0}
-    m_SelectedIDs: 245a0000
-    m_LastClickedID: 23076
-    m_ExpandedIDs: 00000000a4590000a6590000
+    m_SelectedIDs: a4610000
+    m_LastClickedID: 24996
+    m_ExpandedIDs: 00000000a4590000a659000000ca9a3bffffff7f
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -421,9 +421,9 @@ MonoBehaviour:
       m_Icon: {fileID: 0}
       m_ResourceFile: 
   m_ListAreaState:
-    m_SelectedInstanceIDs: dc550000
-    m_LastClickedInstanceID: 21980
-    m_HadKeyboardFocusLastEvent: 0
+    m_SelectedInstanceIDs: be110000
+    m_LastClickedInstanceID: 4542
+    m_HadKeyboardFocusLastEvent: 1
     m_ExpandedInstanceIDs: c6230000fa620000f46300001c63000000000000
     m_RenameOverlay:
       m_UserAcceptedRename: 0
@@ -538,9 +538,9 @@ MonoBehaviour:
   m_SceneHierarchy:
     m_TreeViewState:
       scrollPos: {x: 0, y: 0}
-      m_SelectedIDs: de550000
-      m_LastClickedID: 21982
-      m_ExpandedIDs: 26fbffff28fbffff30560000
+      m_SelectedIDs: 065d0000
+      m_LastClickedID: 23814
+      m_ExpandedIDs: caf3ffff24f4ffff98f6ffff28fbffff065d00000e5e0000
       m_RenameOverlay:
         m_UserAcceptedRename: 0
         m_Name: 

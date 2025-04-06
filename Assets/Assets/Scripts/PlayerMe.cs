@@ -5,7 +5,7 @@ using System.IO;
 
 public class PlayerMe : PlayerManager
 {
-    public readonly Queue<ClientInput> q_inputTimeline = new Queue<ClientInput>();
+    public readonly Queue<ClientInput> _clientInputQueue = new Queue<ClientInput>();
 
     void Awake() {
         m_UI_HpBar = GameManager.instance.m_UIManager.m_UI_HpBarMain;
@@ -22,13 +22,14 @@ public class PlayerMe : PlayerManager
 
     public override void OnStateReceived(long timestamp, Vector3 position, Vector3 direction, Vector3 deltaPos)
     {
-        while (q_inputTimeline.Count > 0 && q_inputTimeline.Peek().timestamp < timestamp) { // 처리된 요청은 삭제
-            q_inputTimeline.Dequeue();
+        while (_clientInputQueue.Count > 0 && _clientInputQueue.Peek().timestamp < timestamp) { // 처리된 요청은 삭제
+            _clientInputQueue.Dequeue();
         }
 
         Vector3 newState = position; // 서버로부터 받은 가장 최신 좌표
+        Debug.Log($"Received: {timestamp}, {position}, {deltaPos}");
         
-        foreach (var input in q_inputTimeline) { // 지금까지 input기록에 따라 시뮬레이션하여 현재 좌표 계산
+        foreach (var input in _clientInputQueue) { // 지금까지 input기록에 따라 시뮬레이션하여 현재 좌표 계산
             newState += input.deltaPos;
         }
 

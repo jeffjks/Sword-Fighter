@@ -39,8 +39,6 @@ public class TimeSync : MonoBehaviour
         _timeOffset = estimatedServerTime - clientReceiveTime;
         _waitingForResponse = false;
         _lastSyncTime = GetSyncTime();
-
-        Debug.Log($"[TimeSync] {serverTime}, {clientSendTime} / {clientReceiveTime}");
     }
 
     private void SyncServerTime()
