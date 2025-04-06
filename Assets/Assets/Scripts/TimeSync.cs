@@ -11,6 +11,8 @@ public class TimeSync : MonoBehaviour
 
     private const int RequestInterval = 5000;
 
+    public static event Action<int> Action_OnPingUpdate;
+
     private void Update()
     {
         if (!_waitingForResponse && GetSyncTime() - _lastSyncTime >= RequestInterval)
@@ -33,12 +35,14 @@ public class TimeSync : MonoBehaviour
     {
         var clientReceiveTime = GetLocalUnixTime();
         var rtt = clientReceiveTime - clientSendTime;
-        var oneWay = rtt / 2L;
+        var halfRtt = rtt / 2L;
 
-        long estimatedServerTime = serverTime + oneWay;
+        long estimatedServerTime = serverTime + halfRtt;
         _timeOffset = estimatedServerTime - clientReceiveTime;
         _waitingForResponse = false;
         _lastSyncTime = GetSyncTime();
+        
+        Action_OnPingUpdate?.Invoke((int) rtt);
     }
 
     private void SyncServerTime()

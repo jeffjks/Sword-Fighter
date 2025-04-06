@@ -13,6 +13,7 @@ public class GameManager : MonoBehaviour
     public UIManager m_UIManager;
     public ObjectPooling m_ObjectPooling;
     public int m_PingMin, m_PingMax;
+    public static bool IsDebugPing;
 
     [HideInInspector]
     public PlayerController m_PlayerController;
@@ -28,6 +29,8 @@ public class GameManager : MonoBehaviour
             Debug.Log("Instance already exists. Destroying object!");
             Destroy(this);
         }
+
+        IsDebugPing = m_PingMin != 0 || m_PingMax != 0;
     }
 
     public void SpawnPlayer(int id, string username, Vector3 position, Vector3 direction, int hp, int state) {

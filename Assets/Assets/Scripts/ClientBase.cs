@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 using System.Net.Sockets;
+using Cysharp.Threading.Tasks;
 
 public abstract class ClientBase : MonoBehaviour
 {
@@ -129,18 +130,24 @@ public abstract class ClientBase : MonoBehaviour
             while (0 < packetLength && packetLength <= receivedData.UnreadLength()) {
                 byte[] packetBytes = receivedData.ReadBytes(packetLength);
 
-                ThreadManager.ExecuteOnMainThread(() =>
+                if (GameManager.IsDebugPing)
                 {
-                    using (Packet packet = new Packet(packetBytes)) {
-                        int packetId = packet.ReadInt(); // 패킷 종류 (SpawnPlayer, PlayerMovement, ChatMessage 등)
-                        if (instance.IsConnected()) { // 접속 종료 시 패킷 처리 중지
-                            instance.packetHandlers[packetId](packet);
+                    HandlePacketWithDelay(packetBytes).Forget();
+                }
+                else
+                {
+                    ThreadManager.ExecuteOnMainThread(() =>
+                    {
+                        using (Packet packet = new Packet(packetBytes)) {
+                            int packetId = packet.ReadInt(); // 패킷 종류 (SpawnPlayer, PlayerMovement, ChatMessage 등)
+                            if (instance.IsConnected()) { // 접속 종료 시 패킷 처리 중지
+                                instance.packetHandlers[packetId](packet);
+                            }
                         }
-                    }
-                });
+                    });
+                }
 
                 packetLength = 0;
-                //Debug.Log(receivedData.UnreadLength());
 
                 if (receivedData.UnreadLength() >= 4) { // 아직 패킷 길이가 남아있음 = 동시에 여러 종류의 패킷이 들어왔을 경우
                     packetLength = receivedData.ReadInt(); // 읽은 Integer를 패킷 길이로 취급하여 패킷 읽기 계속 진행
@@ -154,6 +161,23 @@ public abstract class ClientBase : MonoBehaviour
                 return true;
             }
             return false;
+        }
+        
+        private async UniTaskVoid HandlePacketWithDelay(byte[] packetBytes)
+        {
+            await UniTask.SwitchToMainThread(); // 메인 스레드로 전환
+
+            int ping = UnityEngine.Random.Range(GameManager.instance.m_PingMin, GameManager.instance.m_PingMax) / 2;
+
+            if (ping > 0)
+                await UniTask.Delay(ping);
+
+            using (Packet packet = new Packet(packetBytes)) {
+                int packetId = packet.ReadInt();
+                if (instance.IsConnected()) {
+                    instance.packetHandlers[packetId](packet);
+                }
+            }
         }
 
         private void Disconnect() {

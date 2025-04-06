@@ -50,8 +50,8 @@ public class PlayerController : MonoBehaviour
         clientInput.deltaPos = deltaPos;
 
         if (Mathf.Abs(Vector3.Distance(deltaPos, previousDeltaPos)) > 0f) { // 변화가 있을때만 전송
-            //ClientSend.PlayerMovement(clientInput, realPosition);
-            StartCoroutine(PlayerMovementDelay(clientInput, m_PlayerMe.realPosition));
+            ClientSend.PlayerMovement(clientInput, m_PlayerMe.realPosition);
+            //StartCoroutine(PlayerMovementDelay(clientInput, m_PlayerMe.realPosition));
 
             previousDeltaPos = clientInput.deltaPos;
         }
