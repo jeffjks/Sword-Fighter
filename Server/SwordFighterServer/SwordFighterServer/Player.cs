@@ -165,7 +165,7 @@ namespace SwordFighterServer
                 if (deltaTime <= 0)
                     continue;
 
-                position = lastPosition + lastClientInput.deltaPos * deltaTime * Constants.TICKS_PER_SEC;
+                position = lastPosition + lastClientInput.deltaPos * (deltaTime * Constants.TICKS_PER_SEC / 1000f);
 
                 lastPosition = position;
                 lastClientInput.timestamp = clientInput.timestamp;
