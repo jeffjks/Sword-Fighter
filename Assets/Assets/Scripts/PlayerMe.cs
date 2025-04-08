@@ -20,9 +20,9 @@ public class PlayerMe : PlayerManager
         //m_Sword.FinishDeal();
     }
 
-    public override void OnStateReceived(long timestamp, Vector3 position, Vector3 direction, Vector3 deltaPos)
+    public override void OnStateReceived(Vector3 position, ClientInput clientInput)
     {
-        while (_clientInputQueue.Count > 0 && _clientInputQueue.Peek().timestamp < timestamp) { // 처리된 요청은 삭제
+        while (_clientInputQueue.Count > 0 && _clientInputQueue.Peek().timestamp < clientInput.timestamp) { // 처리된 요청은 삭제
             _clientInputQueue.Dequeue();
         }
 

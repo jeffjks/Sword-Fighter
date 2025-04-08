@@ -66,13 +66,12 @@ public class ClientSend : MonoBehaviour
 
     public static void PlayerMovement(ClientInput clientInput, Vector3 position) { // 움직임에 관련된 키 입력에 대한 패킷
         Packet packet = new ((int) ClientPackets.playerMovement);
+        Vector2Int movementRaw = clientInput.movementRaw;
         packet.Write(clientInput.timestamp);
-        packet.Write(clientInput.horizontal_raw);
-        packet.Write(clientInput.vertical_raw);
-        packet.Write(clientInput.cam_forward);
+        packet.Write(movementRaw);
+        packet.Write(clientInput.forwardDirection);
         packet.Write(clientInput.deltaPos);
         packet.Write(position);
-        packet.Write(clientInput.cam_forward);
 
         SendTCPData(packet);
     }

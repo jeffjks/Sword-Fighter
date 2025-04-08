@@ -6,10 +6,17 @@ using System.IO;
 public struct ClientInput
 {
     public long timestamp;
-    public int horizontal_raw;
-    public int vertical_raw;
-    public Vector3 cam_forward;
+    public Vector2Int movementRaw;
+    public Vector3 forwardDirection;
     public Vector3 deltaPos;
+
+    public ClientInput(long timestamp, Vector2Int movementRaw, Vector3 forwardDirection, Vector3 deltaPos)
+    {
+        this.timestamp = timestamp;
+        this.movementRaw = movementRaw;
+        this.forwardDirection = forwardDirection;
+        this.deltaPos = deltaPos;
+    }
 }
 
 public class PlayerController : MonoBehaviour
@@ -41,8 +48,7 @@ public class PlayerController : MonoBehaviour
         }
 
         if (m_PlayerMe.m_State > 1) {
-            clientInput.horizontal_raw = 0;
-            clientInput.vertical_raw = 0;
+            clientInput.movementRaw = Vector2Int.zero;
         }
 
         var deltaPos = GetDeltaPosition(clientInput);
@@ -84,6 +90,7 @@ public class PlayerController : MonoBehaviour
             ClientSend.PlayerInput(timestamp, inputs);
         }
 
+        // DEBUG
         if (Input.GetButtonDown("Jump"))
         {
             m_PlayerMe.realPosition = new Vector3(m_PlayerMe.realPosition.x + 12f, m_PlayerMe.realPosition.y, m_PlayerMe.realPosition.z);
@@ -97,13 +104,12 @@ public class PlayerController : MonoBehaviour
 
     void FixedUpdate() // Camera
     {
-        Vector3 cam_forward = Vector3.Normalize(new Vector3(m_CameraObject.forward.x, 0, m_CameraObject.forward.z));
+        Vector3 forwardDirection = Vector3.Normalize(new Vector3(m_CameraObject.forward.x, 0, m_CameraObject.forward.z));
 
         ClientInput clientInput = new ClientInput {
             timestamp = TimeSync.GetSyncTime(),
-            horizontal_raw = inputVector_raw.x,
-            vertical_raw = inputVector_raw.y,
-            cam_forward = cam_forward,
+            movementRaw = inputVector_raw,
+            forwardDirection = forwardDirection,
             deltaPos = Vector3.zero
         };
         /*
@@ -140,20 +146,20 @@ public class PlayerController : MonoBehaviour
     }
 
     private Vector3 GetDeltaPosition(ClientInput clientInput) { // 이동벡터 반환 및 이동
-        if ((clientInput.horizontal_raw == 0 && clientInput.vertical_raw == 0)) {
+        if ((clientInput.movementRaw == Vector2Int.zero)) {
             return Vector3.zero;
         }
         
         //m_PlayerMe.m_State = 1;
-        Vector3 cam_right = Vector3.Cross(clientInput.cam_forward, Vector3.down);
-        Vector3 deltaPos = (cam_right*clientInput.horizontal_raw + clientInput.cam_forward*clientInput.vertical_raw)*SPEED / 30f;
+        Vector3 cam_right = Vector3.Cross(clientInput.forwardDirection, Vector3.down);
+        Vector3 deltaPos = (cam_right*clientInput.movementRaw.x + clientInput.forwardDirection*clientInput.movementRaw.y)*SPEED / 30f;
         
         return deltaPos;
     }
 
     private void ProcessMovement(ClientInput clientInput, Vector3 deltaPos)
     {
-        Quaternion rot = Quaternion.LookRotation(clientInput.cam_forward);
+        Quaternion rot = Quaternion.LookRotation(clientInput.forwardDirection);
         m_CharacterModel.rotation = rot;
 
         m_PlayerMe.realPosition += deltaPos;

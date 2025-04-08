@@ -43,17 +43,31 @@ public class ClientHandle : MonoBehaviour
         Vector3 position = packet.ReadVector3();
         Vector3 direction = packet.ReadVector3();
         Vector3 deltaPos = packet.ReadVector3();
+        var clientInput = new ClientInput(timestamp, Vector2Int.zero, direction, deltaPos);
 
-        if (Client.instance.myId == id) { // 자신 플레이어
-            GameManager.players[id].OnStateReceived(timestamp, position, direction, deltaPos);
+        if (Client.instance.myId == id) {
+            GameManager.players[id].OnStateReceived(position, clientInput);
         }
         else { // 다른 플레이어
-            try {
-                GameManager.players[id].OnStateReceived(timestamp, position, direction, deltaPos);
-            }
-            catch (KeyNotFoundException e) {
-                Debug.Log(e);
-            }
+            Debug.LogError("Received UpdatePlayer Packet with Controller's PlayerID");
+        }
+    }
+
+    public static void BroadcastPlayer(Packet packet) {
+        int id = packet.ReadInt();
+
+        var timestamp = packet.ReadLong();
+        Vector3 position = packet.ReadVector3();
+        Vector3 direction = packet.ReadVector3();
+        Vector3 deltaPos = packet.ReadVector3();
+        Vector2Int movementRaw = Vector2Int.FloorToInt(packet.ReadVector2());
+        var clientInput = new ClientInput(timestamp, movementRaw, direction, deltaPos);
+
+        if (Client.instance.myId == id) { // 자신 플레이어
+            Debug.LogError("Received UpdatePlayer Packet with Other's PlayerID");
+        }
+        else { // 다른 플레이어
+            GameManager.players[id].OnStateReceived(position, clientInput);
         }
     }
 

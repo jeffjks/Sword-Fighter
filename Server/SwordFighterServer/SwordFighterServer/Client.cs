@@ -149,6 +149,7 @@ namespace SwordFighterServer
         public void SendIntoGame(string username) // 플레이어 접속 시 SpawnPlayer 패킷 전달
         {
             player = new Player(id, username, new Vector3(0, 0, 0));
+            Console.WriteLine($"Welcome! {id}");
 
             foreach (Client client in Server.clients.Values) // 상대방 캐릭 생성
             {

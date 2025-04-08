@@ -90,7 +90,7 @@ namespace SwordFighterServer
 
         public static void BroadcastPlayer(Player player) // 플레이어 움직임, 좌표, 방향 패킷 전달
         {
-            Packet packet = new Packet((int)ServerPackets.updatePlayer);
+            Packet packet = new Packet((int)ServerPackets.broadcastPlayer);
             var timestamp = Server.GetUnixTime();
             var playerID = player.id;
 
@@ -100,6 +100,7 @@ namespace SwordFighterServer
             packet.Write(player.position);
             packet.Write(player.direction);
             packet.Write(player.deltaPos);
+            packet.Write(player.movementRaw);
 
             SendTCPDataToAll(playerID, playerID, packet);
         }

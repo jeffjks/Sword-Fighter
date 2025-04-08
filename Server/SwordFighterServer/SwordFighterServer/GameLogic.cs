@@ -13,19 +13,23 @@ namespace SwordFighterServer
         public static void Update()
         {
             broadcastTimer += deltaTime;
+            bool isBroadcasting = broadcastTimer >= 1f / broadcastRate;
 
             foreach (Client client in Server.clients.Values)
             {
                 if (client.player != null)
                 {
                     client.player.Update();
-                    if (broadcastTimer >= 1f / broadcastRate)
+                    if (isBroadcasting)
                     {
                         client.player.BroadcastPlayer();
-                        broadcastTimer -= 1f / broadcastRate;
                     }
                 }
             }
+
+            if (isBroadcasting)
+                broadcastTimer -= 1f / broadcastRate;
+
             ThreadManager.UpdateMain();
         }
     }

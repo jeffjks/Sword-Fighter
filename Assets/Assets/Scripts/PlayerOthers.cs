@@ -45,16 +45,17 @@ public class PlayerOthers : PlayerManager
         return;
     }
 
-    public override void OnStateReceived(long timestamp, Vector3 position, Vector3 direction, Vector3 deltaPos) {
+    public override void OnStateReceived(Vector3 position, ClientInput clientInput) {
         long now = TimeSync.GetSyncTime();
-        int delay = Mathf.Clamp((int) (now - timestamp), 0, MaxPredictionTime); // 예측 제한 500ms
+        int delay = Mathf.Clamp((int) (now - clientInput.timestamp), 0, MaxPredictionTime); // 예측 제한 500ms
         
         _prevPosition = realPosition;
         _nextPosition = position + deltaPos * (delay / 1000f);
         _deltaPos = _nextPosition - position;
         _nextDeltaPos = deltaPos;
         _hasTarget = true;
-        this.direction = direction;
+        direction = clientInput.forwardDirection;
+        m_Movement = clientInput.movementRaw;
 
         //var playerMovement = new PlayerMovement(timestamp, position, deltaPos);
         //_playerMovementQueue.Enqueue(playerMovement);

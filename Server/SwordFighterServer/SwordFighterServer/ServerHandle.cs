@@ -61,19 +61,17 @@ namespace SwordFighterServer
             ClientInput clientInput = new ClientInput()
             {
                 timestamp = packet.ReadLong(),
-                horizontal_raw = packet.ReadInt(),
-                vertical_raw = packet.ReadInt(),
-                cam_forward = packet.ReadVector3(),
+                movementRaw = packet.ReadVector2(),
+                forwardDirection = packet.ReadVector3(),
                 deltaPos = packet.ReadVector3()
             };
 
             Vector3 position = packet.ReadVector3();
-            Vector3 direction = packet.ReadVector3();
             //Quaternion rotation = packet.ReadQuaternion();
 
             if (Server.clients[fromClient].player != null)
             {
-                Server.clients[fromClient].player.SetMovement(clientInput, position, direction);
+                Server.clients[fromClient].player.SetMovement(clientInput, position);
             }
         }
         public static void PlayerAttack(int fromClient, Packet packet) // 피격 판정 (반경 2.5의 반원 범위)

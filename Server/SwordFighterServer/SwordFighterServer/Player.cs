@@ -5,9 +5,8 @@ using System.Numerics;
 public struct ClientInput
 {
     public long timestamp;
-    public int horizontal_raw;
-    public int vertical_raw;
-    public Vector3 cam_forward;
+    public Vector2 movementRaw;
+    public Vector3 forwardDirection;
     public Vector3 deltaPos;
 }
 
@@ -24,7 +23,8 @@ namespace SwordFighterServer
         public Vector3 position;
         public Vector3 direction; // 방향 벡터
         public Vector3 deltaPos;
-        //public Quaternion rotation;
+        public Vector2 movementRaw;
+
         public int hitPoints_max;
         public int hitPoints;
         public int state;
@@ -167,6 +167,9 @@ namespace SwordFighterServer
 
                 position = lastPosition + lastClientInput.deltaPos * (deltaTime * Constants.TICKS_PER_SEC / 1000f);
 
+                direction = clientInput.forwardDirection;
+                movementRaw = clientInput.movementRaw;
+
                 lastPosition = position;
                 lastClientInput.timestamp = clientInput.timestamp;
                 deltaPos = clientInput.deltaPos;
@@ -186,11 +189,10 @@ namespace SwordFighterServer
             ServerSend.BroadcastPlayer(this);
         }
 
-        public void SetMovement(ClientInput clientInput, Vector3 position, Vector3 direction)
+        public void SetMovement(ClientInput clientInput, Vector3 position)
         {
             //this.position = position;
             clientInputs.Enqueue(clientInput);
-            this.direction = direction;
         }
 
         private Vector3 GetRollDestination(Vector3 position)

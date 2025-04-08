@@ -15,6 +15,7 @@ public enum ServerPackets
     requestServerTime,
     spawnPlayer,
     updatePlayer,
+    broadcastPlayer,
     playerState,
     playerHp,
     playerDisconnected
