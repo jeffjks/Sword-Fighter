@@ -146,6 +146,6 @@ public abstract class PlayerManager : MonoBehaviour
     }
 
     private void InterpolatePosition() {
-        transform.position = Vector3.Slerp(transform.position, realPosition, 0.15f);
+        transform.position = Vector3.Slerp(transform.position, realPosition, 0.25f);
     }
 }

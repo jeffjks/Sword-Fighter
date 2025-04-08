@@ -27,7 +27,7 @@ public class PlayerMe : PlayerManager
         }
 
         Vector3 newState = position; // 서버로부터 받은 가장 최신 좌표
-        Debug.Log($"Received: {timestamp}, {position}, {deltaPos}");
+        //Debug.Log($"Received: {timestamp}, {position}, {deltaPos}");
         
         foreach (var input in _clientInputQueue) { // 지금까지 input기록에 따라 시뮬레이션하여 현재 좌표 계산
             newState += input.deltaPos;

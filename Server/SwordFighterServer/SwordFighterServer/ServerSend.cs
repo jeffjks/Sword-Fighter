@@ -70,7 +70,6 @@ namespace SwordFighterServer
             packet.Write(player.direction);
             packet.Write(player.hitPoints);
             packet.Write(player.state);
-            //packet.Write(Server.CurrentPlayers);
 
             SendTCPData(toClient, packet);
         }

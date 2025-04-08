@@ -6,13 +6,15 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager instance;
 
-    public static Dictionary<int, PlayerManager> players = new Dictionary<int, PlayerManager>();
+    public static Dictionary<int, PlayerManager> players = new ();
 
     //public GameObject localPlayerPrefab;
     //public GameObject playerPrefab;
     public UIManager m_UIManager;
     public ObjectPooling m_ObjectPooling;
-    public int m_PingMin, m_PingMax;
+
+    [SerializeField] private int _pingMin, _pingMax;
+
     public static bool IsDebugPing;
 
     [HideInInspector]
@@ -30,7 +32,12 @@ public class GameManager : MonoBehaviour
             Destroy(this);
         }
 
-        IsDebugPing = m_PingMin != 0 || m_PingMax != 0;
+        IsDebugPing = _pingMin != 0 || _pingMax != 0;
+    }
+
+    public int GetDebugPing()
+    {
+        return Random.Range(_pingMin, _pingMax);
     }
 
     public void SpawnPlayer(int id, string username, Vector3 position, Vector3 direction, int hp, int state) {

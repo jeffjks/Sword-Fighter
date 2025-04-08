@@ -943,8 +943,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_UIManager: {fileID: 1045295599}
   m_ObjectPooling: {fileID: 1185269212}
-  m_PingMin: 500
-  m_PingMax: 500
+  _pingMin: 1000
+  _pingMax: 1000
   m_PlayerController: {fileID: 0}
 --- !u!114 &647720034
 MonoBehaviour:

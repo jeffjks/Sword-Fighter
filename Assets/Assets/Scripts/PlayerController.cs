@@ -51,7 +51,6 @@ public class PlayerController : MonoBehaviour
 
         if (Mathf.Abs(Vector3.Distance(deltaPos, previousDeltaPos)) > 0f) { // 변화가 있을때만 전송
             ClientSend.PlayerMovement(clientInput, m_PlayerMe.realPosition);
-            //StartCoroutine(PlayerMovementDelay(clientInput, m_PlayerMe.realPosition));
 
             previousDeltaPos = clientInput.deltaPos;
         }
@@ -59,14 +58,6 @@ public class PlayerController : MonoBehaviour
         m_PlayerMe._clientInputQueue.Enqueue(clientInput);
         
         ProcessMovement(clientInput, m_PlayerMe.deltaPos);
-    }
-
-    private IEnumerator PlayerMovementDelay(ClientInput clientInput, Vector3 realPosition) {
-        int ping = Random.Range(GameManager.instance.m_PingMin, GameManager.instance.m_PingMax) / 2;
-        if (ping > 0)
-            yield return new WaitForSeconds(ping / 1000f);
-        ClientSend.PlayerMovement(clientInput, realPosition);
-        yield break;
     }
 
     private void SendInputDataToServer() {
@@ -167,6 +158,6 @@ public class PlayerController : MonoBehaviour
 
         m_PlayerMe.realPosition += deltaPos;
         m_PlayerMe.realPosition = m_PlayerMe.ClampPosition(m_PlayerMe.realPosition);
-        transform.position = m_PlayerMe.realPosition;
+        //transform.position = m_PlayerMe.realPosition;
     }
 }

@@ -20,7 +20,7 @@ public class ClientSend : MonoBehaviour
 
     private static async UniTaskVoid SendTCPDataDelayed(Packet packet)
     {
-        int ping = Random.Range(GameManager.instance.m_PingMin, GameManager.instance.m_PingMax) / 2;
+        int ping = GameManager.instance.GetDebugPing() / 2;
 
         if (ping > 0)
             await UniTask.Delay(ping);
@@ -32,7 +32,7 @@ public class ClientSend : MonoBehaviour
 
     #region Packets
     public static void WelcomeReceived() {
-        Packet packet = new Packet((int) ClientPackets.welcomeReceived);
+        Packet packet = new ((int) ClientPackets.welcomeReceived);
         packet.Write(Client.instance.myId);
         packet.Write(UIManager.instance.m_UsernameField.text);
 
@@ -40,21 +40,21 @@ public class ClientSend : MonoBehaviour
     }
 
     public static void RequestServerTime() {
-        Packet packet = new Packet((int) ClientPackets.requestServerTime);
+        Packet packet = new ((int) ClientPackets.requestServerTime);
         long clientTime = TimeSync.GetLocalUnixTime();
         packet.Write(clientTime);
         SendTCPData(packet);
     }
 
     public static void SpawnPlayerReceived(int id) {
-        Packet packet = new Packet((int) ClientPackets.spawnPlayerReceived);
+        Packet packet = new ((int) ClientPackets.spawnPlayerReceived);
         packet.Write(id);
 
         SendTCPData(packet);
     }
 
     public static void PlayerInput(long timestamp, bool[] inputs) { // 움직임을 제외한 나머지 키 입력에 대한 패킷 (스킬 등)
-        Packet packet = new Packet((int) ClientPackets.playerInput);
+        Packet packet = new ((int) ClientPackets.playerInput);
         packet.Write(timestamp);
         packet.Write(inputs.Length);
         foreach (bool input in inputs) {
@@ -65,7 +65,7 @@ public class ClientSend : MonoBehaviour
     }
 
     public static void PlayerMovement(ClientInput clientInput, Vector3 position) { // 움직임에 관련된 키 입력에 대한 패킷
-        Packet packet = new Packet((int) ClientPackets.playerMovement);
+        Packet packet = new ((int) ClientPackets.playerMovement);
         packet.Write(clientInput.timestamp);
         packet.Write(clientInput.horizontal_raw);
         packet.Write(clientInput.vertical_raw);
@@ -78,12 +78,12 @@ public class ClientSend : MonoBehaviour
     }
 
     public static void PlayerAttack() {
-        Packet packet = new Packet((int) ClientPackets.playerAttack);
+        Packet packet = new ((int) ClientPackets.playerAttack);
         SendTCPData(packet);
     }
 
     public static void ChangeHp(int hitPoints, int targetPlayer) {
-        Packet packet = new Packet((int) ClientPackets.changeHp);
+        Packet packet = new ((int) ClientPackets.changeHp);
         packet.Write(hitPoints);
         packet.Write(targetPlayer);
 
