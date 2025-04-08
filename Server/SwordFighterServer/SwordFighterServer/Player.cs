@@ -130,7 +130,7 @@ namespace SwordFighterServer
                     {
                         position = GetRollDestination(position);
                         lastPosition = position;
-                        ServerSend.UpdatePlayer(this, timestamp);
+                        ServerSend.UpdatePlayer(id, this, timestamp);
                     }
                     return;
                 }
@@ -171,7 +171,7 @@ namespace SwordFighterServer
                 lastClientInput.timestamp = clientInput.timestamp;
                 deltaPos = clientInput.deltaPos;
 
-                ServerSend.UpdatePlayer(this, clientInput.timestamp);
+                ServerSend.UpdatePlayer(id, this, clientInput.timestamp);
 
                 lastClientInput = clientInput;
             }
@@ -179,6 +179,11 @@ namespace SwordFighterServer
             position += lastClientInput.deltaPos;
 
             position = ClampPosition(position);
+        }
+
+        public void BroadcastPlayer()
+        {
+            ServerSend.BroadcastPlayer(this);
         }
 
         public void SetMovement(ClientInput clientInput, Vector3 position, Vector3 direction)

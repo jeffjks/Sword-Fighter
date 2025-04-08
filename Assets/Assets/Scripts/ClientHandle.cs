@@ -44,7 +44,6 @@ public class ClientHandle : MonoBehaviour
         Vector3 direction = packet.ReadVector3();
         Vector3 deltaPos = packet.ReadVector3();
 
-        //Debug.Log(id);
         if (Client.instance.myId == id) { // 자신 플레이어
             GameManager.players[id].OnStateReceived(timestamp, position, direction, deltaPos);
         }

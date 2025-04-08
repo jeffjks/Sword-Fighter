@@ -6,25 +6,30 @@ public struct PlayerMovement
 {
     public long timestamp;
     public Vector3 position;
-    public Vector3 direction;
     public Vector3 deltaPos;
 
     public PlayerMovement(long timestamp, Vector3 position, Vector3 direction, Vector3 deltaPos) {
         this.timestamp = timestamp;
         this.position = position;
-        this.direction = direction;
         this.deltaPos = deltaPos;
     }
 }
 
 public class PlayerOthers : PlayerManager
 {
-    private readonly Queue<PlayerMovement> _playerMovementQueue = new ();
-    private Vector3 nextTargetPosition;
-    private const float MaxPredictionTime = 0.5f;
+    private Vector3 _prevPosition, _nextPosition;
+    private bool _hasTarget;
+    private Vector3 _deltaPos;
+    private Vector3 _nextDeltaPos;
+    private float _moveTimer;
+
+    private const int MaxPredictionTime = 500;
+    private const int UpdateInterval = 200;
 
     protected override void Update() {
         base.Update();
+
+        ProcessMovement();
         SetRotation();
     }
 
@@ -41,16 +46,18 @@ public class PlayerOthers : PlayerManager
     }
 
     public override void OnStateReceived(long timestamp, Vector3 position, Vector3 direction, Vector3 deltaPos) {
-        var playerMovement = new PlayerMovement(timestamp, position, direction, deltaPos);
-        StartCoroutine(OnStateReceivedDelay(playerMovement));
-    }
+        long now = TimeSync.GetSyncTime();
+        int delay = Mathf.Clamp((int) (now - timestamp), 0, MaxPredictionTime); // 예측 제한 500ms
+        
+        _prevPosition = realPosition;
+        _nextPosition = position + deltaPos * (delay / 1000f);
+        _deltaPos = _nextPosition - position;
+        _nextDeltaPos = deltaPos;
+        _hasTarget = true;
+        this.direction = direction;
 
-    private IEnumerator OnStateReceivedDelay(PlayerMovement playerMovement) {
-        int ping = Random.Range(GameManager.instance.m_PingMin, GameManager.instance.m_PingMax) / 2; // 핑 테스트용
-        if (ping > 0)
-            yield return new WaitForSeconds(ping / 1000f);
-
-        _playerMovementQueue.Enqueue(playerMovement);
+        //var playerMovement = new PlayerMovement(timestamp, position, deltaPos);
+        //_playerMovementQueue.Enqueue(playerMovement);
     }
 
     private bool CheckFront(Vector3 direction, Vector3 target_pos) {
@@ -58,27 +65,24 @@ public class PlayerOthers : PlayerManager
         return dot > 0;
     }
 
-    void FixedUpdate()
-    {
-        ProcessMovement();
-    }
-
     private void ProcessMovement()
     {
-        if (_playerMovementQueue.Count > 0)
+        if (!_hasTarget)
         {
-            var playerMovement = _playerMovementQueue.Dequeue();
-
-            long clientTime = TimeSync.GetSyncTime();
-            
-            direction = playerMovement.direction;
-            deltaPos = playerMovement.deltaPos;
-
-            float delaySec = Mathf.Clamp((clientTime - playerMovement.timestamp) / 1000f, 0f, MaxPredictionTime);
-            realPosition = playerMovement.position + deltaPos * delaySec;
+            realPosition += _deltaPos;
+            return;
         }
 
-        realPosition += deltaPos;
-        m_Movement = deltaPos;
+        _moveTimer += Time.deltaTime;
+        float t = _moveTimer / (UpdateInterval / 1000f);
+
+        if (t >= 1f)
+        {
+            t = 1f;
+            _hasTarget = false;
+            _deltaPos = _nextDeltaPos;
+        }
+
+        realPosition = Vector3.Lerp(_prevPosition, _nextPosition, t);
     }
 }

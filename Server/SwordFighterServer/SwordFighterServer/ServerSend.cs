@@ -74,7 +74,7 @@ namespace SwordFighterServer
             SendTCPData(toClient, packet);
         }
 
-        public static void UpdatePlayer(Player player, long timestamp) // 플레이어 움직임, 좌표, 방향 패킷 전달
+        public static void UpdatePlayer(int toClient, Player player, long timestamp) // 플레이어 움직임, 좌표, 방향 패킷 전달
         {
             Packet packet = new Packet((int)ServerPackets.updatePlayer);
 
@@ -85,8 +85,23 @@ namespace SwordFighterServer
             packet.Write(player.direction);
             packet.Write(player.deltaPos);
 
-            SendTCPDataToAll(player.id, packet);
-            //SendTCPDataToAll(player.id, packet); // except
+            SendTCPData(toClient, packet);
+        }
+
+        public static void BroadcastPlayer(Player player) // 플레이어 움직임, 좌표, 방향 패킷 전달
+        {
+            Packet packet = new Packet((int)ServerPackets.updatePlayer);
+            var timestamp = Server.GetUnixTime();
+            var playerID = player.id;
+
+            packet.Write(playerID);
+
+            packet.Write(timestamp);
+            packet.Write(player.position);
+            packet.Write(player.direction);
+            packet.Write(player.deltaPos);
+
+            SendTCPDataToAll(playerID, playerID, packet);
         }
 
         public static void PlayerState(Player player) // 플레이어 스킬 상태 패킷 전달
