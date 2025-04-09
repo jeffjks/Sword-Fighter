@@ -43,11 +43,11 @@ public class PlayerController : MonoBehaviour
     }
 
     private void SendMovementDataToServer(ClientInput clientInput) {
-        if (m_PlayerMe.m_State == -1) {
+        if (m_PlayerMe.m_State == PlayerSkill.Dead) {
             return;
         }
 
-        if (m_PlayerMe.m_State > 1) {
+        if (m_PlayerMe.m_State > PlayerSkill.Move) {
             clientInput.movementRaw = Vector2Int.zero;
         }
 
@@ -67,31 +67,24 @@ public class PlayerController : MonoBehaviour
     }
 
     private void SendInputDataToServer() {
-        if (m_PlayerMe.m_State > 1) {
+        if (m_PlayerMe.m_State > PlayerSkill.Move) {
             return;
         }
-        bool[] inputs = new bool[]
+
+        var timestamp = TimeSync.GetSyncTime();
+        if (Input.GetButtonDown("Attack1"))
         {
-            Input.GetButtonDown("Block"),
-            Input.GetButtonDown("Attack1"),
-            Input.GetButtonDown("Attack2"),
-            Input.GetButtonDown("Roll")
-        };
-
-        bool tmp = false;
-        foreach (bool input in inputs) {
-            if (input) {
-                tmp = true;
-                break;
-            }
+            ClientSend.PlayerSkill(timestamp, PlayerSkill.Attack1, GetForwardDirection());
         }
-        if (tmp) {
-            var timestamp = TimeSync.GetSyncTime();
-            ClientSend.PlayerInput(timestamp, inputs);
+        else if (Input.GetButtonDown("Block"))
+        {
+            ClientSend.PlayerSkill(timestamp, PlayerSkill.Block, GetForwardDirection());
         }
-
-        // DEBUG
-        if (Input.GetButtonDown("Jump"))
+        else if (Input.GetButtonDown("Roll"))
+        {
+            ClientSend.PlayerSkill(timestamp, PlayerSkill.Roll, GetForwardDirection());
+        }
+        else if (Input.GetButtonDown("Jump")) // DEBUG
         {
             m_PlayerMe.realPosition = new Vector3(m_PlayerMe.realPosition.x + 12f, m_PlayerMe.realPosition.y, m_PlayerMe.realPosition.z);
         }
@@ -102,9 +95,14 @@ public class PlayerController : MonoBehaviour
         m_PlayerMe.m_MovementRaw = inputVector_raw;
     }
 
+    private Vector3 GetForwardDirection()
+    {
+        return Vector3.Normalize(new Vector3(m_CameraObject.forward.x, 0, m_CameraObject.forward.z));
+    }
+
     void FixedUpdate() // Camera
     {
-        Vector3 forwardDirection = Vector3.Normalize(new Vector3(m_CameraObject.forward.x, 0, m_CameraObject.forward.z));
+        Vector3 forwardDirection = GetForwardDirection();
 
         ClientInput clientInput = new ClientInput {
             timestamp = TimeSync.GetSyncTime(),
@@ -133,7 +131,7 @@ public class PlayerController : MonoBehaviour
         ControlPlayerMovement();
         
 
-        if (m_PlayerMe.m_State == -1) {
+        if (m_PlayerMe.m_State == PlayerSkill.Dead) {
             return;
         }
 
@@ -159,8 +157,11 @@ public class PlayerController : MonoBehaviour
 
     private void ProcessMovement(ClientInput clientInput, Vector3 deltaPos)
     {
-        Quaternion rot = Quaternion.LookRotation(clientInput.forwardDirection);
-        m_CharacterModel.rotation = rot;
+        if (m_PlayerMe.m_State == PlayerSkill.Idle || m_PlayerMe.m_State == PlayerSkill.Move)
+        {
+            Quaternion rot = Quaternion.LookRotation(clientInput.forwardDirection);
+            m_CharacterModel.rotation = rot;
+        }
 
         m_PlayerMe.realPosition += deltaPos;
         m_PlayerMe.realPosition = m_PlayerMe.ClampPosition(m_PlayerMe.realPosition);

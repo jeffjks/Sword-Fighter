@@ -2,6 +2,18 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+
+public enum PlayerSkill
+{
+    Dead = -1,
+    Idle,
+    Move,
+    Block,
+    Attack1,
+    Attack2,
+    Roll
+}
+
 public abstract class PlayerManager : MonoBehaviour
 {
     public Animator m_Animator;
@@ -17,12 +29,11 @@ public abstract class PlayerManager : MonoBehaviour
     [HideInInspector] public Vector2Int m_MovementRaw = Vector2Int.zero;
     [HideInInspector] public Vector2 m_Movement = Vector2.zero;
     [HideInInspector] public Vector3 direction = Vector3.forward;
-    [HideInInspector] public int m_State = 0;
+    [HideInInspector] public PlayerSkill m_State = PlayerSkill.Idle;
     [HideInInspector] public Vector3 realPosition;
 
     private string username;
     private bool m_CanMove = true;
-    private bool m_IsRolling = false;
     private const float ROLL_DISTANCE = 5f;
 
     public void Init() {
@@ -31,10 +42,10 @@ public abstract class PlayerManager : MonoBehaviour
     }
 
     public bool IsDead() {
-        if (m_State == -1) {
+        if (m_State == PlayerSkill.Dead) {
             m_CanMove = false;
             m_PlayerCollider.enabled = false;
-            m_Animator.SetInteger("State", m_State);
+            m_Animator.SetInteger("State", (int)m_State);
             m_MovementRaw = Vector2Int.zero;
             m_Movement = Vector2.zero;
             return true;
@@ -48,32 +59,22 @@ public abstract class PlayerManager : MonoBehaviour
             return;
         }
 
-        if (m_State <= 1) {
+        if (m_State == PlayerSkill.Idle || m_State == PlayerSkill.Move) {
             if (m_Movement != Vector2.zero) {
                 if (m_CanMove) {
-                    m_State = 1;
+                    m_State = PlayerSkill.Move;
                 }
             }
             else {
-                m_State = 0;
+                m_State = PlayerSkill.Idle;
             }
-        }
-
-        if (m_State == 5) {
-            if (!m_IsRolling) {
-                StartCoroutine(StartRoll());
-                m_IsRolling = true;
-            }
-        }
-        else {
-            m_IsRolling = false;
         }
 
         m_Animator.SetFloat("MovementHorizontal", m_Movement.x);
         m_Animator.SetFloat("MovementVertical", m_Movement.y);
-        m_Animator.SetInteger("State", m_State);
+        m_Animator.SetInteger("State", (int)m_State);
 
-        if (m_State != 3) {
+        if (m_State != PlayerSkill.Attack1) {
             Finish_DealDamage_Attack1();
         }
         
@@ -82,12 +83,29 @@ public abstract class PlayerManager : MonoBehaviour
         //Debug.Log(m_State);
     }
 
-    private IEnumerator StartRoll() {
-        Vector3 character_forward = Vector3.Normalize(new Vector3(m_CharacterModel.forward.x, 0, m_CharacterModel.forward.z));
+    public void ExecutePlayerSkill(PlayerSkill playerSkill, Vector3 direction)
+    {
+        m_State = playerSkill;
+
+        switch(playerSkill)
+        {
+            case PlayerSkill.Roll:
+                StartRoll(direction);
+                break;
+        }
+    }
+
+    private void StartRoll(Vector3 direction)
+    {
+        StartCoroutine(RollCoroutine(direction));
+    }
+
+    private IEnumerator RollCoroutine(Vector3 character_forward) {
         Vector3 start_pos = transform.position;
         Vector3 target_pos = transform.position + character_forward*ROLL_DISTANCE;
         float ctime = 0f;
         float roll_time = 1f;
+        SetRotation(character_forward);
 
         while (ctime < roll_time) {
             float dt = (1f - Mathf.Cos(ctime*180f*Mathf.Deg2Rad)) / 2f;
@@ -98,6 +116,10 @@ public abstract class PlayerManager : MonoBehaviour
             yield return null;
         }
         yield break;
+    }
+
+    protected void SetRotation(Vector3 direction) {
+        m_CharacterModel.rotation = Quaternion.LookRotation(direction);
     }
 
     void ReleaseBlock() {

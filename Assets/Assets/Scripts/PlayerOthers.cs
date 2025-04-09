@@ -30,11 +30,7 @@ public class PlayerOthers : PlayerManager
         base.Update();
 
         ProcessMovement();
-        SetRotation();
-    }
-
-    private void SetRotation() {
-        m_CharacterModel.rotation = Quaternion.LookRotation(direction);
+        SetRotation(direction);
     }
 
     public override void Start_DealDamage_Attack1() {
@@ -56,6 +52,7 @@ public class PlayerOthers : PlayerManager
         _hasTarget = true;
         direction = clientInput.forwardDirection;
         m_Movement = clientInput.movementRaw;
+        _moveTimer = 0f;
 
         //var playerMovement = new PlayerMovement(timestamp, position, deltaPos);
         //_playerMovementQueue.Enqueue(playerMovement);
@@ -82,6 +79,7 @@ public class PlayerOthers : PlayerManager
             t = 1f;
             _hasTarget = false;
             _deltaPos = _nextDeltaPos;
+            _moveTimer = 0f;
         }
 
         realPosition = Vector3.Lerp(_prevPosition, _nextPosition, t);

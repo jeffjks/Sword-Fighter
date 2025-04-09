@@ -72,7 +72,7 @@ namespace SwordFighterServer
                 { (int) ClientPackets.welcomeReceived, ServerHandle.WelcomeReceived },
                 { (int) ClientPackets.requestServerTime, ServerHandle.RequestServerTime },
                 { (int) ClientPackets.spawnPlayerReceived, ServerHandle.SpawnPlayerReceived },
-                { (int) ClientPackets.playerInput, ServerHandle.PlayerInput },
+                { (int) ClientPackets.playerSkill, ServerHandle.PlayerSkill },
                 { (int) ClientPackets.playerMovement, ServerHandle.PlayerMovement },
                 { (int) ClientPackets.playerAttack, ServerHandle.PlayerAttack },
                 { (int) ClientPackets.changeHp, ServerHandle.ChangeHp },

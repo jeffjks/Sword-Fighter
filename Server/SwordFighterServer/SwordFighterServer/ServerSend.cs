@@ -69,7 +69,7 @@ namespace SwordFighterServer
             packet.Write(player.position);
             packet.Write(player.direction);
             packet.Write(player.hitPoints);
-            packet.Write(player.state);
+            packet.Write((int) player.state);
 
             SendTCPData(toClient, packet);
         }
@@ -107,10 +107,11 @@ namespace SwordFighterServer
 
         public static void PlayerState(Player player) // 플레이어 스킬 상태 패킷 전달
         {
-            Packet packet = new Packet((int)ServerPackets.playerState);
+            Packet packet = new Packet((int)ServerPackets.playerSkill);
 
             packet.Write(player.id);
-            packet.Write(player.state);
+            packet.Write((int) player.state);
+            packet.Write(player.direction);
 
             SendTCPDataToAll(player.id, packet);
         }

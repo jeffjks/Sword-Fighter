@@ -40,19 +40,14 @@ namespace SwordFighterServer
             //Server.clients[fromClient].SetReady(spawnedPlayerId);
         }
 
-        public static void PlayerInput(int fromClient, Packet packet) // 플레이어의 스킬 사용 input
+        public static void PlayerSkill(int fromClient, Packet packet) // 플레이어의 스킬 사용 input
         {
             var timestamp = packet.ReadLong();
-
-            bool[] inputs = new bool[packet.ReadInt()];
-            for (int i = 0; i < inputs.Length; ++i)
-            {
-                inputs[i] = packet.ReadBool();
-            }
+            var playerSkill = packet.ReadInt();
 
             if (Server.clients[fromClient].player != null)
             {
-                Server.clients[fromClient].player.SetInput(timestamp, inputs);
+                Server.clients[fromClient].player.SetInput(timestamp, (PlayerSkill) playerSkill);
             }
         }
 

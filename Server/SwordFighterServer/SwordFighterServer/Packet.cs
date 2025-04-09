@@ -13,7 +13,7 @@ namespace SwordFighterServer
         spawnPlayer,
         updatePlayer,
         broadcastPlayer,
-        playerState,
+        playerSkill,
         playerHp,
         playerDisconnected
     }
@@ -24,7 +24,7 @@ namespace SwordFighterServer
         welcomeReceived = 1,
         requestServerTime,
         spawnPlayerReceived,
-        playerInput,
+        playerSkill,
         playerMovement,
         playerAttack,
         changeHp

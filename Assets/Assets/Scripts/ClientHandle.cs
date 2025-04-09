@@ -75,9 +75,10 @@ public class ClientHandle : MonoBehaviour
         int id = packet.ReadInt();
 
         int state = packet.ReadInt();
+        Vector3 direction = packet.ReadVector3();
         
         try {
-            GameManager.players[id].m_State = state;
+            GameManager.players[id].ExecutePlayerSkill((PlayerSkill) state, direction);
         }
         catch (KeyNotFoundException e) {
             Debug.Log(e);

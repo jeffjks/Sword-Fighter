@@ -16,7 +16,7 @@ public enum ServerPackets
     spawnPlayer,
     updatePlayer,
     broadcastPlayer,
-    playerState,
+    playerSkill,
     playerHp,
     playerDisconnected
 }
@@ -27,7 +27,7 @@ public enum ClientPackets
     welcomeReceived = 1,
     requestServerTime,
     spawnPlayerReceived,
-    playerInput,
+    playerSkill,
     playerMovement,
     playerAttack,
     changeHp

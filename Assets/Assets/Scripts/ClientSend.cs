@@ -53,13 +53,11 @@ public class ClientSend : MonoBehaviour
         SendTCPData(packet);
     }
 
-    public static void PlayerInput(long timestamp, bool[] inputs) { // 움직임을 제외한 나머지 키 입력에 대한 패킷 (스킬 등)
-        Packet packet = new ((int) ClientPackets.playerInput);
+    public static void PlayerSkill(long timestamp, PlayerSkill playerSkill, Vector3 direction) { // 움직임을 제외한 나머지 키 입력에 대한 패킷 (스킬 등)
+        Packet packet = new ((int) ClientPackets.playerSkill);
         packet.Write(timestamp);
-        packet.Write(inputs.Length);
-        foreach (bool input in inputs) {
-            packet.Write(input);
-        }
+        packet.Write((int) playerSkill);
+        packet.Write(direction);
 
         SendTCPData(packet);
     }

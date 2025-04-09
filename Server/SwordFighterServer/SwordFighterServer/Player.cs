@@ -10,6 +10,17 @@ public struct ClientInput
     public Vector3 deltaPos;
 }
 
+public enum PlayerSkill
+{
+    Dead = -1,
+    Idle,
+    Move,
+    Block,
+    Attack1,
+    Attack2,
+    Roll
+}
+
 // 서버 내 캐릭터 시뮬레이션
 
 namespace SwordFighterServer
@@ -19,7 +30,6 @@ namespace SwordFighterServer
         public int id;
         public string username;
 
-        public bool[] inputs;
         public Vector3 position;
         public Vector3 direction; // 방향 벡터
         public Vector3 deltaPos;
@@ -27,7 +37,7 @@ namespace SwordFighterServer
 
         public int hitPoints_max;
         public int hitPoints;
-        public int state;
+        public PlayerSkill state;
 
         private Queue<ClientInput> clientInputs = new Queue<ClientInput>();
 
@@ -35,8 +45,7 @@ namespace SwordFighterServer
         private Vector3 lastPosition;
 
         private LinkedList<DateTime> stateLinkedList = new LinkedList<DateTime>(); // 스킬 사용 후 종료 시점 기록용
-        private int[] duration;
-        private int[] input_state;
+        private Dictionary<PlayerSkill, int> skillDuration = new Dictionary<PlayerSkill, int>();
 
         public Player(int id, string username, Vector3 spawnPosition)
         {
@@ -47,11 +56,11 @@ namespace SwordFighterServer
             direction = new Vector3(0, 0, 1);
             hitPoints_max = 100;
             hitPoints = hitPoints_max;
-            state = 0;
+            state = PlayerSkill.Idle;
 
-            inputs = new bool[4];
-            duration = new int[4] { 1500, 800, 800, 1000 };
-            input_state = new int[4] { 2, 3, 4, 5 };
+            skillDuration.Add(PlayerSkill.Attack1, 800);
+            skillDuration.Add(PlayerSkill.Block, 1500);
+            skillDuration.Add(PlayerSkill.Roll, 1000);
         }
 
         public void Update() // 스레드에 의해 실행. 클라이언트로부터 패킷을 받았을 때마다가 아닌 일정 시간마다 broadcast
@@ -65,7 +74,7 @@ namespace SwordFighterServer
             if (stateLinkedList.Count > 0)
             {
                 if (stateLinkedList.First.Value <= DateTime.Now) { // 스킬 종료 시 state를 0으로 만들고 클라이언트에게 전달
-                    state = 0;
+                    state = PlayerSkill.Idle;
                     stateLinkedList.RemoveFirst();
                     //stateLinkedList.RemoveAt(0);
                     ServerSend.PlayerState(this);
@@ -73,13 +82,13 @@ namespace SwordFighterServer
             }
         }
 
-        private void InputToState(long timestamp) // 클라이언트의 input을 감지하면 스킬 사용
+        private void InputToState(long timestamp, PlayerSkill playerSkill) // 클라이언트의 input을 감지하면 스킬 사용
         {
-            if (0 <= state && state <= 1)
+            if (state == PlayerSkill.Idle || state == PlayerSkill.Move)
             {
-                SetState(timestamp, inputs);
+                SetState(timestamp, playerSkill);
 
-                if (state > 1)
+                if (state > PlayerSkill.Move)
                 {
                     ServerSend.PlayerState(this);
                     //Console.WriteLine($"State send: {state}");
@@ -116,30 +125,21 @@ namespace SwordFighterServer
             }
         }
 
-        private void SetState(long timestamp, bool[] inputs) { // input에 따라 스킬 사용
-            for (int i = 0; i < inputs.Length; ++i)
-            {
-                if (inputs[i])
-                {
-                    AddStateToStateLinkedList(DateTime.Now.AddMilliseconds(duration[i])); // 스킬 종료 시점 추가
-                    //stateList.Add();
-                    //stateList.Sort();
-                    state = input_state[i];
+        private void SetState(long timestamp, PlayerSkill playerSkill) { // input에 따라 스킬 사용
+            state = playerSkill;
+            AddStateToStateLinkedList(DateTime.Now.AddMilliseconds(skillDuration[playerSkill])); // 스킬 종료 시점 추가
 
-                    if (i == 3) // Roll
-                    {
-                        position = GetRollDestination(position);
-                        lastPosition = position;
-                        ServerSend.UpdatePlayer(id, this, timestamp);
-                    }
-                    return;
-                }
+            if (playerSkill == PlayerSkill.Roll)
+            {
+                position = GetRollDestination(position);
+                lastPosition = position;
+                ServerSend.UpdatePlayer(id, this, timestamp);
             }
         }
 
         private bool IsBlocking(int fromId)
         {
-            if (state != 2)
+            if (state != PlayerSkill.Block)
             {
                 return false;
             }
@@ -148,10 +148,9 @@ namespace SwordFighterServer
             return (dot < 0); // 캐릭터의 방향을 계산하여 막기 판정
         }
 
-        public void SetInput(long timestamp, bool[] inputs)
+        public void SetInput(long timestamp, PlayerSkill playerSkill)
         {
-            this.inputs = inputs;
-            InputToState(timestamp);
+            InputToState(timestamp, playerSkill);
         }
 
         private void Move()
@@ -226,7 +225,7 @@ namespace SwordFighterServer
         {
             if (hitPoints <= 0)
             {
-                if (state != 5 && !IsBlocking(fromClient))
+                if (state != PlayerSkill.Roll && !IsBlocking(fromClient))
                 {
                     this.hitPoints += hitPoints;
                     ServerSend.PlayerHp(this);
@@ -235,7 +234,7 @@ namespace SwordFighterServer
 
             if (this.hitPoints <= 0)
             {
-                state = -1;
+                state = PlayerSkill.Dead;
                 ServerSend.PlayerState(this); // 캐릭터 사망 판정
             }
         }
