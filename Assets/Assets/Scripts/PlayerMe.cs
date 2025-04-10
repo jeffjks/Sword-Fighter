@@ -7,7 +7,9 @@ public class PlayerMe : PlayerManager
 {
     public readonly Queue<ClientInput> _clientInputQueue = new Queue<ClientInput>();
 
-    void Awake() {
+    private long _lastTimestamp;
+
+    private void Awake() {
         m_UI_HpBar = GameManager.instance.m_UIManager.m_UI_HpBarMain;
     }
 
@@ -22,22 +24,28 @@ public class PlayerMe : PlayerManager
 
     public override void OnStateReceived(Vector3 position, ClientInput clientInput)
     {
+        if (clientInput.timestamp < _lastTimestamp)
+            return;
+        
         while (_clientInputQueue.Count > 0 && _clientInputQueue.Peek().timestamp < clientInput.timestamp) { // 처리된 요청은 삭제
             _clientInputQueue.Dequeue();
         }
 
-        Vector3 newState = position; // 서버로부터 받은 가장 최신 좌표
-        //Debug.Log($"Received: {clientInput.timestamp}, {position}, {deltaPos}");
+        Vector3 correctPos = position; // 서버로부터 받은 가장 최신 좌표
         
         foreach (var input in _clientInputQueue) { // 지금까지 input기록에 따라 시뮬레이션하여 현재 좌표 계산
-            newState += input.deltaPos;
+            correctPos += input.deltaPos;
         }
 
-        var distance = Vector3.Distance(newState, realPosition);
+        _lastTimestamp = clientInput.timestamp;
+
+        //Debug.Log($"[{clientInput.timestamp}] {position}, {deltaPos} / {correctPos}");
+
+        var distance = Vector3.Distance(correctPos, realPosition);
         
         if (distance > 0f) { // 계산한 좌표가 맞는지 확인
-            //Debug.Log($"Wrong ({distance}): {realPosition} -> {newState}");
-            realPosition = newState;
+            //Debug.Log($"Wrong ({distance}): {realPosition} -> {correctPos}");
+            realPosition = correctPos;
         }
     }
 }
