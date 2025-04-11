@@ -26,7 +26,6 @@ namespace SwordFighterServer
         spawnPlayerReceived,
         playerSkill,
         playerMovement,
-        playerAttack,
         changeHp
     }
 

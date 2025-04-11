@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Numerics;
+using System.Threading.Tasks;
 
 public struct ClientInput
 {
@@ -44,8 +45,17 @@ namespace SwordFighterServer
         private ClientInput lastClientInput;
         private Vector3 lastPosition;
 
-        private LinkedList<DateTime> stateLinkedList = new LinkedList<DateTime>(); // 스킬 사용 후 종료 시점 기록용
         private Dictionary<PlayerSkill, int> skillDuration = new Dictionary<PlayerSkill, int>();
+        private readonly List<ScheduledTask> tasks = new List<ScheduledTask>();
+
+        private const float AttackRadius = 2.5f;
+        private const int AttackDamage = 20;
+
+        public class ScheduledTask
+        {
+            public long ExecuteAt;
+            public Action Task;
+        }
 
         public Player(int id, string username, Vector3 spawnPosition)
         {
@@ -65,19 +75,30 @@ namespace SwordFighterServer
 
         public void Update() // 스레드에 의해 실행. 클라이언트로부터 패킷을 받았을 때마다가 아닌 일정 시간마다 broadcast
         {
-            UpdateState();
+            ExecuteSchedule();
             Move();
         }
 
-        private void UpdateState()
+        public void AddSchedule(Action action, int delayMs)
         {
-            if (stateLinkedList.Count > 0)
+            var task = new ScheduledTask
             {
-                if (stateLinkedList.First.Value <= DateTime.Now) { // 스킬 종료 시 state를 0으로 만들고 클라이언트에게 전달
-                    state = PlayerSkill.Idle;
-                    stateLinkedList.RemoveFirst();
-                    //stateLinkedList.RemoveAt(0);
-                    ServerSend.PlayerState(this);
+                ExecuteAt = Server.GetUnixTime() + delayMs,
+                Task = action
+            };
+            tasks.Add(task);
+        }
+
+        private void ExecuteSchedule()
+        {
+            long now = Server.GetUnixTime();
+
+            for (int i = tasks.Count - 1; i >= 0; i--)
+            {
+                if (tasks[i].ExecuteAt <= now)
+                {
+                    tasks[i].Task.Invoke();
+                    tasks.RemoveAt(i);
                 }
             }
         }
@@ -96,44 +117,28 @@ namespace SwordFighterServer
             }
         }
 
-        private void AddStateToStateLinkedList(DateTime dateTime)
+        private void UpdateState(PlayerSkill state)
         {
-            var currentNode = stateLinkedList.First;
-
-            if (currentNode == null)
-            {
-                stateLinkedList.AddFirst(dateTime);
-                return;
-            }
-
-            while (true)
-            {
-                Console.WriteLine("State 0");
-                DateTime currentDateTime = currentNode.Value;
-                if (currentDateTime < dateTime)
-                {
-                    stateLinkedList.AddAfter(currentNode, dateTime);
-                    return;
-                }
-                currentNode = currentNode.Next;
-
-                if (currentNode == null)
-                {
-                    stateLinkedList.AddLast(dateTime);
-                    return;
-                }
-            }
+            this.state = state;
+            ServerSend.PlayerState(this);
         }
 
         private void SetState(long timestamp, PlayerSkill playerSkill) { // input에 따라 스킬 사용
             state = playerSkill;
-            AddStateToStateLinkedList(DateTime.Now.AddMilliseconds(skillDuration[playerSkill])); // 스킬 종료 시점 추가
+            var serverTime = Server.GetUnixTime();
+            AddSchedule(() => UpdateState(PlayerSkill.Idle), skillDuration[playerSkill]);
 
-            if (playerSkill == PlayerSkill.Roll)
+            switch (playerSkill)
             {
-                position = GetRollDestination(position);
-                lastPosition = position;
-                ServerSend.UpdatePlayer(id, this, timestamp);
+                case PlayerSkill.Roll:
+                    position = GetRollDestination(position);
+                    lastPosition = position;
+                    ServerSend.UpdatePlayer(id, this, timestamp);
+                    break;
+
+                case PlayerSkill.Attack1:
+                    AddSchedule(() => PlayerAttack(), 500);
+                    break;
             }
         }
 
@@ -151,6 +156,28 @@ namespace SwordFighterServer
         public void SetInput(long timestamp, PlayerSkill playerSkill)
         {
             InputToState(timestamp, playerSkill);
+        }
+
+        public void PlayerAttack() // 피격 판정 (반경 2.5의 반원 범위)
+        {
+            foreach (int targetPlayerID in Server.spawnedPlayers)
+            {
+                if (targetPlayerID == id) // 자기자신 제외
+                {
+                    continue;
+                }
+
+                Vector3 target_position = Server.clients[targetPlayerID].player.position;
+                float distance_squared = Vector3.DistanceSquared(position, target_position);
+
+                if (distance_squared < AttackRadius * AttackRadius) // 거리 계산
+                {
+                    if (Vector3.Dot(direction, position - target_position) < 0) // 방향 계산
+                    {
+                        Server.clients[targetPlayerID].player.ChangePlayerHp(id, -AttackDamage);
+                    }
+                }
+            }
         }
 
         private void Move()

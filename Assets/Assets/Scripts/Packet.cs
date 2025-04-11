@@ -29,7 +29,6 @@ public enum ClientPackets
     spawnPlayerReceived,
     playerSkill,
     playerMovement,
-    playerAttack,
     changeHp
 }
 

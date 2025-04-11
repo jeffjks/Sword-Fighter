@@ -9,7 +9,7 @@ public class UI_ChatInputField : MonoBehaviour
     public InputField m_UI_ChatInputField;
     public UI_ChatWindow m_UI_ChatWindow;
 
-    private bool m_WritingChat = false;
+    private bool _isWritingChat = false;
 
     public void SubmitChatMessage(string chatText) {
         if (chatText == string.Empty) {
@@ -30,23 +30,23 @@ public class UI_ChatInputField : MonoBehaviour
     }
 
     public void ToggleWritingChat() {
-        if (m_WritingChat) {
+        if (_isWritingChat) {
             //string chatText = Strip(m_UI_ChatInputField.text);
             SubmitChatMessage(m_UI_ChatInputField.text);
         }
-        m_WritingChat = !m_WritingChat;
+        _isWritingChat = !_isWritingChat;
         m_UI_ChatInputField.text = string.Empty;
-        m_UI_ChatInputField.gameObject.SetActive(m_WritingChat);
+        m_UI_ChatInputField.gameObject.SetActive(_isWritingChat);
         m_UI_ChatInputField.ActivateInputField();
     }
 
     public void WritingChatOff() {
-        m_WritingChat = false;
+        _isWritingChat = false;
         m_UI_ChatInputField.text = string.Empty;
         m_UI_ChatInputField.gameObject.SetActive(false);
     }
 
     public bool GetWritingChat() {
-        return m_WritingChat;
+        return _isWritingChat;
     }
 }

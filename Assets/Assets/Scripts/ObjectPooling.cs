@@ -7,15 +7,15 @@ public class ObjectPooling : MonoBehaviour
     public GameObject oppositePlayerPrefab;
     public PlayerController m_PlayerController;
 
-    private Queue<PlayerManager> poolingObjectQueue = new Queue<PlayerManager>();
-    private List<PlayerManager> allPoolingObjectList = new List<PlayerManager>();
-    private const int defaultObjectCount = 3;
+    private Queue<PlayerManager> _poolingObjectQueue = new Queue<PlayerManager>();
+    private List<PlayerManager> _allPoolingObjectList = new List<PlayerManager>();
+    private const int DefaultObjectCount = 3;
 
     public void Init(int count) {
-        int totalCount = count - poolingObjectQueue.Count;
+        int totalCount = count - _poolingObjectQueue.Count;
         for(int i = 0; i < totalCount; i++) {
             PlayerManager playerManager;
-            poolingObjectQueue.Enqueue(playerManager = CreateNewObject());
+            _poolingObjectQueue.Enqueue(playerManager = CreateNewObject());
             playerManager.gameObject.SetActive(false);
         }
     }
@@ -27,8 +27,8 @@ public class ObjectPooling : MonoBehaviour
     }
 
     public PlayerManager GetOppositePlayer() {
-        if (poolingObjectQueue.Count > 0) {
-            PlayerManager obj = poolingObjectQueue.Dequeue();
+        if (_poolingObjectQueue.Count > 0) {
+            PlayerManager obj = _poolingObjectQueue.Dequeue();
             obj.gameObject.SetActive(true);
             return obj;
         }
@@ -48,7 +48,7 @@ public class ObjectPooling : MonoBehaviour
         if (!obj.gameObject.activeSelf) {
             return;
         }
-        poolingObjectQueue.Enqueue(obj);
+        _poolingObjectQueue.Enqueue(obj);
         obj.gameObject.SetActive(false);
         //obj.transform.SetParent(transform);
     }

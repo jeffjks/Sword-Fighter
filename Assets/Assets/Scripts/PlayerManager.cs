@@ -32,12 +32,12 @@ public abstract class PlayerManager : MonoBehaviour
     [HideInInspector] public PlayerSkill m_State = PlayerSkill.Idle;
     [HideInInspector] public Vector3 realPosition;
 
-    private string username;
+    private string _username;
     private bool m_CanMove = true;
     private const float ROLL_DISTANCE = 5f;
 
     public void Init() {
-        SetUserNameUI(username);
+        SetUserNameUI(_username);
         SetCurrentHitPoint(m_CurrentHp);
     }
 
@@ -150,12 +150,12 @@ public abstract class PlayerManager : MonoBehaviour
         );
     }
 
-    public void SetUserName(string username) {
-        this.username = username;
+    public void SetUserName(string _username) {
+        this._username = _username;
     }
 
     public string GetUserName() {
-        return username;
+        return _username;
     }
 
     public void SetCurrentHitPoint(int hitPoints) {
@@ -163,8 +163,8 @@ public abstract class PlayerManager : MonoBehaviour
         m_UI_HpBar.UpdateHpBarFill();
     }
 
-    public void SetUserNameUI(string username) {
-        m_UI_HpBar.SetUserNameUI(username);
+    public void SetUserNameUI(string _username) {
+        m_UI_HpBar.SetUserNameUI(_username);
     }
 
     private void InterpolatePosition() {
