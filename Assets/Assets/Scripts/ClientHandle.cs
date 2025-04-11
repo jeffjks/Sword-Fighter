@@ -19,7 +19,7 @@ public class ClientHandle : MonoBehaviour
         long serverTime = packet.ReadLong();
         long clientTime = packet.ReadLong();
         
-        TimeSync.SyncServerTime(serverTime, clientTime);
+        TimeSync.OnServerTimeResponse(serverTime, clientTime);
     }
 
     public static void SpawnPlayer(Packet packet) {

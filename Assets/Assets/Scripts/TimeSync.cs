@@ -17,7 +17,7 @@ public class TimeSync : MonoBehaviour
     {
         if (!_waitingForResponse && GetSyncTime() - _lastSyncTime >= RequestInterval)
         {
-            SyncServerTime();
+            StartTimeSync();
         }
     }
 
@@ -31,7 +31,7 @@ public class TimeSync : MonoBehaviour
         return DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
     }
 
-    public static void SyncServerTime(long serverTime, long clientSendTime)
+    public static void OnServerTimeResponse(long serverTime, long clientSendTime)
     {
         var clientReceiveTime = GetLocalUnixTime();
         var rtt = clientReceiveTime - clientSendTime;
@@ -45,7 +45,7 @@ public class TimeSync : MonoBehaviour
         Action_OnPingUpdate?.Invoke((int) rtt);
     }
 
-    private void SyncServerTime()
+    private void StartTimeSync()
     {
         _waitingForResponse = true;
         ClientSend.RequestServerTime();
