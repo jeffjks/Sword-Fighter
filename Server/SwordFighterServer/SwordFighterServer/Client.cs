@@ -108,12 +108,10 @@ namespace SwordFighterServer
                 while (packetLength > 0 && packetLength <= receivedData.UnreadLength())
                 {
                     byte[] packetBytes = receivedData.ReadBytes(packetLength); // receivedData에서 packetLength만큼 다 읽음
-                    ThreadManager.ExecuteOnMainThread(() =>
-                    {
-                        Packet packet = new Packet(packetBytes);
-                        int packetId = packet.ReadInt();
-                        Server.packetHandlers[packetId](id, packet);
-                    });
+
+                    Packet packet = new Packet(packetBytes);
+                    int packetId = packet.ReadInt();
+                    Server.packetHandlers[packetId](id, packet);
 
                     packetLength = 0;
                     if (receivedData.UnreadLength() >= 4) // byte가 남았다면 packetLength를 읽고 다시 읽기 진행
@@ -126,7 +124,7 @@ namespace SwordFighterServer
                     }
                 }
 
-                if (packetLength <= 1)
+                if (packetLength <= 0)
                 {
                     return true;
                 }
@@ -155,9 +153,6 @@ namespace SwordFighterServer
                 if (client.player != null && client.id != id)
                 {
                     ServerSend.SpawnPlayer(id, client.player);
-                    //Console.WriteLine($"SendIntoGame1 - SpawnPlayer: {id}, {client.player.username}");
-                    //client.SetReady(client.player.id);
-                    //SetReady(client.player.id);
                 }
             }
 
@@ -166,8 +161,6 @@ namespace SwordFighterServer
                 if (client.player != null)
                 {
                     ServerSend.SpawnPlayer(client.id, player);
-                    //Console.WriteLine($"SendIntoGame2 - SpawnPlayer: {client.id}, {username}");
-                    //client.SetReady(player.id);
                 }
             }
         }

@@ -31,7 +31,7 @@ public class TimeSync : MonoBehaviour
         return DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
     }
 
-    public static void SetServerTime(long serverTime, long clientSendTime)
+    public static void SyncServerTime(long serverTime, long clientSendTime)
     {
         var clientReceiveTime = GetLocalUnixTime();
         var rtt = clientReceiveTime - clientSendTime;

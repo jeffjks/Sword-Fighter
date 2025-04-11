@@ -46,7 +46,7 @@ public abstract class ClientBase : MonoBehaviour
     {
         public TcpClient socket;
 
-        private ClientBase instance;
+        private readonly ClientBase instance;
         private NetworkStream stream;
         private Packet receivedData;
         private byte[] receiveBuffer;
@@ -157,7 +157,7 @@ public abstract class ClientBase : MonoBehaviour
                 }
             }
 
-            if (packetLength <= 1) {
+            if (packetLength <= 0) {
                 return true;
             }
             return false;

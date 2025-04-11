@@ -5,8 +5,6 @@ using UnityEngine;
 public class CameraController : MonoBehaviour
 {
     public float m_CameraRotationSpeed;
-    
-    private float m_CameraRotation;
 
     void Update()
     {
