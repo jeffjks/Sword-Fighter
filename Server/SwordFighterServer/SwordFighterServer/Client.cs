@@ -7,7 +7,7 @@ using System.Numerics;
 
 namespace SwordFighterServer
 {
-    class Client
+    public class Client
     {
         public static int dataBufferSize = 4096;
 

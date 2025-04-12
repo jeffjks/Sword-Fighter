@@ -38,14 +38,15 @@ namespace SwordFighterServer
             //Server.clients[fromClient].SetReady(spawnedPlayerId);
         }
 
-        public static void PlayerSkill(int fromClient, Packet packet) // 플레이어의 스킬 사용 input
+        public static void PlayerSkill(int fromClient, Packet packet) // 플레이어의 스킬 사용
         {
             var timestamp = packet.ReadLong();
             var playerSkill = packet.ReadInt();
+            var direction = packet.ReadVector3();
 
             if (Server.clients[fromClient].player != null)
             {
-                Server.clients[fromClient].player.SetInput(timestamp, (PlayerSkill) playerSkill);
+                Server.clients[fromClient].player.ExecutePlayerSkill(timestamp, (PlayerSkill) playerSkill, direction);
             }
         }
 
@@ -65,33 +66,6 @@ namespace SwordFighterServer
             if (Server.clients[fromClient].player != null)
             {
                 Server.clients[fromClient].player.SetMovement(clientInput, position);
-            }
-        }
-        public static void PlayerAttack(int fromClient, Packet packet) // 피격 판정 (반경 2.5의 반원 범위)
-        {
-            if (Server.clients[fromClient].player != null)
-            {
-                Vector3 position = Server.clients[fromClient].player.position;
-                Vector3 direction = Server.clients[fromClient].player.direction;
-
-                foreach (int playerId in Server.spawnedPlayers)
-                {
-                    if (playerId == fromClient) // 자기자신 제외
-                    {
-                        continue;
-                    }
-
-                    Vector3 target_position = Server.clients[playerId].player.position;
-                    float distance_squared = Vector3.DistanceSquared(position, target_position);
-
-                    if (distance_squared < 2.5f * 2.5f) // 거리 계산
-                    {
-                        if (Vector3.Dot(direction, position - target_position) < 0) // 방향 계산
-                        {
-                            Server.clients[playerId].player.ChangePlayerHp(fromClient, -20);
-                        }
-                    }
-                }
             }
         }
 
