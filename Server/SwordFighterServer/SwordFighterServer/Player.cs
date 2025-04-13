@@ -128,14 +128,14 @@ namespace SwordFighterServer
                         break;
                 }
 
-                ServerSend.PlayerState(this);
+                //ServerSend.PlayerState(this);
             }
         }
 
         private void UpdateState(PlayerSkill state)
         {
             this.state = state;
-            ServerSend.PlayerState(this);
+            //ServerSend.PlayerState(this);
         }
 
         private bool IsBlocking(int fromId)
@@ -183,13 +183,31 @@ namespace SwordFighterServer
         {
             while (_clientInputs.Count > 0)
             {
+                ClientInput curInput = _clientInputs.Dequeue();
+
+                position += curInput.deltaPos;
+
+                if (_clientInputs.Count == 0)
+                {
+                    position = ClampPosition(position);
+                    ServerSend.UpdatePlayer(id, this, curInput.timestamp);
+                    break;
+                }
+            }
+
+            /*
+            long deltaTime;
+
+            while (_clientInputs.Count > 0)
+            {
                 ClientInput clientInput = _clientInputs.Dequeue();
 
-                var deltaTime = (clientInput.timestamp - _lastClientInput.timestamp);
+                deltaTime = clientInput.timestamp - _lastClientInput.timestamp;
 
                 if (deltaTime <= 0)
                     continue;
 
+                Console.WriteLine($"[{clientInput.timestamp}] ClientInput: {position} -> {_lastPosition + _lastClientInput.deltaPos * (deltaTime * Constants.TICKS_PER_SEC / 1000f)} ({_lastClientInput.deltaPos}, {deltaTime})");
                 position = _lastPosition + _lastClientInput.deltaPos * (deltaTime * Constants.TICKS_PER_SEC / 1000f);
 
                 direction = clientInput.forwardDirection;
@@ -199,14 +217,17 @@ namespace SwordFighterServer
                 _lastClientInput.timestamp = clientInput.timestamp;
                 deltaPos = clientInput.deltaPos;
 
-                ServerSend.UpdatePlayer(id, this, clientInput.timestamp);
-
                 _lastClientInput = clientInput;
             }
 
-            position += _lastClientInput.deltaPos;
+            //position += _lastClientInput.deltaPos;
+            deltaTime = Server.GetUnixTime() - _lastClientInput.timestamp;
+            position = _lastPosition + _lastClientInput.deltaPos * (deltaTime * Constants.TICKS_PER_SEC / 1000f);
 
-            position = ClampPosition(position);
+            if (sendUpdatePlayer)
+                ServerSend.UpdatePlayer(id, this, _lastClientInput.timestamp);
+
+            position = ClampPosition(position);*/
         }
 
         public void BroadcastPlayer()

@@ -29,6 +29,8 @@ public class PlayerOthers : PlayerManager
     protected override void Update() {
         base.Update();
 
+        correctedPos = realPosition;
+        
         ProcessMovement();
         SetRotation(direction);
     }
@@ -56,11 +58,6 @@ public class PlayerOthers : PlayerManager
 
         //var playerMovement = new PlayerMovement(timestamp, position, deltaPos);
         //_playerMovementQueue.Enqueue(playerMovement);
-    }
-
-    private bool CheckFront(Vector3 direction, Vector3 target_pos) {
-        float dot = Vector3.Dot(direction, target_pos - realPosition);
-        return dot > 0;
     }
 
     private void ProcessMovement()

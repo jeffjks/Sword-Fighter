@@ -32,9 +32,12 @@ public abstract class PlayerManager : MonoBehaviour
     [HideInInspector] public PlayerSkill m_State = PlayerSkill.Idle;
     [HideInInspector] public Vector3 realPosition;
 
+    protected Vector3 correctedPos;
+
     private string _username;
     private bool m_CanMove = true;
-    private const float ROLL_DISTANCE = 5f;
+
+    public const float ROLL_DISTANCE = 5f;
 
     public void Init() {
         SetUserNameUI(_username);
@@ -102,15 +105,18 @@ public abstract class PlayerManager : MonoBehaviour
 
     private IEnumerator RollCoroutine(Vector3 character_forward) {
         Vector3 start_pos = transform.position;
-        Vector3 target_pos = transform.position + character_forward*ROLL_DISTANCE;
+        Vector3 target_pos = correctedPos + character_forward*ROLL_DISTANCE;
+        target_pos = ClampPosition(target_pos);
+
+        realPosition = target_pos;
+
         float ctime = 0f;
         float roll_time = 1f;
         SetRotation(character_forward);
 
         while (ctime < roll_time) {
             float dt = (1f - Mathf.Cos(ctime*180f*Mathf.Deg2Rad)) / 2f;
-            realPosition = Vector3.Lerp(start_pos, target_pos, dt/roll_time);
-            realPosition = ClampPosition(realPosition);
+            transform.position = Vector3.Lerp(start_pos, target_pos, dt/roll_time);
 
             ctime += Time.deltaTime;
             yield return null;
@@ -168,6 +174,8 @@ public abstract class PlayerManager : MonoBehaviour
     }
 
     private void InterpolatePosition() {
+        if (m_State == PlayerSkill.Roll)
+            return;
         transform.position = Vector3.Slerp(transform.position, realPosition, 0.25f);
     }
 }

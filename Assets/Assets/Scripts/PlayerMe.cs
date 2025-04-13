@@ -2,12 +2,16 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
+using System.Linq;
 
 public class PlayerMe : PlayerManager
 {
-    public readonly Queue<ClientInput> _clientInputQueue = new Queue<ClientInput>();
+    public readonly Queue<ClientInput> m_ClientInputQueue = new ();
 
-    private long _lastTimestamp;
+    private ClientInput _lastClientInput;
+    private Vector3 _lastPositionFromServer;
+
+    private const float PositionCorrectionThreshold = 0.25f;
 
     private void Awake() {
         m_UI_HpBar = GameManager.instance.m_UIManager.m_UI_HpBarMain;
@@ -21,31 +25,44 @@ public class PlayerMe : PlayerManager
     public override void Finish_DealDamage_Attack1() {
         //m_Sword.FinishDeal();
     }
-
-    public override void OnStateReceived(Vector3 position, ClientInput clientInput)
+    
+    private void CorrectPosition()
     {
-        if (clientInput.timestamp < _lastTimestamp)
+        while (m_ClientInputQueue.Count > 0 && m_ClientInputQueue.Peek().timestamp <= _lastClientInput.timestamp) { // 처리된 요청은 삭제
+            m_ClientInputQueue.Dequeue();
+        }
+
+        Vector3 newPos = _lastPositionFromServer; // 서버로부터 받은 가장 최신 좌표
+        
+        foreach (var input in m_ClientInputQueue) { // 지금까지 input기록에 따라 시뮬레이션하여 현재 좌표 계산
+            newPos += input.deltaPos;
+        }
+
+        correctedPos = newPos;
+        
+        var distance = Vector3.Distance(correctedPos, realPosition);
+
+        if (distance > PositionCorrectionThreshold) { // 계산한 좌표가 맞는지 확인
+            Debug.Log($"Wrong ({distance}): {realPosition} -> {correctedPos}");
+            realPosition = correctedPos;
+        }
+    }
+
+    public override void OnStateReceived(Vector3 positionFromServer, ClientInput clientInput)
+    {
+        if (clientInput.timestamp < _lastClientInput.timestamp)
             return;
         
-        while (_clientInputQueue.Count > 0 && _clientInputQueue.Peek().timestamp < clientInput.timestamp) { // 처리된 요청은 삭제
-            _clientInputQueue.Dequeue();
-        }
-
-        Vector3 correctPos = position; // 서버로부터 받은 가장 최신 좌표
+        _lastPositionFromServer = positionFromServer;
+        _lastClientInput = clientInput;
         
-        foreach (var input in _clientInputQueue) { // 지금까지 input기록에 따라 시뮬레이션하여 현재 좌표 계산
-            correctPos += input.deltaPos;
-        }
+        CorrectPosition();
 
-        _lastTimestamp = clientInput.timestamp;
-
-        //Debug.Log($"[{clientInput.timestamp}] {position}, {deltaPos} / {correctPos}");
-
-        var distance = Vector3.Distance(correctPos, realPosition);
-        
-        if (distance > 0f) { // 계산한 좌표가 맞는지 확인
-            //Debug.Log($"Wrong ({distance}): {realPosition} -> {correctPos}");
-            realPosition = correctPos;
+        using (StreamWriter writer = new ("Assets/Resources/received.txt", append: true))
+        {
+            var queueString = string.Join(", ", m_ClientInputQueue.Select(i => i.timestamp));
+            writer.WriteLine($"[{clientInput.timestamp}] ClientReceived: {clientInput.deltaPos}, {positionFromServer}, ({m_ClientInputQueue.Count}), [{TimeSync.GetSyncTime()}] {realPosition}");
+            writer.WriteLine($"\t{queueString}");
         }
     }
 }
