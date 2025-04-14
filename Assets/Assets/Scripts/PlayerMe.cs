@@ -58,11 +58,13 @@ public class PlayerMe : PlayerManager
         
         CorrectPosition();
 
+#if UNITY_EDITOR
         using (StreamWriter writer = new ("Assets/Resources/received.txt", append: true))
         {
-            var queueString = string.Join(", ", m_ClientInputQueue.Select(i => i.timestamp));
+            var queueString = string.Join(", ", m_ClientInputQueue.Select(i => $"[{i.timestamp}] {i.deltaPos}"));
             writer.WriteLine($"[{clientInput.timestamp}] ClientReceived: {clientInput.deltaPos}, {positionFromServer}, ({m_ClientInputQueue.Count}), [{TimeSync.GetSyncTime()}] {realPosition}");
-            writer.WriteLine($"\t{queueString}");
+            //writer.WriteLine($"\t{queueString}");
         }
+#endif
     }
 }

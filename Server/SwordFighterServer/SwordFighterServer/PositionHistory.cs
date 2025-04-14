@@ -28,10 +28,12 @@ namespace SwordFighterServer
             }
         }
 
-        public Vector3? GetPositionAt(long targetTimestamp)
+        public bool TryGetPositionAt(long targetTimestamp, out Vector3 pos)
         {
+            pos = default;
+
             if (_positions.Count == 0)
-                return null;
+                return false;
 
             LinkedListNode<TimedPosition> before = null;
             LinkedListNode<TimedPosition> after = null;
@@ -52,16 +54,17 @@ namespace SwordFighterServer
             }
 
             if (before == null)
-                return _positions.First.Value.position;
+                pos = _positions.First.Value.position;
             if (after == null)
-                return _positions.Last.Value.position;
+                pos = _positions.Last.Value.position;
 
             long t1 = before.Value.timestamp;
             long t2 = after.Value.timestamp;
 
             float lerpT = (float)(targetTimestamp - t1) / (t2 - t1);
 
-            return Vector3.Lerp(before.Value.position, after.Value.position, lerpT);
+            pos = Vector3.Lerp(before.Value.position, after.Value.position, lerpT);
+            return true;
         }
     }
 }

@@ -34,13 +34,23 @@ public class PlayerController : MonoBehaviour
     
     private UIManager m_UIManager;
     private CancellationTokenSource _cts;
-
-    private const float TICKS_PER_SEC = 30f;
-    private const float MS_PER_TICK = 1000f / TICKS_PER_SEC;
-    private const int BUFFER_SIZE = 1024;
     private const float SPEED = 4.8f;
 
-    void Awake() {
+    private readonly Dictionary<PlayerSkill, int> _skillDurations = new()
+    {
+        { PlayerSkill.Attack1, 800 },
+        { PlayerSkill.Block, 1500 },
+        { PlayerSkill.Roll, 1000 }
+    };
+
+    private readonly Dictionary<PlayerSkill, float> _skillDistances = new()
+    {
+        { PlayerSkill.Attack1, 0f },
+        { PlayerSkill.Block, 0f },
+        { PlayerSkill.Roll, 5f }
+    };
+
+    private void Awake() {
         m_UIManager = GameManager.instance.m_UIManager;
 
         File.WriteAllText("Assets/Resources/send.txt", string.Empty); // DEBUG
@@ -59,45 +69,61 @@ public class PlayerController : MonoBehaviour
         m_PlayerMe.m_ClientInputQueue.Enqueue(clientInput);
     }
 
-    private void SendInputDataToServer() {
-        if (m_PlayerMe.m_State > PlayerSkill.Move) {
-            return;
-        }
+    public void OnAttack() => UsePlayerSkill(PlayerSkill.Attack1);
 
+    public void OnBlock() => UsePlayerSkill(PlayerSkill.Block);
+
+    public void OnRoll() => UsePlayerSkill(PlayerSkill.Roll);
+
+    private void UsePlayerSkill(PlayerSkill playerSkill)
+    {
+        if (CanUseSkill() == false)
+            return;
+        if (_skillDurations.TryGetValue(playerSkill, out int duration) == false)
+            return;
+        
         _cts?.Cancel(); // 이전 예약 취소
         _cts = new CancellationTokenSource();
-        
+
         var timestamp = TimeSync.GetSyncTime();
-        if (Input.GetButtonDown("Attack1"))
+        var forwardDirection = GetForwardDirection();
+
+        if (_skillDistances.TryGetValue(playerSkill, out var distance) && distance != 0f)
         {
-            m_PlayerMe.ExecutePlayerSkill(PlayerSkill.Attack1, GetForwardDirection());
-            IdleAfterDelay(800, _cts.Token).Forget();
-            ClientSend.PlayerSkill(timestamp, PlayerSkill.Attack1, GetForwardDirection());
-        }
-        else if (Input.GetButtonDown("Block"))
-        {
-            m_PlayerMe.ExecutePlayerSkill(PlayerSkill.Block, GetForwardDirection());
-            IdleAfterDelay(1500, _cts.Token).Forget();
-            ClientSend.PlayerSkill(timestamp, PlayerSkill.Block, GetForwardDirection());
-        }
-        else if (Input.GetButtonDown("Roll"))
-        {
-            var forwardDirection = GetForwardDirection();
-            var rollInput = new ClientInput() {
-                timestamp = TimeSync.GetSyncTime(),
+            var clientInput = new ClientInput() {
+                timestamp = timestamp,
                 movementRaw = inputVector_raw,
                 forwardDirection = forwardDirection,
-                deltaPos = forwardDirection * PlayerManager.ROLL_DISTANCE
+                deltaPos = forwardDirection * distance
             };
-            m_PlayerMe.m_ClientInputQueue.Enqueue(rollInput);
-            m_PlayerMe.ExecutePlayerSkill(PlayerSkill.Roll, GetForwardDirection());
-            IdleAfterDelay(1000, _cts.Token).Forget();
-            ClientSend.PlayerSkill(timestamp, PlayerSkill.Roll, GetForwardDirection());
+            m_PlayerMe.m_ClientInputQueue.Enqueue(clientInput);
         }
-        else if (Input.GetButtonDown("Jump")) // DEBUG
-        {
-            m_PlayerMe.realPosition = new Vector3(m_PlayerMe.realPosition.x + 12f, m_PlayerMe.realPosition.y, m_PlayerMe.realPosition.z);
-        }
+
+        m_PlayerMe.ExecutePlayerSkill(playerSkill, forwardDirection);
+        IdleAfterDelay(duration, _cts.Token).Forget();
+        ClientSend.PlayerSkill(timestamp, playerSkill, forwardDirection);
+    }
+
+    public void OnJump()
+    {
+        if (CanUseSkill() == false)
+            return;
+        
+        _cts?.Cancel(); // 이전 예약 취소
+        _cts = new CancellationTokenSource();
+
+        m_PlayerMe.realPosition = new Vector3(m_PlayerMe.realPosition.x + 12f, m_PlayerMe.realPosition.y, m_PlayerMe.realPosition.z);
+    }
+
+    private bool CanUseSkill() // 최적화 예정
+    {
+        if (m_UIManager.m_UI_ChatInputField.GetWritingChat())
+            return false;
+        if (m_PlayerMe.m_State == PlayerSkill.Dead)
+            return false;
+        if (m_PlayerMe.m_State > PlayerSkill.Move)
+            return false;
+        return true;
     }
 
     private async UniTaskVoid IdleAfterDelay(int delayMilliseconds, CancellationToken token)
@@ -140,6 +166,7 @@ public class PlayerController : MonoBehaviour
         
         SimulateMove(clientInput);
 
+#if UNITY_EDITOR
         if (clientInput.deltaPos != Vector3.zero)
         {
             using (StreamWriter writer = new ("Assets/Resources/send.txt", append: true))
@@ -147,6 +174,7 @@ public class PlayerController : MonoBehaviour
                 writer.WriteLine($"[{clientInput.timestamp}] ClientSend: {clientInput.deltaPos} (position: {m_PlayerMe.realPosition})");
             }
         }
+#endif
     }
 
     void Update()
@@ -161,21 +189,9 @@ public class PlayerController : MonoBehaviour
         }
 
         ControlPlayerMovement();
-        
-
-        if (m_PlayerMe.m_State == PlayerSkill.Dead) {
-            return;
-        }
-
-        //isReady = true; // TEMP
-        if (!m_UIManager.m_UI_ChatInputField.GetWritingChat()) {
-            SendInputDataToServer();
-        }
-
-        //Debug.Log(m_State);
     }
 
-    private Vector3 GetDeltaPosition(Vector3 forwardDirection, Vector2Int movementRaw) { // 이동벡터 반환 및 이동
+    private Vector3 GetDeltaPosition(Vector3 forwardDirection, Vector2Int movementRaw) { // 이동벡터 반환
         if (movementRaw == Vector2Int.zero) {
             return Vector3.zero;
         }

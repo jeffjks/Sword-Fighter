@@ -42,9 +42,7 @@ namespace SwordFighterServer
         public PositionHistory positionHistory = new PositionHistory();
 
         private Queue<ClientInput> _clientInputs = new Queue<ClientInput>();
-
-        private ClientInput _lastClientInput;
-        private Vector3 _lastPosition;
+        private long _lastTimestamp;
 
         private readonly Dictionary<PlayerSkill, int> _skillDuration = new Dictionary<PlayerSkill, int>();
         private readonly List<ScheduledTask> _scheduledTasks = new List<ScheduledTask>();
@@ -77,7 +75,7 @@ namespace SwordFighterServer
         public void Update() // 스레드에 의해 실행. 클라이언트로부터 패킷을 받았을 때마다가 아닌 일정 시간마다 broadcast
         {
             ExecuteSchedule();
-            Move();
+            SimulateMove();
             positionHistory.RecordPosition(Server.GetUnixTime(), position);
         }
 
@@ -118,9 +116,9 @@ namespace SwordFighterServer
                 switch (playerSkill)
                 {
                     case PlayerSkill.Roll:
+                        Console.WriteLine($"[{timestamp}] {position}, {GetRollDestination(position)}");
                         position = GetRollDestination(position);
-                        _lastPosition = position;
-                        ServerSend.UpdatePlayer(id, this, timestamp);
+                        UpdateCurrentPlayer(timestamp);
                         break;
 
                     case PlayerSkill.Attack1:
@@ -130,6 +128,14 @@ namespace SwordFighterServer
 
                 //ServerSend.PlayerState(this);
             }
+        }
+
+        private void UpdateCurrentPlayer(long timestamp)
+        {
+            if (_lastTimestamp > timestamp)
+                return;
+            _lastTimestamp = timestamp;
+            ServerSend.UpdatePlayer(id, this, timestamp);
         }
 
         private void UpdateState(PlayerSkill state)
@@ -156,22 +162,23 @@ namespace SwordFighterServer
                 if (targetPlayerID == id) // 자기자신 제외
                     continue;
 
+                var serverTime = Server.GetUnixTime();
+
                 var otherPlayer = Server.clients[targetPlayerID].player;
 
-                Vector3? otherPosition = otherPlayer.positionHistory.GetPositionAt(Server.GetUnixTime());
-                Vector3? myPosition = positionHistory.GetPositionAt(Server.GetUnixTime());
+                if (otherPlayer.positionHistory.TryGetPositionAt(serverTime, out var otherPosition) == false)
+                    return;
+                if (positionHistory.TryGetPositionAt(serverTime, out var myPosition) == false)
+                    return;
 
                 if (otherPosition == null || myPosition == null)
                     continue;
 
-                Console.WriteLine($"otherPosition: {otherPosition}");
-                Console.WriteLine($"myPosition: {myPosition}");
-
-                float distance_squared = Vector3.DistanceSquared(myPosition.Value, otherPosition.Value);
+                float distance_squared = Vector3.DistanceSquared(myPosition, otherPosition);
 
                 if (distance_squared < AttackRadius * AttackRadius) // 거리 계산
                 {
-                    if (Vector3.Dot(direction, myPosition.Value - otherPosition.Value) < 0) // 방향 계산
+                    if (Vector3.Dot(direction, myPosition - otherPosition) < 0) // 방향 계산
                     {
                         otherPlayer.ChangePlayerHp(id, -AttackDamage);
                     }
@@ -179,7 +186,7 @@ namespace SwordFighterServer
             }
         }
 
-        private void Move()
+        private void SimulateMove()
         {
             while (_clientInputs.Count > 0)
             {
@@ -189,45 +196,12 @@ namespace SwordFighterServer
 
                 if (_clientInputs.Count == 0)
                 {
+                    Console.WriteLine($"[{curInput.timestamp}] {position}");
                     position = ClampPosition(position);
-                    ServerSend.UpdatePlayer(id, this, curInput.timestamp);
+                    UpdateCurrentPlayer(curInput.timestamp);
                     break;
                 }
             }
-
-            /*
-            long deltaTime;
-
-            while (_clientInputs.Count > 0)
-            {
-                ClientInput clientInput = _clientInputs.Dequeue();
-
-                deltaTime = clientInput.timestamp - _lastClientInput.timestamp;
-
-                if (deltaTime <= 0)
-                    continue;
-
-                Console.WriteLine($"[{clientInput.timestamp}] ClientInput: {position} -> {_lastPosition + _lastClientInput.deltaPos * (deltaTime * Constants.TICKS_PER_SEC / 1000f)} ({_lastClientInput.deltaPos}, {deltaTime})");
-                position = _lastPosition + _lastClientInput.deltaPos * (deltaTime * Constants.TICKS_PER_SEC / 1000f);
-
-                direction = clientInput.forwardDirection;
-                movementRaw = clientInput.movementRaw;
-
-                _lastPosition = position;
-                _lastClientInput.timestamp = clientInput.timestamp;
-                deltaPos = clientInput.deltaPos;
-
-                _lastClientInput = clientInput;
-            }
-
-            //position += _lastClientInput.deltaPos;
-            deltaTime = Server.GetUnixTime() - _lastClientInput.timestamp;
-            position = _lastPosition + _lastClientInput.deltaPos * (deltaTime * Constants.TICKS_PER_SEC / 1000f);
-
-            if (sendUpdatePlayer)
-                ServerSend.UpdatePlayer(id, this, _lastClientInput.timestamp);
-
-            position = ClampPosition(position);*/
         }
 
         public void BroadcastPlayer()

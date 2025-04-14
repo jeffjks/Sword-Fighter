@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("SwordFighterServer")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+7579bb2970cf95b992a24f82bf45ac1af8d61850")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+8fb6f1501f62baf1526205a6f0fe7360e35ead7d")]
 [assembly: System.Reflection.AssemblyProductAttribute("SwordFighterServer")]
 [assembly: System.Reflection.AssemblyTitleAttribute("SwordFighterServer")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

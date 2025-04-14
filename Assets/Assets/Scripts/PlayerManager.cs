@@ -32,16 +32,23 @@ public abstract class PlayerManager : MonoBehaviour
     [HideInInspector] public PlayerSkill m_State = PlayerSkill.Idle;
     [HideInInspector] public Vector3 realPosition;
 
+    public PlayerStateMachine m_FSM = new();
+
     protected Vector3 correctedPos;
 
     private string _username;
     private bool m_CanMove = true;
 
-    public const float ROLL_DISTANCE = 5f;
+    private const float ROLL_DISTANCE = 5f;
 
     public void Init() {
         SetUserNameUI(_username);
         SetCurrentHitPoint(m_CurrentHp);
+    }
+
+    private void Start()
+    {
+        m_FSM.OnIdle();
     }
 
     public bool IsDead() {
@@ -105,7 +112,7 @@ public abstract class PlayerManager : MonoBehaviour
 
     private IEnumerator RollCoroutine(Vector3 character_forward) {
         Vector3 start_pos = transform.position;
-        Vector3 target_pos = correctedPos + character_forward*ROLL_DISTANCE;
+        Vector3 target_pos = realPosition + character_forward*ROLL_DISTANCE; // TEMP
         target_pos = ClampPosition(target_pos);
 
         realPosition = target_pos;
@@ -113,6 +120,7 @@ public abstract class PlayerManager : MonoBehaviour
         float ctime = 0f;
         float roll_time = 1f;
         SetRotation(character_forward);
+        Debug.Log($"{start_pos}, ({correctedPos}), {target_pos}");
 
         while (ctime < roll_time) {
             float dt = (1f - Mathf.Cos(ctime*180f*Mathf.Deg2Rad)) / 2f;
