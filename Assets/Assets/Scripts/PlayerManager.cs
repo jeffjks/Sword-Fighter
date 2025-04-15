@@ -26,15 +26,13 @@ public abstract class PlayerManager : MonoBehaviour
     public int id;
     public Transform m_CharacterModel;
     public Collider m_PlayerCollider;
-    public Sword m_Sword;
     public UI_HpBar m_UI_HpBar;
     public int m_CurrentHp;
     public int m_MaxHp;
-    public Vector3 deltaPos;
+    public Vector3 m_DeltaPos;
 
     [HideInInspector] public Vector2 m_Movement = Vector2.zero;
-    [HideInInspector] public Vector3 direction = Vector3.forward;
-    [HideInInspector] public Vector3 realPosition;
+    [HideInInspector] public Vector3 m_RealPosition;
 
     protected Vector3 correctedPos;
 
@@ -168,10 +166,10 @@ public abstract class PlayerManager : MonoBehaviour
 
     private IEnumerator RollCoroutine(Vector3 character_forward) {
         Vector3 start_pos = transform.position;
-        Vector3 target_pos = realPosition + character_forward*ROLL_DISTANCE; // TEMP
+        Vector3 target_pos = m_RealPosition + character_forward*ROLL_DISTANCE; // TEMP
         target_pos = ClampPosition(target_pos);
 
-        realPosition = target_pos;
+        m_RealPosition = target_pos;
 
         float ctime = 0f;
         float roll_time = 1f;
@@ -188,8 +186,10 @@ public abstract class PlayerManager : MonoBehaviour
         yield break;
     }
 
-    protected void SetRotation(Vector3 direction) {
-        m_CharacterModel.rotation = Quaternion.LookRotation(direction);
+    public void SetRotation(Vector3 direction)
+    {
+        var rotationDirection = new Vector3(direction.x, 0f, direction.z);
+        m_CharacterModel.rotation = Quaternion.LookRotation(rotationDirection);
     }
 
     public abstract void Start_DealDamage_Attack1();
@@ -228,6 +228,6 @@ public abstract class PlayerManager : MonoBehaviour
     private void InterpolatePosition() {
         if (CurrentSkill == PlayerSkill.Roll)
             return;
-        transform.position = Vector3.Slerp(transform.position, realPosition, 0.25f);
+        transform.position = Vector3.Slerp(transform.position, m_RealPosition, 0.25f);
     }
 }

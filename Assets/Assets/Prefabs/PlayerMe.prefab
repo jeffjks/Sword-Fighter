@@ -2054,8 +2054,9 @@ GameObject:
   - component: {fileID: 6102899817224009438}
   - component: {fileID: 4309770918851652384}
   - component: {fileID: 486075619493683137}
-  - component: {fileID: 8019605307383838337}
   - component: {fileID: 3308443238430782296}
+  - component: {fileID: 8019605307383838337}
+  - component: {fileID: 6293821526412654205}
   - component: {fileID: 8998400725810758741}
   m_Layer: 0
   m_Name: PlayerMe
@@ -2152,21 +2153,6 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!114 &8019605307383838337
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6102899817233482914}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 435569bd339117541aa0cbabd925bba4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_PlayerMe: {fileID: 3308443238430782296}
-  m_CameraObject: {fileID: 8939089762944725779}
-  m_CharacterModel: {fileID: 6708934368766509321}
 --- !u!114 &3308443238430782296
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2187,12 +2173,39 @@ MonoBehaviour:
   m_UI_HpBar: {fileID: 0}
   m_CurrentHp: 100
   m_MaxHp: 100
-  deltaPos: {x: 0, y: 0, z: 0}
-  m_MovementRaw: {x: 0, y: 0}
+  m_DeltaPos: {x: 0, y: 0, z: 0}
   m_Movement: {x: 0, y: 0}
   direction: {x: 0, y: 0, z: 1}
-  m_State: 0
   realPosition: {x: 0, y: 0, z: 0}
+--- !u!114 &8019605307383838337
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6102899817233482914}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 435569bd339117541aa0cbabd925bba4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_PlayerMe: {fileID: 3308443238430782296}
+  m_CameraObject: {fileID: 8939089762944725779}
+  m_CharacterModel: {fileID: 6708934368766509321}
+--- !u!114 &6293821526412654205
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6102899817233482914}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c186b5c5d93eb9d4b8cbf11439f771cf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_PlayerController: {fileID: 8019605307383838337}
+  m_PlayerMe: {fileID: 3308443238430782296}
 --- !u!114 &8998400725810758741
 MonoBehaviour:
   m_ObjectHideFlags: 0

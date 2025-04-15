@@ -40,11 +40,11 @@ public class PlayerMe : PlayerManager
 
         correctedPos = newPos;
         
-        var distance = Vector3.Distance(correctedPos, realPosition);
+        var distance = Vector3.Distance(correctedPos, m_RealPosition);
 
         if (distance > PositionCorrectionThreshold) { // 계산한 좌표가 맞는지 확인
-            Debug.Log($"Wrong ({distance}): {realPosition} -> {correctedPos}");
-            realPosition = correctedPos;
+            Debug.Log($"Wrong ({distance}): {m_RealPosition} -> {correctedPos}");
+            m_RealPosition = correctedPos;
         }
     }
 
@@ -62,7 +62,7 @@ public class PlayerMe : PlayerManager
         using (StreamWriter writer = new ("Assets/Resources/received.txt", append: true))
         {
             var queueString = string.Join(", ", m_ClientInputQueue.Select(i => $"[{i.timestamp}] {i.deltaPos}"));
-            writer.WriteLine($"[{clientInput.timestamp}] ClientReceived: {clientInput.deltaPos}, {positionFromServer}, ({m_ClientInputQueue.Count}), [{TimeSync.GetSyncTime()}] {realPosition}");
+            writer.WriteLine($"[{clientInput.timestamp}] ClientReceived: {clientInput.deltaPos}, {positionFromServer}, ({m_ClientInputQueue.Count}), [{TimeSync.GetSyncTime()}] {m_RealPosition}");
             //writer.WriteLine($"\t{queueString}");
         }
 #endif

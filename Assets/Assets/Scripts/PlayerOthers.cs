@@ -29,10 +29,9 @@ public class PlayerOthers : PlayerManager
     protected override void Update() {
         base.Update();
 
-        correctedPos = realPosition;
+        correctedPos = m_RealPosition;
         
         ProcessMovement();
-        SetRotation(direction);
     }
 
     public override void Start_DealDamage_Attack1() {
@@ -47,14 +46,15 @@ public class PlayerOthers : PlayerManager
         long now = TimeSync.GetSyncTime();
         int delay = Mathf.Clamp((int) (now - clientInput.timestamp), 0, MaxPredictionTime); // 예측 제한 500ms
         
-        _prevPosition = realPosition;
-        _nextPosition = position + deltaPos * (delay / 1000f);
+        _prevPosition = m_RealPosition;
+        _nextPosition = position + m_DeltaPos * (delay / 1000f);
         _deltaPos = _nextPosition - position;
-        _nextDeltaPos = deltaPos;
+        _nextDeltaPos = m_DeltaPos;
         _hasTarget = true;
-        direction = clientInput.forwardDirection;
         m_Movement = clientInput.inputVector;
         _moveTimer = 0f;
+
+        SetRotation(clientInput.forwardDirection);
 
         //var playerMovement = new PlayerMovement(timestamp, position, deltaPos);
         //_playerMovementQueue.Enqueue(playerMovement);
@@ -64,7 +64,7 @@ public class PlayerOthers : PlayerManager
     {
         if (!_hasTarget)
         {
-            realPosition += _deltaPos;
+            m_RealPosition += _deltaPos;
             return;
         }
 
@@ -79,6 +79,6 @@ public class PlayerOthers : PlayerManager
             _moveTimer = 0f;
         }
 
-        realPosition = Vector3.Lerp(_prevPosition, _nextPosition, t);
+        m_RealPosition = Vector3.Lerp(_prevPosition, _nextPosition, t);
     }
 }

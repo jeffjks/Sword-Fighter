@@ -49,7 +49,6 @@ namespace SwordFighterServer
         public PositionHistory positionHistory = new PositionHistory();
 
         private Queue<ClientInput> _clientInputs = new Queue<ClientInput>();
-        private long _lastTimestamp;
 
         private readonly Dictionary<PlayerSkill, int> _skillDuration = new Dictionary<PlayerSkill, int>();
         private readonly List<ScheduledTask> _scheduledTasks = new List<ScheduledTask>();
@@ -140,9 +139,6 @@ namespace SwordFighterServer
 
         private void UpdateCurrentPlayer(long timestamp)
         {
-            if (_lastTimestamp > timestamp)
-                return;
-            _lastTimestamp = timestamp;
             ServerSend.UpdatePlayer(id, this, timestamp);
         }
 
