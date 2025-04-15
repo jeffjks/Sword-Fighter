@@ -5,18 +5,19 @@ using Cysharp.Threading.Tasks;
 using System;
 using System.Threading;
 using System.IO;
+using UnityEngine.InputSystem;
 
 public struct ClientInput
 {
     public long timestamp;
-    public Vector2Int movementRaw;
+    public Vector2 inputVector;
     public Vector3 forwardDirection;
     public Vector3 deltaPos;
 
-    public ClientInput(long timestamp, Vector2Int movementRaw, Vector3 forwardDirection, Vector3 deltaPos)
+    public ClientInput(long timestamp, Vector2 inputVector, Vector3 forwardDirection, Vector3 deltaPos)
     {
         this.timestamp = timestamp;
-        this.movementRaw = movementRaw;
+        this.inputVector = inputVector;
         this.forwardDirection = forwardDirection;
         this.deltaPos = deltaPos;
     }
@@ -29,7 +30,6 @@ public class PlayerController : MonoBehaviour
     public Transform m_CameraObject;
     public Transform m_CharacterModel;
     
-    private Vector2Int inputVector_raw;
     private Vector2 inputVector;
     
     private UIManager m_UIManager;
@@ -58,7 +58,7 @@ public class PlayerController : MonoBehaviour
     }
 
     private void SendMovementDataToServer(ClientInput clientInput) {
-        if (m_PlayerMe.m_State == PlayerSkill.Dead)
+        if (m_PlayerMe.CurrentState == PlayerState.Dead)
             return;
 
         if (clientInput.deltaPos == Vector3.zero)
@@ -67,6 +67,17 @@ public class PlayerController : MonoBehaviour
         ClientSend.PlayerMovement(clientInput, m_PlayerMe.realPosition);
         
         m_PlayerMe.m_ClientInputQueue.Enqueue(clientInput);
+    }
+
+    public void OnMove(InputValue inputValue)
+    {
+        Debug.Log($"OnMove: {inputValue.Get<Vector2>()} ({CanUseSkill()})");
+        if (CanUseSkill() == false)
+            return;
+        
+        inputVector = inputValue.Get<Vector2>();
+
+        m_PlayerMe.m_Movement = inputVector;
     }
 
     public void OnAttack() => UsePlayerSkill(PlayerSkill.Attack1);
@@ -90,15 +101,11 @@ public class PlayerController : MonoBehaviour
 
         if (_skillDistances.TryGetValue(playerSkill, out var distance) && distance != 0f)
         {
-            var clientInput = new ClientInput() {
-                timestamp = timestamp,
-                movementRaw = inputVector_raw,
-                forwardDirection = forwardDirection,
-                deltaPos = forwardDirection * distance
-            };
+            var clientInput = new ClientInput(timestamp, inputVector, forwardDirection, forwardDirection * distance);
             m_PlayerMe.m_ClientInputQueue.Enqueue(clientInput);
         }
 
+        inputVector = Vector2.zero;
         m_PlayerMe.ExecutePlayerSkill(playerSkill, forwardDirection);
         IdleAfterDelay(duration, _cts.Token).Forget();
         ClientSend.PlayerSkill(timestamp, playerSkill, forwardDirection);
@@ -119,9 +126,9 @@ public class PlayerController : MonoBehaviour
     {
         if (m_UIManager.m_UI_ChatInputField.GetWritingChat())
             return false;
-        if (m_PlayerMe.m_State == PlayerSkill.Dead)
+        if (m_PlayerMe.CurrentState == PlayerState.Dead)
             return false;
-        if (m_PlayerMe.m_State > PlayerSkill.Move)
+        if (m_PlayerMe.CurrentState > PlayerState.Move)
             return false;
         return true;
     }
@@ -131,16 +138,11 @@ public class PlayerController : MonoBehaviour
         try
         {
             await UniTask.Delay(delayMilliseconds, cancellationToken: token);
-            m_PlayerMe.m_State = PlayerSkill.Idle;
+            m_PlayerMe.CurrentState = PlayerState.Idle;
         }
         catch (OperationCanceledException)
         {
         }
-    }
-
-    private void ControlPlayerMovement() {
-        m_PlayerMe.m_Movement = inputVector;
-        m_PlayerMe.m_MovementRaw = inputVector_raw;
     }
 
     private Vector3 GetForwardDirection()
@@ -150,21 +152,42 @@ public class PlayerController : MonoBehaviour
 
     private void FixedUpdate() // Camera
     {
+        SimulateMove();
+        
+        if (m_PlayerMe.CurrentState == PlayerState.Idle || m_PlayerMe.CurrentState == PlayerState.Move)
+        {
+            Quaternion rot = Quaternion.LookRotation(GetForwardDirection());
+            m_CharacterModel.rotation = rot;
+        }
+    }
+
+    private Vector3 GetDeltaPosition()
+    {
+        if (inputVector == Vector2.zero) {
+            return Vector3.zero;
+        }
+
+        var forwardDirection = GetForwardDirection();
+        
+        //m_PlayerMe.m_State = 1;
+        Vector3 cam_right = Vector3.Cross(forwardDirection, Vector3.down);
+        Vector3 deltaPos = (cam_right*inputVector.x + forwardDirection*inputVector.y)*SPEED / 30f;
+        
+        return deltaPos;
+    }
+
+    private void SimulateMove()
+    {
         Vector3 forwardDirection = GetForwardDirection();
 
-        var clientInput = new ClientInput {
-            timestamp = TimeSync.GetSyncTime(),
-            movementRaw = inputVector_raw,
-            forwardDirection = forwardDirection,
-            deltaPos = GetDeltaPosition(forwardDirection, inputVector_raw)
-        };
-        /*
-        if (clientInput.deltaPos != Vector3.zero) {
-            Debug.Log($"{clientInput.deltaPos.x}, {clientInput.deltaPos.y}, {clientInput.deltaPos.z}");
-        }*/
-        SendMovementDataToServer(clientInput);
+        var clientInput = new ClientInput(TimeSync.GetSyncTime(), inputVector, forwardDirection, GetDeltaPosition());
+
+        m_PlayerMe.deltaPos = clientInput.deltaPos;
+        m_PlayerMe.realPosition += clientInput.deltaPos;
+        m_PlayerMe.realPosition = m_PlayerMe.ClampPosition(m_PlayerMe.realPosition);
+        //transform.position = m_PlayerMe.realPosition;
         
-        SimulateMove(clientInput);
+        SendMovementDataToServer(clientInput);
 
 #if UNITY_EDITOR
         if (clientInput.deltaPos != Vector3.zero)
@@ -175,45 +198,5 @@ public class PlayerController : MonoBehaviour
             }
         }
 #endif
-    }
-
-    void Update()
-    {
-        if (GameManager.instance.m_UIManager.m_UI_ChatInputField.GetWritingChat() || m_PlayerMe.m_State > PlayerSkill.Move) {
-            inputVector_raw = Vector2Int.zero;
-            inputVector = Vector2.zero;
-        }
-        else {
-            inputVector_raw = new Vector2Int((int) Input.GetAxisRaw("Horizontal"), (int) Input.GetAxisRaw("Vertical"));
-            inputVector = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
-        }
-
-        ControlPlayerMovement();
-    }
-
-    private Vector3 GetDeltaPosition(Vector3 forwardDirection, Vector2Int movementRaw) { // 이동벡터 반환
-        if (movementRaw == Vector2Int.zero) {
-            return Vector3.zero;
-        }
-        
-        //m_PlayerMe.m_State = 1;
-        Vector3 cam_right = Vector3.Cross(forwardDirection, Vector3.down);
-        Vector3 deltaPos = (cam_right*movementRaw.x + forwardDirection*movementRaw.y)*SPEED / 30f;
-        
-        return deltaPos;
-    }
-
-    private void SimulateMove(ClientInput clientInput)
-    {
-        if (m_PlayerMe.m_State == PlayerSkill.Idle || m_PlayerMe.m_State == PlayerSkill.Move)
-        {
-            Quaternion rot = Quaternion.LookRotation(clientInput.forwardDirection);
-            m_CharacterModel.rotation = rot;
-        }
-
-        m_PlayerMe.deltaPos = clientInput.deltaPos;
-        m_PlayerMe.realPosition += clientInput.deltaPos;
-        m_PlayerMe.realPosition = m_PlayerMe.ClampPosition(m_PlayerMe.realPosition);
-        //transform.position = m_PlayerMe.realPosition;
     }
 }

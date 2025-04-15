@@ -13,6 +13,13 @@ public abstract class PlayerStateBase
 
 // ───────── 상위 상태들 ─────────
 
+public class DeadState : PlayerStateBase
+{
+    public DeadState(PlayerStateMachine _fsm) : base(_fsm) { }
+    public override void Enter() { }
+    public override void Update() { }
+}
+
 public class IdleState : PlayerStateBase
 {
     public IdleState(PlayerStateMachine _fsm) : base(_fsm) { }
@@ -106,6 +113,7 @@ public class PlayerStateMachine
     public void Update() => currentState?.Update();
 
     // 상태 전환 예시
+    public void OnDead() => SetState(new DeadState(this));
     public void OnMove() => SetState(new MoveState(this));
     public void OnIdle() => SetState(new IdleState(this));
     public void OnAttack() => SetSkill(new AttackState(this));

@@ -11,11 +11,17 @@ public struct ClientInput
     public Vector3 deltaPos;
 }
 
-public enum PlayerSkill
+public enum PlayerState
 {
     Dead = -1,
     Idle,
     Move,
+    UsingSkill
+}
+
+public enum PlayerSkill
+{
+    None,
     Block,
     Attack1,
     Attack2,
@@ -38,7 +44,8 @@ namespace SwordFighterServer
 
         public int hitPoints_max;
         public int hitPoints;
-        public PlayerSkill state;
+        public PlayerState currentState;
+        public PlayerSkill currentSkill;
         public PositionHistory positionHistory = new PositionHistory();
 
         private Queue<ClientInput> _clientInputs = new Queue<ClientInput>();
@@ -65,7 +72,7 @@ namespace SwordFighterServer
             direction = new Vector3(0, 0, 1);
             hitPoints_max = 100;
             hitPoints = hitPoints_max;
-            state = PlayerSkill.Idle;
+            currentState = PlayerState.Idle;
 
             _skillDuration.Add(PlayerSkill.Attack1, 800);
             _skillDuration.Add(PlayerSkill.Block, 1500);
@@ -107,11 +114,12 @@ namespace SwordFighterServer
         {
             this.direction = direction;
 
-            if (state == PlayerSkill.Idle || state == PlayerSkill.Move)
+            if (currentState == PlayerState.Idle || currentState == PlayerState.Move)
             {
-                state = playerSkill;
+                currentState = PlayerState.UsingSkill;
+                currentSkill = playerSkill;
                 var serverTime = Server.GetUnixTime();
-                AddSchedule(() => UpdateState(PlayerSkill.Idle), _skillDuration[playerSkill]);
+                AddSchedule(ReturnToIdle, _skillDuration[playerSkill]);
 
                 switch (playerSkill)
                 {
@@ -138,15 +146,15 @@ namespace SwordFighterServer
             ServerSend.UpdatePlayer(id, this, timestamp);
         }
 
-        private void UpdateState(PlayerSkill state)
+        private void ReturnToIdle()
         {
-            this.state = state;
-            //ServerSend.PlayerState(this);
+            currentState = PlayerState.Idle;
+            currentSkill = PlayerSkill.None;
         }
 
         private bool IsBlocking(int fromId)
         {
-            if (state != PlayerSkill.Block)
+            if (currentSkill != PlayerSkill.Block)
             {
                 return false;
             }
@@ -246,7 +254,7 @@ namespace SwordFighterServer
         {
             if (hitPoints <= 0)
             {
-                if (state != PlayerSkill.Roll && !IsBlocking(fromClient))
+                if (currentSkill != PlayerSkill.Roll && !IsBlocking(fromClient))
                 {
                     this.hitPoints += hitPoints;
                     ServerSend.PlayerHp(this);
@@ -255,7 +263,7 @@ namespace SwordFighterServer
 
             if (this.hitPoints <= 0)
             {
-                state = PlayerSkill.Dead;
+                currentState = PlayerState.Dead;
                 ServerSend.PlayerState(this); // 캐릭터 사망 판정
             }
         }

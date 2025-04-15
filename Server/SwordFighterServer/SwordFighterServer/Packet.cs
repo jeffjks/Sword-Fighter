@@ -13,7 +13,7 @@ namespace SwordFighterServer
         spawnPlayer,
         updatePlayer,
         broadcastPlayer,
-        playerSkill,
+        playerState,
         playerHp,
         playerDisconnected
     }

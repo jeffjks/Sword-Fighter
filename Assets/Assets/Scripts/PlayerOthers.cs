@@ -53,7 +53,7 @@ public class PlayerOthers : PlayerManager
         _nextDeltaPos = deltaPos;
         _hasTarget = true;
         direction = clientInput.forwardDirection;
-        m_Movement = clientInput.movementRaw;
+        m_Movement = clientInput.inputVector;
         _moveTimer = 0f;
 
         //var playerMovement = new PlayerMovement(timestamp, position, deltaPos);
