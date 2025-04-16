@@ -14,8 +14,8 @@ public enum ServerPackets
     welcome = 1,
     requestServerTime,
     spawnPlayer,
-    updatePlayer,
-    broadcastPlayer,
+    updatePlayerPosition,
+    playerSkill,
     playerState,
     playerHp,
     playerDisconnected

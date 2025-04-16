@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
-using static SwordFighterServer.Client;
+using System.Numerics;
 
 namespace SwordFighterServer
 {
@@ -74,38 +73,39 @@ namespace SwordFighterServer
             SendTCPData(toClient, packet);
         }
 
-        public static void UpdatePlayer(int toClient, Player player, long timestamp) // 플레이어 움직임, 좌표, 방향 패킷 전달
+        public static void UpdatePlayerPosition(int seqNum, Player player, long timestamp, bool isBroadcasting = false) // 플레이어 움직임, 좌표, 방향 패킷 전달
         {
-            Packet packet = new Packet((int)ServerPackets.updatePlayer);
+            Packet packet = new Packet((int)ServerPackets.updatePlayerPosition);
 
             packet.Write(player.id);
 
+            packet.Write(seqNum);
             packet.Write(timestamp);
-            packet.Write(player.position);
             packet.Write(player.direction);
             packet.Write(player.deltaPos);
+            packet.Write(player.inputVector);
+            packet.Write(player.position);
 
-            SendTCPData(toClient, packet);
+            if (isBroadcasting)
+                SendTCPDataToAll(player.id, player.id, packet);
+            else
+                SendTCPData(player.id, packet);
         }
 
-        public static void BroadcastPlayer(Player player) // 플레이어 움직임, 좌표, 방향 패킷 전달
+        public static void PlayerSkill(int playerId, long timestamp, PlayerSkill playerSkill, Vector3 facingDirection) // 플레이어 스킬
         {
-            Packet packet = new Packet((int)ServerPackets.broadcastPlayer);
-            var timestamp = Server.GetUnixTime();
-            var playerID = player.id;
+            Packet packet = new Packet((int)ServerPackets.playerSkill);
 
-            packet.Write(playerID);
+            packet.Write(playerId);
 
             packet.Write(timestamp);
-            packet.Write(player.position);
-            packet.Write(player.direction);
-            packet.Write(player.deltaPos);
-            packet.Write(player.movementRaw);
+            packet.Write((int)playerSkill);
+            packet.Write(facingDirection);
 
-            SendTCPDataToAll(playerID, playerID, packet);
+            SendTCPDataToAll(playerId, playerId, packet);
         }
 
-        public static void PlayerState(Player player) // 플레이어 스킬 상태 패킷 전달
+        public static void PlayerState(Player player) // 플레이어 상태
         {
             Packet packet = new Packet((int)ServerPackets.playerState);
 

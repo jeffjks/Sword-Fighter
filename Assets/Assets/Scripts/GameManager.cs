@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.IO;
 
 public class GameManager : MonoBehaviour
 {
@@ -23,6 +24,9 @@ public class GameManager : MonoBehaviour
     private void Awake() // Singleton
     {
         Application.targetFrameRate = 30;
+
+        File.WriteAllText("Assets/Resources/send.txt", string.Empty); // DEBUG
+        File.WriteAllText("Assets/Resources/received.txt", string.Empty); // DEBUG
         
         if (instance == null) {
             instance = this;

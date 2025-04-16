@@ -2,19 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public struct PlayerMovement
-{
-    public long timestamp;
-    public Vector3 position;
-    public Vector3 deltaPos;
-
-    public PlayerMovement(long timestamp, Vector3 position, Vector3 direction, Vector3 deltaPos) {
-        this.timestamp = timestamp;
-        this.position = position;
-        this.deltaPos = deltaPos;
-    }
-}
-
 public class PlayerOthers : PlayerManager
 {
     private Vector3 _prevPosition, _nextPosition;
@@ -42,22 +29,29 @@ public class PlayerOthers : PlayerManager
         return;
     }
 
-    public override void OnStateReceived(Vector3 position, ClientInput clientInput) {
+    public override void OnStateReceived(int seqNum, long timestamp, Vector3 facingDirection, Vector3 deltaPos, Vector2 inputVector, Vector3 position)
+    {
         long now = TimeSync.GetSyncTime();
-        int delay = Mathf.Clamp((int) (now - clientInput.timestamp), 0, MaxPredictionTime); // 예측 제한 500ms
+        int delay = Mathf.Clamp((int) (now - timestamp), 0, MaxPredictionTime); // 예측 제한 500ms
         
         _prevPosition = m_RealPosition;
         _nextPosition = position + m_DeltaPos * (delay / 1000f);
         _deltaPos = _nextPosition - position;
         _nextDeltaPos = m_DeltaPos;
         _hasTarget = true;
-        m_Movement = clientInput.inputVector;
         _moveTimer = 0f;
 
-        SetRotation(clientInput.forwardDirection);
+        SetMovementAnimation(inputVector);
+
+        SetRotation(facingDirection);
 
         //var playerMovement = new PlayerMovement(timestamp, position, deltaPos);
         //_playerMovementQueue.Enqueue(playerMovement);
+    }
+
+    public override void OnStateReceived(long timestamp, PlayerSkill playerSkill, Vector3 facingDirection)
+    {
+        ExecutePlayerSkill(playerSkill, facingDirection);
     }
 
     private void ProcessMovement()

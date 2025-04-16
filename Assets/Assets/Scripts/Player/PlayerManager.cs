@@ -22,7 +22,6 @@ public enum PlayerSkill
 
 public abstract class PlayerManager : MonoBehaviour
 {
-    public Animator m_Animator;
     public int id;
     public Transform m_CharacterModel;
     public Collider m_PlayerCollider;
@@ -30,8 +29,10 @@ public abstract class PlayerManager : MonoBehaviour
     public int m_CurrentHp;
     public int m_MaxHp;
     public Vector3 m_DeltaPos;
+    public Animator m_Animator;
+    public bool m_IsMovable = true;
 
-    [HideInInspector] public Vector2 m_Movement = Vector2.zero;
+
     [HideInInspector] public Vector3 m_RealPosition;
 
     protected Vector3 correctedPos;
@@ -70,8 +71,13 @@ public abstract class PlayerManager : MonoBehaviour
     // [HideInInspector] public PlayerSkill m_PlayerSkill = PlayerSkill.None;
 
     private string _username;
-    private bool m_IsMovable = true;
+    private Vector2 _animationMovement;
 
+
+    private readonly int _animatorMovementHorizontal = Animator.StringToHash("MovementHorizontal");
+    private readonly int _animatorMovementVertical = Animator.StringToHash("MovementVertical");
+    private readonly int _animatorPlayerState = Animator.StringToHash("State");
+    private readonly int _animatorPlayerSkill = Animator.StringToHash("Skill");
     private const float ROLL_DISTANCE = 5f;
 
     public void Init() {
@@ -82,11 +88,15 @@ public abstract class PlayerManager : MonoBehaviour
     private void OnEnable()
     {
         OnPlayerStateChanged += HandleStateChange;
+        OnPlayerStateChanged += SetStateAnimation;
+        OnPlayerSkillChanged += SetSkillAnimation;
     }
 
     private void OnDisable()
     {
         OnPlayerStateChanged -= HandleStateChange;
+        OnPlayerStateChanged -= SetStateAnimation;
+        OnPlayerSkillChanged -= SetSkillAnimation;
     }
 
     private void HandleStateChange(PlayerState playerState)
@@ -96,15 +106,15 @@ public abstract class PlayerManager : MonoBehaviour
             case PlayerState.Dead:
                 m_IsMovable = false;
                 m_PlayerCollider.enabled = false;
-                m_Animator.SetInteger("State", (int)playerState);
-                m_Movement = Vector2.zero;
+                //m_Animator.SetInteger("State", (int)playerState);
+                // m_Movement = Vector2.zero;
                 break;
             case PlayerState.Idle:
             case PlayerState.Move:
                 CurrentSkill = PlayerSkill.None;
                 break;
             case PlayerState.UsingSkill:
-                m_Movement = Vector2.zero;
+                // m_Movement = Vector2.zero;
                 break;
         }
     }
@@ -115,21 +125,8 @@ public abstract class PlayerManager : MonoBehaviour
             return;
         }
 
-        if (CurrentState == PlayerState.Idle || CurrentState == PlayerState.Move) {
-            if (m_Movement != Vector2.zero) {
-                if (m_IsMovable) {
-                    CurrentState = PlayerState.Move;
-                }
-            }
-            else {
-                CurrentState = PlayerState.Idle;
-            }
-        }
-
-        m_Animator.SetFloat("MovementHorizontal", m_Movement.x);
-        m_Animator.SetFloat("MovementVertical", m_Movement.y);
-        m_Animator.SetInteger("Skill", (int)CurrentSkill);
-        m_Animator.SetInteger("State", (int)CurrentState);
+        m_Animator.SetFloat(_animatorMovementHorizontal, _animationMovement.x, 0.25f, Time.deltaTime);
+        m_Animator.SetFloat(_animatorMovementVertical, _animationMovement.y, 0.25f, Time.deltaTime);
 
         //Debug.Log($"Skill: {CurrentSkill}, State: {CurrentState}");
 
@@ -174,7 +171,7 @@ public abstract class PlayerManager : MonoBehaviour
         float ctime = 0f;
         float roll_time = 1f;
         SetRotation(character_forward);
-        Debug.Log($"{start_pos}, ({correctedPos}), {target_pos}");
+        //Debug.Log($"{start_pos}, ({correctedPos}), {target_pos}");
 
         while (ctime < roll_time) {
             float dt = (1f - Mathf.Cos(ctime*180f*Mathf.Deg2Rad)) / 2f;
@@ -196,7 +193,8 @@ public abstract class PlayerManager : MonoBehaviour
 
     public abstract void Finish_DealDamage_Attack1();
 
-    public abstract void OnStateReceived(Vector3 position, ClientInput clientInput);
+    public abstract void OnStateReceived(int seqNum, long timestamp, Vector3 facingDirection, Vector3 deltaPos, Vector2 inputVector, Vector3 position);
+    public abstract void OnStateReceived(long timestamp, PlayerSkill playerSkill, Vector3 facingDirection);
 
     public Vector3 ClampPosition(Vector3 position)
     {
@@ -206,6 +204,21 @@ public abstract class PlayerManager : MonoBehaviour
             position.y,
             Mathf.Clamp(position.z, -50f, 50f)
         );
+    }
+
+    private void SetStateAnimation(PlayerState playerState)
+    {
+        m_Animator.SetInteger(_animatorPlayerState, (int) playerState);
+    }
+
+    private void SetSkillAnimation(PlayerSkill playerSkill)
+    {
+        m_Animator.SetInteger(_animatorPlayerSkill, (int) playerSkill);
+    }
+
+    public void SetMovementAnimation(Vector2 movement)
+    {
+        _animationMovement = movement;
     }
 
     public void SetUserName(string _username) {

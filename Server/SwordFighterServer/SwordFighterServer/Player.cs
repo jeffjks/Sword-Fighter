@@ -1,14 +1,46 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Numerics;
-using System.Threading.Tasks;
 
-public struct ClientInput
+public interface IClientInput
 {
-    public long timestamp;
-    public Vector2 movementRaw;
-    public Vector3 forwardDirection;
+    public int SeqNum { get; set; }
+    public long Timestamp { get; set; }
+    public Vector3 FacingDirection { get; set; }
+}
+
+public class MoveInput : IClientInput
+{
+    public int SeqNum { get; set; }
+    public long Timestamp { get; set; }
+    public Vector3 FacingDirection { get; set; }
+
     public Vector3 deltaPos;
+    public Vector2 inputVector;
+
+    public MoveInput(long timestamp, Vector3 facingDirection, Vector3 deltaPos, Vector2 inputVector)
+    {
+        Timestamp = timestamp;
+        FacingDirection = facingDirection;
+        this.deltaPos = deltaPos;
+        this.inputVector = inputVector;
+    }
+}
+
+public class SkillInput : IClientInput
+{
+    public int SeqNum { get; set; }
+    public long Timestamp { get; set; }
+    public Vector3 FacingDirection { get; set; }
+
+    public PlayerSkill playerSkill;
+
+    public SkillInput(long timestamp, Vector3 facingDirection, PlayerSkill playerSkill)
+    {
+        Timestamp = timestamp;
+        FacingDirection = facingDirection;
+        this.playerSkill = playerSkill;
+    }
 }
 
 public enum PlayerState
@@ -40,7 +72,7 @@ namespace SwordFighterServer
         public Vector3 position;
         public Vector3 direction; // 방향 벡터
         public Vector3 deltaPos;
-        public Vector2 movementRaw;
+        public Vector2 inputVector;
 
         public int hitPoints_max;
         public int hitPoints;
@@ -48,13 +80,14 @@ namespace SwordFighterServer
         public PlayerSkill currentSkill;
         public PositionHistory positionHistory = new PositionHistory();
 
-        private Queue<ClientInput> _clientInputs = new Queue<ClientInput>();
+        private Dictionary<int, IClientInput> _clientInputs = new Dictionary<int, IClientInput>();
 
         private readonly Dictionary<PlayerSkill, int> _skillDuration = new Dictionary<PlayerSkill, int>();
         private readonly List<ScheduledTask> _scheduledTasks = new List<ScheduledTask>();
 
         private const float AttackRadius = 2.5f;
         private const int AttackDamage = 20;
+        private int _lastSeqNum;
 
         public class ScheduledTask
         {
@@ -81,7 +114,7 @@ namespace SwordFighterServer
         public void Update() // 스레드에 의해 실행. 클라이언트로부터 패킷을 받았을 때마다가 아닌 일정 시간마다 broadcast
         {
             ExecuteSchedule();
-            SimulateMove();
+            SimulateInput();
             positionHistory.RecordPosition(Server.GetUnixTime(), position);
         }
 
@@ -109,23 +142,54 @@ namespace SwordFighterServer
             }
         }
 
-        public void ExecutePlayerSkill(long timestamp, PlayerSkill playerSkill, Vector3 direction)
+        private void SimulateInput()
         {
-            this.direction = direction;
+            while (_clientInputs.TryGetValue(_lastSeqNum, out var curInput))
+            {
+                ExecuteInput(curInput);
+                ServerSend.UpdatePlayerPosition(_lastSeqNum, this, curInput.Timestamp);
+                _clientInputs.Remove(_lastSeqNum);
+                _lastSeqNum++;
+            }
+        }
 
+        public void AddClientInput(IClientInput clientInput)
+        {
+            _clientInputs.Add(clientInput.SeqNum, clientInput);
+        }
+
+        private void ExecuteInput(IClientInput clientInput)
+        {
+            direction = clientInput.FacingDirection;
+
+            switch (clientInput)
+            {
+                case MoveInput moveInput:
+                    position = ClampPosition(position + moveInput.deltaPos);
+                    inputVector = moveInput.inputVector;
+                    Console.WriteLine($"[{clientInput.SeqNum}, {moveInput.Timestamp}] {position}");
+                    break;
+
+                case SkillInput skillInput:
+                    ExecutePlayerSkill(skillInput);
+                    break;
+            }
+        }
+
+        public void ExecutePlayerSkill(SkillInput skillInput)
+        {
             if (currentState == PlayerState.Idle || currentState == PlayerState.Move)
             {
                 currentState = PlayerState.UsingSkill;
-                currentSkill = playerSkill;
+                currentSkill = skillInput.playerSkill;
                 var serverTime = Server.GetUnixTime();
-                AddSchedule(ReturnToIdle, _skillDuration[playerSkill]);
+                AddSchedule(ReturnToIdle, _skillDuration[skillInput.playerSkill]);
 
-                switch (playerSkill)
+                switch (skillInput.playerSkill)
                 {
                     case PlayerSkill.Roll:
-                        Console.WriteLine($"[{timestamp}] {position}, {GetRollDestination(position)}");
+                        Console.WriteLine($"[{skillInput.SeqNum}, {skillInput.Timestamp}] {skillInput.playerSkill}: {position}, {GetRollDestination(position)}");
                         position = GetRollDestination(position);
-                        UpdateCurrentPlayer(timestamp);
                         break;
 
                     case PlayerSkill.Attack1:
@@ -133,13 +197,8 @@ namespace SwordFighterServer
                         break;
                 }
 
-                //ServerSend.PlayerState(this);
+                ServerSend.PlayerSkill(id, skillInput.Timestamp, currentSkill, skillInput.FacingDirection);
             }
-        }
-
-        private void UpdateCurrentPlayer(long timestamp)
-        {
-            ServerSend.UpdatePlayer(id, this, timestamp);
         }
 
         private void ReturnToIdle()
@@ -190,33 +249,9 @@ namespace SwordFighterServer
             }
         }
 
-        private void SimulateMove()
-        {
-            while (_clientInputs.Count > 0)
-            {
-                ClientInput curInput = _clientInputs.Dequeue();
-
-                position += curInput.deltaPos;
-
-                if (_clientInputs.Count == 0)
-                {
-                    Console.WriteLine($"[{curInput.timestamp}] {position}");
-                    position = ClampPosition(position);
-                    UpdateCurrentPlayer(curInput.timestamp);
-                    break;
-                }
-            }
-        }
-
         public void BroadcastPlayer()
         {
-            ServerSend.BroadcastPlayer(this);
-        }
-
-        public void SetMovement(ClientInput clientInput, Vector3 position)
-        {
-            //this.position = position;
-            _clientInputs.Enqueue(clientInput);
+            ServerSend.UpdatePlayerPosition(-1, this, Server.GetUnixTime(), true);
         }
 
         private Vector3 GetRollDestination(Vector3 position)

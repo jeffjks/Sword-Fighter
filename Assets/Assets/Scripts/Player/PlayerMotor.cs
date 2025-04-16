@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using System.IO;
 
 public class PlayerMotor : MonoBehaviour
 {
@@ -9,56 +8,41 @@ public class PlayerMotor : MonoBehaviour
     public PlayerMe m_PlayerMe;
 
     private const float SPEED = 4.8f;
-    
-    private void Awake()
-    {
-        File.WriteAllText("Assets/Resources/send.txt", string.Empty); // DEBUG
-        File.WriteAllText("Assets/Resources/received.txt", string.Empty); // DEBUG
-    }
 
     private void FixedUpdate() // Camera
     {
         SimulateMove();
     }
 
-    private void SendMovementDataToServer(ClientInput clientInput) {
-        if (m_PlayerMe.CurrentState != PlayerState.Move)
-            return;
-
-        if (clientInput.deltaPos == Vector3.zero)
-            return;
-
-        ClientSend.PlayerMovement(clientInput, m_PlayerMe.m_RealPosition);
-        
-        m_PlayerMe.m_ClientInputQueue.Enqueue(clientInput);
-    }
-    
-
     private void SimulateMove()
     {
-        if (m_PlayerMe.CurrentState != PlayerState.Move)
+        var inputVector = m_PlayerController.InputVector;
+
+        if (inputVector == Vector2.zero)
+        {
+            if (m_PlayerMe.CurrentState == PlayerState.Move)
+                m_PlayerMe.CurrentState = PlayerState.Idle;
+            return;
+        }
+        if ((m_PlayerMe.CurrentState == PlayerState.Idle || m_PlayerMe.CurrentState == PlayerState.Move) == false)
+            return;
+        if (!m_PlayerMe.m_IsMovable)
             return;
         
+        m_PlayerMe.CurrentState = PlayerState.Move;
         Vector3 forwardDirection = m_PlayerController.GetForwardDirection();
 
-        var clientInput = new ClientInput(TimeSync.GetSyncTime(), m_PlayerController.InputVector, forwardDirection, GetDeltaPosition());
+        var timestamp = TimeSync.GetSyncTime();
 
-        m_PlayerMe.m_DeltaPos = clientInput.deltaPos;
-        m_PlayerMe.m_RealPosition += clientInput.deltaPos;
-        m_PlayerMe.m_RealPosition = m_PlayerMe.ClampPosition(m_PlayerMe.m_RealPosition);
-        //transform.position = m_PlayerMe.realPosition;
+        var deltaPos = GetDeltaPosition();
+
+        m_PlayerMe.m_DeltaPos = deltaPos;
+        m_PlayerMe.m_RealPosition = m_PlayerMe.ClampPosition(m_PlayerMe.m_RealPosition + deltaPos);
+        transform.position = m_PlayerMe.ClampPosition(transform.position + deltaPos);
         
-        SendMovementDataToServer(clientInput);
-
-#if UNITY_EDITOR
-        if (clientInput.deltaPos != Vector3.zero)
-        {
-            using (StreamWriter writer = new ("Assets/Resources/send.txt", append: true))
-            {
-                writer.WriteLine($"[{clientInput.timestamp}] ClientSend: {clientInput.deltaPos} (position: {m_PlayerMe.m_RealPosition})");
-            }
-        }
-#endif
+        var clientInput = new ClientInput(timestamp, deltaPos);
+        ClientSend.PlayerMovement(timestamp, forwardDirection, deltaPos, inputVector);
+        m_PlayerMe.m_ClientInputQueue.Enqueue(clientInput);
     }
 
     private Vector3 GetDeltaPosition()

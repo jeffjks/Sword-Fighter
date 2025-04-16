@@ -2,9 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Cysharp.Threading.Tasks;
+using System.IO;
 
 public class ClientSend : MonoBehaviour
 {
+    private static int SeqNum;
+
     private static void SendTCPData(Packet packet) {
         if (GameManager.IsDebugPing)
         {
@@ -53,24 +56,37 @@ public class ClientSend : MonoBehaviour
         SendTCPData(packet);
     }
 
-    public static void PlayerSkill(long timestamp, PlayerSkill playerSkill, Vector3 direction) { // 움직임을 제외한 나머지 키 입력에 대한 패킷 (스킬 등)
+    public static void PlayerSkill(long timestamp, Vector3 facingDirection, PlayerSkill playerSkill) { // 움직임을 제외한 나머지 키 입력에 대한 패킷 (스킬 등)
         Packet packet = new ((int) ClientPackets.playerSkill);
+        packet.Write(SeqNum++);
         packet.Write(timestamp);
+        packet.Write(facingDirection);
         packet.Write((int) playerSkill);
-        packet.Write(direction);
 
         SendTCPData(packet);
     }
 
-    public static void PlayerMovement(ClientInput clientInput, Vector3 position) { // 움직임에 관련된 키 입력에 대한 패킷
+    public static void PlayerMovement(long timestamp, Vector3 facingDirection, Vector3 deltaPos, Vector2 inputVector) { // 움직임에 관련된 키 입력에 대한 패킷
         Packet packet = new ((int) ClientPackets.playerMovement);
-        packet.Write(clientInput.timestamp);
-        packet.Write(clientInput.inputVector);
-        packet.Write(clientInput.forwardDirection);
-        packet.Write(clientInput.deltaPos);
-        packet.Write(position);
+
+        var tempSeqNum = SeqNum;
+        packet.Write(SeqNum++);
+        packet.Write(timestamp);
+        packet.Write(facingDirection);
+        packet.Write(deltaPos);
+        packet.Write(inputVector);
 
         SendTCPData(packet);
+
+#if UNITY_EDITOR
+        if (deltaPos != Vector3.zero)
+        {
+            using (StreamWriter writer = new ("Assets/Resources/send.txt", append: true))
+            {
+                writer.WriteLine($"[{tempSeqNum}, {timestamp}] ClientSend: {deltaPos} (inputVector: {inputVector})");
+            }
+        }
+#endif
     }
 
     public static void ChangeHp(int hitPoints, int targetPlayer) {

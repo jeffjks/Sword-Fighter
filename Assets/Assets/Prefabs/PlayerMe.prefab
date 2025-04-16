@@ -2169,14 +2169,12 @@ MonoBehaviour:
   id: 0
   m_CharacterModel: {fileID: 6708934368766509321}
   m_PlayerCollider: {fileID: 4309770918851652384}
-  m_Sword: {fileID: 1472356315278172450}
   m_UI_HpBar: {fileID: 0}
   m_CurrentHp: 100
   m_MaxHp: 100
   m_DeltaPos: {x: 0, y: 0, z: 0}
   m_Movement: {x: 0, y: 0}
-  direction: {x: 0, y: 0, z: 1}
-  realPosition: {x: 0, y: 0, z: 0}
+  m_RealPosition: {x: 0, y: 0, z: 0}
 --- !u!114 &8019605307383838337
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2191,7 +2189,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_PlayerMe: {fileID: 3308443238430782296}
   m_CameraObject: {fileID: 8939089762944725779}
-  m_CharacterModel: {fileID: 6708934368766509321}
 --- !u!114 &6293821526412654205
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -9,15 +9,11 @@ using UnityEngine.InputSystem;
 public struct ClientInput
 {
     public long timestamp;
-    public Vector2 inputVector;
-    public Vector3 forwardDirection;
     public Vector3 deltaPos;
 
-    public ClientInput(long timestamp, Vector2 inputVector, Vector3 forwardDirection, Vector3 deltaPos)
+    public ClientInput(long timestamp, Vector3 deltaPos)
     {
         this.timestamp = timestamp;
-        this.inputVector = inputVector;
-        this.forwardDirection = forwardDirection;
         this.deltaPos = deltaPos;
     }
 }
@@ -56,7 +52,7 @@ public class PlayerController : MonoBehaviour
     {
         InputVector = inputValue.Get<Vector2>();
 
-        m_PlayerMe.m_Movement = InputVector;
+        m_PlayerMe.SetMovementAnimation(InputVector);
     }
 
     public void OnAttack() => UsePlayerSkill(PlayerSkill.Attack1);
@@ -78,15 +74,15 @@ public class PlayerController : MonoBehaviour
         var timestamp = TimeSync.GetSyncTime();
         var forwardDirection = GetForwardDirection();
 
-        if (_skillDistances.TryGetValue(playerSkill, out var distance) && distance != 0f)
+        if (_skillDistances.TryGetValue(playerSkill, out var distance) && distance != 0f) // 임시로 모든 스킬 일괄처리
         {
-            var clientInput = new ClientInput(timestamp, InputVector, forwardDirection, forwardDirection * distance);
+            var clientInput = new ClientInput(timestamp, forwardDirection * distance);
             m_PlayerMe.m_ClientInputQueue.Enqueue(clientInput);
-        }
 
-        m_PlayerMe.ExecutePlayerSkill(playerSkill, forwardDirection);
-        IdleAfterDelay(duration, _cts.Token).Forget();
-        ClientSend.PlayerSkill(timestamp, playerSkill, forwardDirection);
+            m_PlayerMe.ExecutePlayerSkill(playerSkill, forwardDirection);
+            IdleAfterDelay(duration, _cts.Token).Forget();
+            ClientSend.PlayerSkill(timestamp, forwardDirection, playerSkill);
+        }
     }
 
     public void OnJump()

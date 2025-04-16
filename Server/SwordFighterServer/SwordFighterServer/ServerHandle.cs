@@ -40,32 +40,36 @@ namespace SwordFighterServer
 
         public static void PlayerSkill(int fromClient, Packet packet) // 플레이어의 스킬 사용
         {
+            int seqNum = packet.ReadInt();
             var timestamp = packet.ReadLong();
-            var playerSkill = packet.ReadInt();
-            var direction = packet.ReadVector3();
+            var facingDirection = packet.ReadVector3();
+            var playerSkill = (PlayerSkill) packet.ReadInt();
+
+            var skillInput = new SkillInput(timestamp, facingDirection, playerSkill);
+            skillInput.SeqNum = seqNum;
 
             if (Server.clients[fromClient].player != null)
             {
-                Server.clients[fromClient].player.ExecutePlayerSkill(timestamp, (PlayerSkill) playerSkill, direction);
+                Server.clients[fromClient].player.AddClientInput(skillInput);
             }
         }
 
         public static void PlayerMovement(int fromClient, Packet packet) // 플레이어의 움직임, 좌표, 방향 벡터
         {
-            ClientInput clientInput = new ClientInput()
-            {
-                timestamp = packet.ReadLong(),
-                movementRaw = packet.ReadVector2(),
-                forwardDirection = packet.ReadVector3(),
-                deltaPos = packet.ReadVector3()
-            };
+            int seqNum = packet.ReadInt();
+            var timestamp = packet.ReadLong();
+            var facingDirection = packet.ReadVector3();
+            var deltaPos = packet.ReadVector3();
+            var inputVector = packet.ReadVector2();
 
-            Vector3 position = packet.ReadVector3();
+            var moveInput = new MoveInput(timestamp, facingDirection, deltaPos, inputVector);
+            moveInput.SeqNum = seqNum;
+
             //Quaternion rotation = packet.ReadQuaternion();
 
             if (Server.clients[fromClient].player != null)
             {
-                Server.clients[fromClient].player.SetMovement(clientInput, position);
+                Server.clients[fromClient].player.AddClientInput(moveInput);
             }
         }
 

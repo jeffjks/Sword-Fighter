@@ -7,9 +7,9 @@ using System.Linq;
 public class PlayerMe : PlayerManager
 {
     public readonly Queue<ClientInput> m_ClientInputQueue = new ();
-
-    private ClientInput _lastClientInput;
+    
     private Vector3 _lastPositionFromServer;
+    private long _lastTimestamp;
 
     private const float PositionCorrectionThreshold = 0.25f;
 
@@ -26,16 +26,18 @@ public class PlayerMe : PlayerManager
         //m_Sword.FinishDeal();
     }
     
-    private void CorrectPosition()
+    private void CorrectPosition(int seqNum, long timestamp)
     {
-        while (m_ClientInputQueue.Count > 0 && m_ClientInputQueue.Peek().timestamp <= _lastClientInput.timestamp) { // 처리된 요청은 삭제
+        while (m_ClientInputQueue.Count > 0 && m_ClientInputQueue.Peek().timestamp <= _lastTimestamp) { // 처리된 요청은 삭제
             m_ClientInputQueue.Dequeue();
         }
 
         Vector3 newPos = _lastPositionFromServer; // 서버로부터 받은 가장 최신 좌표
         
+        var tempStr = string.Empty;
         foreach (var input in m_ClientInputQueue) { // 지금까지 input기록에 따라 시뮬레이션하여 현재 좌표 계산
             newPos += input.deltaPos;
+            tempStr += $"{input.timestamp}, {input.deltaPos}\n";
         }
 
         correctedPos = newPos;
@@ -43,28 +45,33 @@ public class PlayerMe : PlayerManager
         var distance = Vector3.Distance(correctedPos, m_RealPosition);
 
         if (distance > PositionCorrectionThreshold) { // 계산한 좌표가 맞는지 확인
-            Debug.Log($"Wrong ({distance}): {m_RealPosition} -> {correctedPos}");
+            Debug.Log($"[{seqNum}, {timestamp}] Wrong ({_lastPositionFromServer}): {m_RealPosition} -> {correctedPos}\n{tempStr}");
             m_RealPosition = correctedPos;
         }
     }
 
-    public override void OnStateReceived(Vector3 positionFromServer, ClientInput clientInput)
+    public override void OnStateReceived(int seqNum, long timestamp, Vector3 facingDirection, Vector3 deltaPos, Vector2 inputVector, Vector3 position)
     {
-        if (clientInput.timestamp < _lastClientInput.timestamp)
+        if (timestamp < _lastTimestamp)
             return;
         
-        _lastPositionFromServer = positionFromServer;
-        _lastClientInput = clientInput;
+        _lastPositionFromServer = position;
+        _lastTimestamp = timestamp;
         
-        CorrectPosition();
+        CorrectPosition(seqNum, timestamp);
 
 #if UNITY_EDITOR
         using (StreamWriter writer = new ("Assets/Resources/received.txt", append: true))
         {
-            var queueString = string.Join(", ", m_ClientInputQueue.Select(i => $"[{i.timestamp}] {i.deltaPos}"));
-            writer.WriteLine($"[{clientInput.timestamp}] ClientReceived: {clientInput.deltaPos}, {positionFromServer}, ({m_ClientInputQueue.Count}), [{TimeSync.GetSyncTime()}] {m_RealPosition}");
+            var queueString = string.Join(", ", m_ClientInputQueue.Select(i => $"[{i.timestamp}]"));
+            writer.WriteLine($"[{seqNum}, {timestamp}] ClientReceived: {position}), [{TimeSync.GetSyncTime()}] {m_RealPosition}");
             //writer.WriteLine($"\t{queueString}");
         }
 #endif
+    }
+
+    public override void OnStateReceived(long timestamp, PlayerSkill playerSkill, Vector3 facingDirection)
+    {
+        throw new System.NotImplementedException();
     }
 }

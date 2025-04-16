@@ -36,38 +36,31 @@ public class ClientHandle : MonoBehaviour
         ClientSend.SpawnPlayerReceived(id);
     }
 
-    public static void UpdatePlayer(Packet packet) {
+    public static void UpdatePlayerPosition(Packet packet) {
         int id = packet.ReadInt();
 
+        var seqNum = packet.ReadInt();
         var timestamp = packet.ReadLong();
-        Vector3 position = packet.ReadVector3();
-        Vector3 direction = packet.ReadVector3();
+        Vector3 facingDirection = packet.ReadVector3();
         Vector3 deltaPos = packet.ReadVector3();
-        var clientInput = new ClientInput(timestamp, Vector2Int.zero, direction, deltaPos);
+        Vector2 inputVector = packet.ReadVector2();
+        Vector3 position = packet.ReadVector3();
 
-        if (Client.instance.myId == id) {
-            GameManager.players[id].OnStateReceived(position, clientInput);
-        }
-        else { // 다른 플레이어
-            Debug.LogError("Received UpdatePlayer Packet with Controller's PlayerID");
-        }
+        GameManager.players[id].OnStateReceived(seqNum, timestamp, facingDirection, deltaPos, inputVector, position);
     }
 
-    public static void BroadcastPlayer(Packet packet) {
+    public static void PlayerSkill(Packet packet) {
         int id = packet.ReadInt();
-
+        
         var timestamp = packet.ReadLong();
-        Vector3 position = packet.ReadVector3();
-        Vector3 direction = packet.ReadVector3();
-        Vector3 deltaPos = packet.ReadVector3();
-        Vector2Int movementRaw = Vector2Int.FloorToInt(packet.ReadVector2());
-        var clientInput = new ClientInput(timestamp, movementRaw, direction, deltaPos);
+        var playerSkill = (PlayerSkill) packet.ReadInt();
+        Vector3 facingDirection = packet.ReadVector3();
 
         if (Client.instance.myId == id) { // 자신 플레이어
             Debug.LogError("Received UpdatePlayer Packet with Other's PlayerID");
         }
         else { // 다른 플레이어
-            GameManager.players[id].OnStateReceived(position, clientInput);
+            GameManager.players[id].OnStateReceived(timestamp, playerSkill, facingDirection);
         }
     }
 
