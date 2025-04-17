@@ -11,7 +11,7 @@ public class PlayerOthers : PlayerManager
     private float _moveTimer;
 
     private const int MaxPredictionTime = 500;
-    private const int UpdateInterval = 200;
+    private const int UpdateInterval = 100;
 
     protected override void Update() {
         base.Update();
