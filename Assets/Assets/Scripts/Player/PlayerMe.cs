@@ -40,13 +40,13 @@ public class PlayerMe : PlayerManager
             tempStr += $"{input.timestamp}, {input.deltaPos}\n";
         }
 
-        correctedPos = newPos;
+        _correctedPos = newPos;
         
-        var distance = Vector3.Distance(correctedPos, m_RealPosition);
+        var distance = Vector3.Distance(_correctedPos, m_RealPosition);
 
         if (distance > PositionCorrectionThreshold) { // 계산한 좌표가 맞는지 확인
-            Debug.Log($"[{seqNum}, {timestamp}] Wrong ({_lastPositionFromServer}): {m_RealPosition} -> {correctedPos}\n{tempStr}");
-            m_RealPosition = correctedPos;
+            Debug.Log($"[{seqNum}, {timestamp}] Wrong ({_lastPositionFromServer}): {m_RealPosition} -> {_correctedPos}\n{tempStr}");
+            m_RealPosition = _correctedPos;
         }
     }
 

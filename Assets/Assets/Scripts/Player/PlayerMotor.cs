@@ -7,6 +7,7 @@ public class PlayerMotor : MonoBehaviour
     public PlayerController m_PlayerController;
     public PlayerMe m_PlayerMe;
 
+    private Vector2 _prevInputVector;
     private const float SPEED = 4.8f;
 
     private void FixedUpdate() // Camera
@@ -18,12 +19,14 @@ public class PlayerMotor : MonoBehaviour
     {
         var inputVector = m_PlayerController.InputVector;
 
-        if (inputVector == Vector2.zero)
+        if (inputVector == Vector2.zero && _prevInputVector == Vector2.zero)
         {
             if (m_PlayerMe.CurrentState == PlayerState.Move)
                 m_PlayerMe.CurrentState = PlayerState.Idle;
             return;
         }
+        _prevInputVector = inputVector;
+
         if ((m_PlayerMe.CurrentState == PlayerState.Idle || m_PlayerMe.CurrentState == PlayerState.Move) == false)
             return;
         if (!m_PlayerMe.m_IsMovable)

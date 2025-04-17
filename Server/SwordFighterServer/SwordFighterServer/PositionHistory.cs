@@ -54,12 +54,24 @@ namespace SwordFighterServer
             }
 
             if (before == null)
+            {
                 pos = _positions.First.Value.position;
+                return true;
+            }
             if (after == null)
+            {
                 pos = _positions.Last.Value.position;
+                return true;
+            }
 
             long t1 = before.Value.timestamp;
             long t2 = after.Value.timestamp;
+
+            if (t1 == t2)
+            {
+                pos = after.Value.position;
+                return true;
+            }
 
             float lerpT = (float)(targetTimestamp - t1) / (t2 - t1);
 

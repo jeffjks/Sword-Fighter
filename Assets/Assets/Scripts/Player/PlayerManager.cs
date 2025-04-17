@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
+using Cysharp.Threading.Tasks;
+using System.Threading;
+using System;
 
 public enum PlayerState
 {
@@ -31,12 +34,19 @@ public abstract class PlayerManager : MonoBehaviour
     public Vector3 m_DeltaPos;
     public Animator m_Animator;
     public bool m_IsMovable = true;
+    public readonly Dictionary<PlayerSkill, int> m_SkillDurations = new()
+    {
+        { PlayerSkill.Attack1, 800 },
+        { PlayerSkill.Block, 1500 },
+        { PlayerSkill.Roll, 1000 }
+    };
 
 
     [HideInInspector] public Vector3 m_RealPosition;
 
-    protected Vector3 correctedPos;
+    protected Vector3 _correctedPos;
 
+    private CancellationTokenSource _cts;
     private PlayerState _currentState;
     private PlayerSkill _currentSkill;
 
@@ -143,20 +153,44 @@ public abstract class PlayerManager : MonoBehaviour
         //Debug.Log(m_State);
     }
 
-    public void ExecutePlayerSkill(PlayerSkill playerSkill, Vector3 direction)
+    public bool ExecutePlayerSkill(long timestamp, PlayerSkill playerSkill, Vector3 facingDirection)
     {
-        CurrentSkill = playerSkill;
-
+        if (m_SkillDurations.TryGetValue(playerSkill, out int duration) == false)
+            return false;
         if (playerSkill == PlayerSkill.None)
-            return;
+            return false;
+        
+        _cts?.Cancel(); // 이전 예약 취소
+        _cts = new CancellationTokenSource();
+        
+        IdleAfterDelay(duration, _cts.Token).Forget();
+
+        if (this is PlayerMe)
+            ClientSend.PlayerSkill(timestamp, facingDirection, playerSkill);
+
+
+        CurrentSkill = playerSkill;
         
         CurrentState = PlayerState.UsingSkill;
 
         switch(playerSkill)
         {
             case PlayerSkill.Roll:
-                StartRoll(direction);
+                StartRoll(facingDirection);
                 break;
+        }
+        return true;
+    }
+
+    private async UniTaskVoid IdleAfterDelay(int delayMilliseconds, CancellationToken token)
+    {
+        try
+        {
+            await UniTask.Delay(delayMilliseconds, cancellationToken: token);
+            CurrentState = PlayerState.Idle;
+        }
+        catch (OperationCanceledException)
+        {
         }
     }
 

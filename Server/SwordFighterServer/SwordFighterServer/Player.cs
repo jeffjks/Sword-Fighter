@@ -166,6 +166,7 @@ namespace SwordFighterServer
             {
                 case MoveInput moveInput:
                     position = ClampPosition(position + moveInput.deltaPos);
+                    deltaPos = moveInput.deltaPos;
                     inputVector = moveInput.inputVector;
                     Console.WriteLine($"[{clientInput.SeqNum}, {moveInput.Timestamp}] {position}");
                     break;
@@ -184,6 +185,8 @@ namespace SwordFighterServer
                 currentSkill = skillInput.playerSkill;
                 var serverTime = Server.GetUnixTime();
                 AddSchedule(ReturnToIdle, _skillDuration[skillInput.playerSkill]);
+                deltaPos = Vector3.Zero;
+                inputVector = Vector2.Zero;
 
                 switch (skillInput.playerSkill)
                 {

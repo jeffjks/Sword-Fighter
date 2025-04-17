@@ -16,7 +16,7 @@ public class PlayerOthers : PlayerManager
     protected override void Update() {
         base.Update();
 
-        correctedPos = m_RealPosition;
+        _correctedPos = m_RealPosition;
         
         ProcessMovement();
     }
@@ -40,6 +40,9 @@ public class PlayerOthers : PlayerManager
         _nextDeltaPos = m_DeltaPos;
         _hasTarget = true;
         _moveTimer = 0f;
+        
+        if (CurrentState == PlayerState.Idle || CurrentState == PlayerState.Move)
+            CurrentState = (deltaPos == Vector3.zero) ? PlayerState.Idle : PlayerState.Move;
 
         SetMovementAnimation(inputVector);
 
@@ -51,7 +54,7 @@ public class PlayerOthers : PlayerManager
 
     public override void OnStateReceived(long timestamp, PlayerSkill playerSkill, Vector3 facingDirection)
     {
-        ExecutePlayerSkill(playerSkill, facingDirection);
+        ExecutePlayerSkill(timestamp, playerSkill, facingDirection);
     }
 
     private void ProcessMovement()

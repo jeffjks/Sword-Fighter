@@ -1,9 +1,5 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
-using Cysharp.Threading.Tasks;
-using System;
-using System.Threading;
 using UnityEngine.InputSystem;
 
 public struct ClientInput
@@ -27,14 +23,6 @@ public class PlayerController : MonoBehaviour
     public Vector2 InputVector { get; private set; }
     
     private UIManager m_UIManager;
-    private CancellationTokenSource _cts;
-
-    private readonly Dictionary<PlayerSkill, int> _skillDurations = new()
-    {
-        { PlayerSkill.Attack1, 800 },
-        { PlayerSkill.Block, 1500 },
-        { PlayerSkill.Roll, 1000 }
-    };
 
     private readonly Dictionary<PlayerSkill, float> _skillDistances = new()
     {
@@ -65,23 +53,20 @@ public class PlayerController : MonoBehaviour
     {
         if (CanUseSkill() == false)
             return;
-        if (_skillDurations.TryGetValue(playerSkill, out int duration) == false)
+        if (m_PlayerMe.m_SkillDurations.TryGetValue(playerSkill, out int duration) == false)
             return;
-        
-        _cts?.Cancel(); // 이전 예약 취소
-        _cts = new CancellationTokenSource();
 
         var timestamp = TimeSync.GetSyncTime();
-        var forwardDirection = GetForwardDirection();
+        var facingDirection = GetForwardDirection();
 
         if (_skillDistances.TryGetValue(playerSkill, out var distance)) // 임시로 모든 스킬 일괄처리
         {
-            var clientInput = new ClientInput(timestamp, forwardDirection * distance);
-            m_PlayerMe.m_ClientInputQueue.Enqueue(clientInput);
+            var result = m_PlayerMe.ExecutePlayerSkill(timestamp, playerSkill, facingDirection);
+            if (result == false)
+                return;
 
-            m_PlayerMe.ExecutePlayerSkill(playerSkill, forwardDirection);
-            IdleAfterDelay(duration, _cts.Token).Forget();
-            ClientSend.PlayerSkill(timestamp, forwardDirection, playerSkill);
+            var clientInput = new ClientInput(timestamp, facingDirection * distance);
+            m_PlayerMe.m_ClientInputQueue.Enqueue(clientInput);
         }
     }
 
@@ -89,9 +74,6 @@ public class PlayerController : MonoBehaviour
     {
         if (CanUseSkill() == false)
             return;
-        
-        _cts?.Cancel(); // 이전 예약 취소
-        _cts = new CancellationTokenSource();
 
         m_PlayerMe.m_RealPosition = new Vector3(m_PlayerMe.m_RealPosition.x + 12f, m_PlayerMe.m_RealPosition.y, m_PlayerMe.m_RealPosition.z);
     }
@@ -103,18 +85,6 @@ public class PlayerController : MonoBehaviour
         if (m_PlayerMe.CurrentState == PlayerState.Dead || m_PlayerMe.CurrentState == PlayerState.UsingSkill)
             return false;
         return true;
-    }
-
-    private async UniTaskVoid IdleAfterDelay(int delayMilliseconds, CancellationToken token)
-    {
-        try
-        {
-            await UniTask.Delay(delayMilliseconds, cancellationToken: token);
-            m_PlayerMe.CurrentState = PlayerState.Idle;
-        }
-        catch (OperationCanceledException)
-        {
-        }
     }
 
     public Vector3 GetForwardDirection()
