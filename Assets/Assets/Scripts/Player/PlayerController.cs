@@ -74,7 +74,7 @@ public class PlayerController : MonoBehaviour
         var timestamp = TimeSync.GetSyncTime();
         var forwardDirection = GetForwardDirection();
 
-        if (_skillDistances.TryGetValue(playerSkill, out var distance) && distance != 0f) // 임시로 모든 스킬 일괄처리
+        if (_skillDistances.TryGetValue(playerSkill, out var distance)) // 임시로 모든 스킬 일괄처리
         {
             var clientInput = new ClientInput(timestamp, forwardDirection * distance);
             m_PlayerMe.m_ClientInputQueue.Enqueue(clientInput);

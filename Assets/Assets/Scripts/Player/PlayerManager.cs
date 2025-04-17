@@ -47,6 +47,8 @@ public abstract class PlayerManager : MonoBehaviour
         }
         set
         {
+            if (_currentState == value)
+                return;
             _currentState = value;
             OnPlayerStateChanged?.Invoke(_currentState);
         }
@@ -59,6 +61,8 @@ public abstract class PlayerManager : MonoBehaviour
         }
         set
         {
+            if (_currentSkill == value)
+                return;
             _currentSkill = value;
             OnPlayerSkillChanged?.Invoke(_currentSkill);
         }
