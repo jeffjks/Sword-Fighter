@@ -2165,7 +2165,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 289b4c0074991c4498fdf7531dae8fd6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Animator: {fileID: 6102899817224009438}
   id: 0
   m_CharacterModel: {fileID: 6708934368766509321}
   m_PlayerCollider: {fileID: 4309770918851652384}
@@ -2173,7 +2172,8 @@ MonoBehaviour:
   m_CurrentHp: 100
   m_MaxHp: 100
   m_DeltaPos: {x: 0, y: 0, z: 0}
-  m_Movement: {x: 0, y: 0}
+  m_Animator: {fileID: 6102899817224009438}
+  m_IsMovable: 1
   m_RealPosition: {x: 0, y: 0, z: 0}
 --- !u!114 &8019605307383838337
 MonoBehaviour:
@@ -2239,7 +2239,7 @@ MonoBehaviour:
     m_ActionName: ActionMap/PlayerSkill[/Keyboard/f,/Keyboard/r,/Keyboard/space]
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: PC
-  m_DefaultActionMap: ActionMap
+  m_DefaultActionMap: 05ee8f41-4ffa-4ef3-8f3b-fea1a46d9e91
   m_SplitScreenIndex: -1
   m_Camera: {fileID: 0}
 --- !u!1 &6102899817233482916
