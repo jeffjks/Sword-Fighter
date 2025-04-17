@@ -21,12 +21,19 @@ public class GameManager : MonoBehaviour
     [HideInInspector]
     public PlayerController m_PlayerController;
 
+    public static string dirSend = $"{Application.dataPath}/Debug";
+    public static string dirReceived = $"{Application.dataPath}/Debug";
+
     private void Awake() // Singleton
     {
         Application.targetFrameRate = 30;
 
-        File.WriteAllText("Assets/Resources/send.txt", string.Empty); // DEBUG
-        File.WriteAllText("Assets/Resources/received.txt", string.Empty); // DEBUG
+        if (!Directory.Exists(dirSend))
+            Directory.CreateDirectory(dirSend);
+        if (!Directory.Exists(dirReceived))
+            Directory.CreateDirectory(dirReceived);
+        File.WriteAllText($"{dirSend}/send.txt", string.Empty); // DEBUG
+        File.WriteAllText($"{dirReceived}/received.txt", string.Empty); // DEBUG
         
         if (instance == null) {
             instance = this;

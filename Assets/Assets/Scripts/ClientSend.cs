@@ -81,7 +81,7 @@ public class ClientSend : MonoBehaviour
 #if UNITY_EDITOR
         if (deltaPos != Vector3.zero)
         {
-            using (StreamWriter writer = new ("Assets/Resources/send.txt", append: true))
+            using (StreamWriter writer = new ($"{GameManager.dirSend}/send.txt", append: true))
             {
                 writer.WriteLine($"[{tempSeqNum}, {timestamp}] ClientSend: {deltaPos} (inputVector: {inputVector})");
             }

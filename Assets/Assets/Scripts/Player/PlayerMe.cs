@@ -61,7 +61,7 @@ public class PlayerMe : PlayerManager
         CorrectPosition(seqNum, timestamp);
 
 #if UNITY_EDITOR
-        using (StreamWriter writer = new ("Assets/Resources/received.txt", append: true))
+        using (StreamWriter writer = new ($"{GameManager.dirReceived}/send.txt", append: true))
         {
             var queueString = string.Join(", ", m_ClientInputQueue.Select(i => $"[{i.timestamp}]"));
             writer.WriteLine($"[{seqNum}, {timestamp}] ClientReceived: {position}), [{TimeSync.GetSyncTime()}] {m_RealPosition}");
