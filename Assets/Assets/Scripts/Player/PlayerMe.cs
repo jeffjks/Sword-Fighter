@@ -52,11 +52,12 @@ public class PlayerMe : PlayerManager
 
     public override void OnStateReceived(int seqNum, long timestamp, Vector3 facingDirection, Vector3 deltaPos, Vector2 inputVector, Vector3 position)
     {
-        if (timestamp < _lastTimestamp)
+        if (seqNum < _lastSeqNum)
             return;
         
         _lastPositionFromServer = position;
         _lastTimestamp = timestamp;
+        _lastSeqNum = seqNum;
         
         CorrectPosition(seqNum, timestamp);
 

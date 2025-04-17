@@ -58,12 +58,21 @@ public class ClientSend : MonoBehaviour
 
     public static void PlayerSkill(long timestamp, Vector3 facingDirection, PlayerSkill playerSkill) { // 움직임을 제외한 나머지 키 입력에 대한 패킷 (스킬 등)
         Packet packet = new ((int) ClientPackets.playerSkill);
+
+        var tempSeqNum = SeqNum;
         packet.Write(SeqNum++);
         packet.Write(timestamp);
         packet.Write(facingDirection);
         packet.Write((int) playerSkill);
 
         SendTCPData(packet);
+
+#if UNITY_EDITOR
+        using (StreamWriter writer = new ($"{GameManager.dirSend}/send.txt", append: true))
+        {
+            writer.WriteLine($"[{tempSeqNum}, {timestamp}] ClientSend (PlayerSkill): {playerSkill}");
+        }
+#endif
     }
 
     public static void PlayerMovement(long timestamp, Vector3 facingDirection, Vector3 deltaPos, Vector2 inputVector) { // 움직임에 관련된 키 입력에 대한 패킷

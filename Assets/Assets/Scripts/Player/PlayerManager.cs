@@ -45,6 +45,7 @@ public abstract class PlayerManager : MonoBehaviour
     [HideInInspector] public Vector3 m_RealPosition;
 
     protected Vector3 _correctedPos;
+    protected int _lastSeqNum;
 
     private CancellationTokenSource _cts;
     private PlayerState _currentState;
