@@ -4,6 +4,7 @@ using UnityEngine;
 using System;
 using System.Net.Sockets;
 using Cysharp.Threading.Tasks;
+using System.Threading.Tasks;
 
 public abstract class ClientBase : MonoBehaviour
 {
@@ -85,13 +86,17 @@ public abstract class ClientBase : MonoBehaviour
             stream.BeginRead(receiveBuffer, 0, dataBufferSize, ReceiveCallback, null);
         }
 
-        public void SendData(Packet packet) {
-            try {
-                if (socket != null) {
-                    stream.BeginWrite(packet.ToArray(), 0, packet.Length(), null, null);
+        public async UniTask SendDataAsync(Packet packet)
+        {
+            try
+            {
+                if (socket != null && stream != null)
+                {
+                    await stream.WriteAsync(packet.ToArray(), 0, packet.Length());
                 }
             }
-            catch (Exception e) {
+            catch (Exception e)
+            {
                 Debug.Log($"Error sending data to server via TCP: {e}");
             }
         }

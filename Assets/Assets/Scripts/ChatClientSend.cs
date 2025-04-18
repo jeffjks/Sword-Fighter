@@ -1,12 +1,19 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Cysharp.Threading.Tasks;
 
 public class ChatClientSend : MonoBehaviour
 {
     private static void SendTCPData(Packet packet) {
-        packet.WriteLength(); // 패킷 가장 앞 부분에 패킷 길이 삽입 (패킷id보다 앞에)
-        ChatClient.instance.tcp.SendData(packet);
+        SendTCPDataAsync(packet).Forget();
+    }
+
+    private static async UniTaskVoid SendTCPDataAsync(Packet packet)
+    {
+        packet.WriteLength(); // 패킷 길이 쓰기
+        await Client.instance.tcp.SendDataAsync(packet);
+        packet.Dispose();
     }
 
     #region Packets

@@ -9,19 +9,10 @@ public class ClientSend : MonoBehaviour
     private static int SeqNum;
 
     private static void SendTCPData(Packet packet) {
-        if (GameManager.IsDebugPing)
-        {
-            SendTCPDataDelayed(packet).Forget();
-        }
-        else
-        {
-            packet.WriteLength(); // 패킷 가장 앞 부분에 패킷 길이 삽입 (패킷id보다 앞에)
-            Client.instance.tcp.SendData(packet);
-            packet.Dispose();
-        }
+        SendTCPDataAsync(packet).Forget();
     }
 
-    private static async UniTaskVoid SendTCPDataDelayed(Packet packet)
+    private static async UniTaskVoid SendTCPDataAsync(Packet packet)
     {
         int ping = GameManager.instance.GetDebugPing() / 2;
 
@@ -29,7 +20,7 @@ public class ClientSend : MonoBehaviour
             await UniTask.Delay(ping);
 
         packet.WriteLength(); // 패킷 길이 쓰기
-        Client.instance.tcp.SendData(packet);
+        await Client.instance.tcp.SendDataAsync(packet);
         packet.Dispose();
     }
 

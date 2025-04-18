@@ -28,7 +28,7 @@ public class PlayerMe : PlayerManager
     
     private void CorrectPosition(int seqNum, long timestamp)
     {
-        while (m_ClientInputQueue.Count > 0 && m_ClientInputQueue.Peek().timestamp <= _lastTimestamp) { // 처리된 요청은 삭제
+        while (m_ClientInputQueue.Count > 0 && m_ClientInputQueue.Peek().timestamp <= timestamp) { // 처리된 요청은 삭제
             m_ClientInputQueue.Dequeue();
         }
 
