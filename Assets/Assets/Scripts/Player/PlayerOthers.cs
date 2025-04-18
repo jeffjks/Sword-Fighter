@@ -15,8 +15,6 @@ public class PlayerOthers : PlayerManager
 
     protected override void Update() {
         base.Update();
-
-        _correctedPos = m_RealPosition;
         
         ProcessMovement();
     }

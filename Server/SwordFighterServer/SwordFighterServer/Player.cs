@@ -92,7 +92,7 @@ namespace SwordFighterServer
         public PlayerSkill currentSkill;
         public PositionHistory positionHistory = new PositionHistory();
 
-        private Dictionary<int, IClientInput> _clientInputs = new Dictionary<int, IClientInput>();
+        private readonly Dictionary<int, IClientInput> _clientInputs = new Dictionary<int, IClientInput>();
 
         private readonly Dictionary<PlayerSkill, int> _skillDuration = new Dictionary<PlayerSkill, int>();
         private readonly List<ScheduledTask> _scheduledTasks = new List<ScheduledTask>();

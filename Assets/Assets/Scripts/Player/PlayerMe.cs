@@ -32,21 +32,19 @@ public class PlayerMe : PlayerManager
             m_ClientInputQueue.Dequeue();
         }
 
-        Vector3 newPos = _lastPositionFromServer; // 서버로부터 받은 가장 최신 좌표
+        Vector3 correctedPos = _lastPositionFromServer; // 서버로부터 받은 가장 최신 좌표
         
         var tempStr = string.Empty;
         foreach (var input in m_ClientInputQueue) { // 지금까지 input기록에 따라 시뮬레이션하여 현재 좌표 계산
-            newPos += input.deltaPos;
+            correctedPos += input.deltaPos;
             tempStr += $"{input.timestamp}, {input.deltaPos}\n";
         }
-
-        _correctedPos = newPos;
         
-        var distance = Vector3.Distance(_correctedPos, m_RealPosition);
+        var distance = Vector3.Distance(correctedPos, m_RealPosition);
 
         if (distance > PositionCorrectionThreshold) { // 계산한 좌표가 맞는지 확인
-            Debug.Log($"[{seqNum}, {timestamp}] Wrong ({_lastPositionFromServer}): {m_RealPosition} -> {_correctedPos}\n{tempStr}");
-            m_RealPosition = _correctedPos;
+            Debug.Log($"[{seqNum}, {timestamp}] Wrong ({_lastPositionFromServer}): {m_RealPosition} -> {correctedPos}\n{tempStr}");
+            m_RealPosition = correctedPos;
         }
     }
 
