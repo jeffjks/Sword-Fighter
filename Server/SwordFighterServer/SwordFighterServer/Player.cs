@@ -2,47 +2,6 @@
 using System.Collections.Generic;
 using System.Numerics;
 
-public interface IClientInput
-{
-    public int SeqNum { get; set; }
-    public long Timestamp { get; set; }
-    public Vector3 FacingDirection { get; set; }
-}
-
-public class MoveInput : IClientInput
-{
-    public int SeqNum { get; set; }
-    public long Timestamp { get; set; }
-    public Vector3 FacingDirection { get; set; }
-
-    public Vector3 deltaPos;
-    public Vector2 inputVector;
-
-    public MoveInput(long timestamp, Vector3 facingDirection, Vector3 deltaPos, Vector2 inputVector)
-    {
-        Timestamp = timestamp;
-        FacingDirection = facingDirection;
-        this.deltaPos = deltaPos;
-        this.inputVector = inputVector;
-    }
-}
-
-public class SkillInput : IClientInput
-{
-    public int SeqNum { get; set; }
-    public long Timestamp { get; set; }
-    public Vector3 FacingDirection { get; set; }
-
-    public PlayerSkill playerSkill;
-
-    public SkillInput(long timestamp, Vector3 facingDirection, PlayerSkill playerSkill)
-    {
-        Timestamp = timestamp;
-        FacingDirection = facingDirection;
-        this.playerSkill = playerSkill;
-    }
-}
-
 public enum PlayerState
 {
     Dead = -1,
@@ -64,6 +23,59 @@ public enum PlayerSkill
 
 namespace SwordFighterServer
 {
+    public interface IClientInput
+    {
+        public int SeqNum { get; set; }
+        public long Timestamp { get; set; }
+        public Vector3 FacingDirection { get; set; }
+
+        public void Execute(Player player);
+    }
+
+    public class MoveInput : IClientInput
+    {
+        public int SeqNum { get; set; }
+        public long Timestamp { get; set; }
+        public Vector3 FacingDirection { get; set; }
+
+        public Vector3 deltaPos;
+        public Vector2 inputVector;
+
+        public MoveInput(long timestamp, Vector3 facingDirection, Vector3 deltaPos, Vector2 inputVector)
+        {
+            Timestamp = timestamp;
+            FacingDirection = facingDirection;
+            this.deltaPos = deltaPos;
+            this.inputVector = inputVector;
+        }
+
+        public void Execute(Player player)
+        {
+            player.ApplyMovementInput(this);
+        }
+    }
+
+    public class SkillInput : IClientInput
+    {
+        public int SeqNum { get; set; }
+        public long Timestamp { get; set; }
+        public Vector3 FacingDirection { get; set; }
+
+        public PlayerSkill playerSkill;
+
+        public SkillInput(long timestamp, Vector3 facingDirection, PlayerSkill playerSkill)
+        {
+            Timestamp = timestamp;
+            FacingDirection = facingDirection;
+            this.playerSkill = playerSkill;
+        }
+
+        public void Execute(Player player)
+        {
+            player.ApplySkillInput(this);
+        }
+    }
+
     public class Player
     {
         public int id;
@@ -146,7 +158,7 @@ namespace SwordFighterServer
         {
             while (_clientInputs.TryGetValue(_lastSeqNum, out var curInput))
             {
-                ExecuteInput(curInput);
+                curInput.Execute(this);
                 ServerSend.UpdatePlayerPosition(_lastSeqNum, this, curInput.Timestamp);
                 _clientInputs.Remove(_lastSeqNum);
                 _lastSeqNum++;
@@ -158,23 +170,19 @@ namespace SwordFighterServer
             _clientInputs.Add(clientInput.SeqNum, clientInput);
         }
 
-        private void ExecuteInput(IClientInput clientInput)
+        public void ApplyMovementInput(MoveInput input)
         {
-            direction = clientInput.FacingDirection;
+            direction = input.FacingDirection;
+            position = ClampPosition(position + input.deltaPos);
+            deltaPos = input.deltaPos;
+            inputVector = input.inputVector;
+            Console.WriteLine($"[{input.SeqNum}, {input.Timestamp}] {position}");
+        }
 
-            switch (clientInput)
-            {
-                case MoveInput moveInput:
-                    position = ClampPosition(position + moveInput.deltaPos);
-                    deltaPos = moveInput.deltaPos;
-                    inputVector = moveInput.inputVector;
-                    Console.WriteLine($"[{clientInput.SeqNum}, {moveInput.Timestamp}] {position}");
-                    break;
-
-                case SkillInput skillInput:
-                    ExecutePlayerSkill(skillInput);
-                    break;
-            }
+        public void ApplySkillInput(SkillInput input)
+        {
+            direction = input.FacingDirection;
+            ExecutePlayerSkill(input);
         }
 
         public void ExecutePlayerSkill(SkillInput skillInput)
@@ -221,7 +229,7 @@ namespace SwordFighterServer
             return (dot < 0); // 캐릭터의 방향을 계산하여 막기 판정
         }
 
-        public void PlayerAttack() // 피격 판정
+        public void PlayerAttack()
         {
             foreach (int targetPlayerID in Server.spawnedPlayers)
             {
@@ -233,10 +241,9 @@ namespace SwordFighterServer
                 var otherPlayer = Server.clients[targetPlayerID].player;
 
                 if (otherPlayer.positionHistory.TryGetPositionAt(serverTime, out var otherPosition) == false)
-                    return;
+                    continue;
                 if (positionHistory.TryGetPositionAt(serverTime, out var myPosition) == false)
-                    return;
-
+                    continue;
                 if (otherPosition == null || myPosition == null)
                     continue;
 
@@ -263,7 +270,7 @@ namespace SwordFighterServer
             return ClampPosition(position);
         }
 
-        private Vector3 ClampPosition(Vector3 position)
+        public Vector3 ClampPosition(Vector3 position)
         {
             if (position.X < -50f)
             {

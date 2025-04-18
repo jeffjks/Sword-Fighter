@@ -31,10 +31,13 @@ public class PlayerOthers : PlayerManager
 
     public override void OnStateReceived(int seqNum, long timestamp, Vector3 facingDirection, Vector3 deltaPos, Vector2 inputVector, Vector3 position)
     {
-        if (seqNum < _lastSeqNum)
-            return;
-        
-        _lastSeqNum = seqNum;
+        if (seqNum >= 0)
+        {
+            if (seqNum < _lastSeqNum)
+                return;
+            
+            _lastSeqNum = seqNum;
+        }
 
         long now = TimeSync.GetSyncTime();
         int delay = Mathf.Clamp((int) (now - timestamp), 0, MaxPredictionTime); // 예측 제한 500ms
