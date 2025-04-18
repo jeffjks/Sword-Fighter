@@ -154,7 +154,7 @@ public abstract class PlayerManager : MonoBehaviour
         //Debug.Log(m_State);
     }
 
-    public bool ExecutePlayerSkill(long timestamp, PlayerSkill playerSkill, Vector3 facingDirection)
+    public bool ExecutePlayerSkill(long timestamp, PlayerSkill playerSkill, Vector3 facingDirection, Vector3? targetPosition = null)
     {
         if (m_SkillDurations.TryGetValue(playerSkill, out int duration) == false)
             return false;
@@ -177,7 +177,7 @@ public abstract class PlayerManager : MonoBehaviour
         switch(playerSkill)
         {
             case PlayerSkill.Roll:
-                StartRoll(facingDirection);
+                StartRoll(facingDirection, targetPosition);
                 break;
         }
         return true;
@@ -195,21 +195,21 @@ public abstract class PlayerManager : MonoBehaviour
         }
     }
 
-    private void StartRoll(Vector3 direction)
+    private void StartRoll(Vector3 direction, Vector3? targetPosition)
     {
-        StartCoroutine(RollCoroutine(direction));
+        StartCoroutine(RollCoroutine(direction, targetPosition));
     }
 
-    private IEnumerator RollCoroutine(Vector3 character_forward) {
+    private IEnumerator RollCoroutine(Vector3 facingDirection, Vector3? targetPosition) {
         Vector3 start_pos = transform.position;
-        Vector3 target_pos = m_RealPosition + character_forward*ROLL_DISTANCE; // TEMP
+        Vector3 target_pos = targetPosition ?? m_RealPosition + facingDirection * ROLL_DISTANCE;
         target_pos = ClampPosition(target_pos);
 
         m_RealPosition = target_pos;
 
         float ctime = 0f;
         float roll_time = 1f;
-        SetRotation(character_forward);
+        SetRotation(facingDirection);
         //Debug.Log($"{start_pos}, ({correctedPos}), {target_pos}");
 
         while (ctime < roll_time) {
@@ -233,7 +233,7 @@ public abstract class PlayerManager : MonoBehaviour
     public abstract void Finish_DealDamage_Attack1();
 
     public abstract void OnStateReceived(int seqNum, long timestamp, Vector3 facingDirection, Vector3 deltaPos, Vector2 inputVector, Vector3 position);
-    public abstract void OnStateReceived(long timestamp, PlayerSkill playerSkill, Vector3 facingDirection);
+    public abstract void OnStateReceived(long timestamp, PlayerSkill playerSkill, Vector3 facingDirection, Vector3 targetPosition);
 
     public Vector3 ClampPosition(Vector3 position)
     {

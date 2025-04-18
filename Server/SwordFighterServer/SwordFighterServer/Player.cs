@@ -195,12 +195,14 @@ namespace SwordFighterServer
                 AddSchedule(ReturnToIdle, _skillDuration[skillInput.playerSkill]);
                 deltaPos = Vector3.Zero;
                 inputVector = Vector2.Zero;
+                Vector3 targetPosition = position;
 
                 switch (skillInput.playerSkill)
                 {
                     case PlayerSkill.Roll:
-                        Console.WriteLine($"[{skillInput.SeqNum}, {skillInput.Timestamp}] {skillInput.playerSkill}: {position}, {GetRollDestination(position)}");
-                        position = GetRollDestination(position);
+                        targetPosition = GetRollDestination(position);
+                        Console.WriteLine($"[{skillInput.SeqNum}, {skillInput.Timestamp}] {skillInput.playerSkill}: {position}, {targetPosition}");
+                        position = targetPosition;
                         break;
 
                     case PlayerSkill.Attack1:
@@ -208,7 +210,7 @@ namespace SwordFighterServer
                         break;
                 }
 
-                ServerSend.PlayerSkill(id, skillInput.Timestamp, currentSkill, skillInput.FacingDirection);
+                ServerSend.PlayerSkill(id, skillInput.Timestamp, currentSkill, skillInput.FacingDirection, targetPosition);
             }
         }
 

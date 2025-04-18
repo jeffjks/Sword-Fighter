@@ -71,7 +71,7 @@ public class PlayerMe : PlayerManager
 #endif
     }
 
-    public override void OnStateReceived(long timestamp, PlayerSkill playerSkill, Vector3 facingDirection)
+    public override void OnStateReceived(long timestamp, PlayerSkill playerSkill, Vector3 facingDirection, Vector3 targetPosition)
     {
         throw new System.NotImplementedException();
     }

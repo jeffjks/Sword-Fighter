@@ -92,7 +92,7 @@ namespace SwordFighterServer
                 SendTCPData(player.id, packet);
         }
 
-        public static void PlayerSkill(int playerId, long timestamp, PlayerSkill playerSkill, Vector3 facingDirection) // 플레이어 스킬
+        public static void PlayerSkill(int playerId, long timestamp, PlayerSkill playerSkill, Vector3 facingDirection, Vector3 targetPosition) // 플레이어 스킬
         {
             Packet packet = new Packet((int)ServerPackets.playerSkill);
 
@@ -101,6 +101,7 @@ namespace SwordFighterServer
             packet.Write(timestamp);
             packet.Write((int)playerSkill);
             packet.Write(facingDirection);
+            packet.Write(targetPosition);
 
             SendTCPDataToAll(playerId, playerId, packet);
         }

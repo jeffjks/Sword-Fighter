@@ -55,12 +55,13 @@ public class ClientHandle : MonoBehaviour
         var timestamp = packet.ReadLong();
         var playerSkill = (PlayerSkill) packet.ReadInt();
         Vector3 facingDirection = packet.ReadVector3();
+        Vector3 targetPosition = packet.ReadVector3();
 
         if (Client.instance.myId == id) { // 자신 플레이어
             Debug.LogError("Received UpdatePlayer Packet with Other's PlayerID");
         }
         else { // 다른 플레이어
-            GameManager.players[id].OnStateReceived(timestamp, playerSkill, facingDirection);
+            GameManager.players[id].OnStateReceived(timestamp, playerSkill, facingDirection, targetPosition);
         }
     }
 

@@ -11,7 +11,7 @@ public class PlayerOthers : PlayerManager
     private float _moveTimer;
 
     private const int MaxPredictionTime = 500;
-    private const int UpdateInterval = 100;
+    private const int UpdateInterval = 200;
 
     protected override void Update() {
         base.Update();
@@ -60,9 +60,9 @@ public class PlayerOthers : PlayerManager
         //_playerMovementQueue.Enqueue(playerMovement);
     }
 
-    public override void OnStateReceived(long timestamp, PlayerSkill playerSkill, Vector3 facingDirection)
+    public override void OnStateReceived(long timestamp, PlayerSkill playerSkill, Vector3 facingDirection, Vector3 targetPosition)
     {
-        ExecutePlayerSkill(timestamp, playerSkill, facingDirection);
+        ExecutePlayerSkill(timestamp, playerSkill, facingDirection, targetPosition);
     }
 
     private void ProcessMovement()
