@@ -13,18 +13,18 @@ namespace SwordFighterServer
             public Vector3 position;
         }
 
-        private readonly LinkedList<TimedPosition> _positions = new LinkedList<TimedPosition>();
+        private readonly LinkedList<TimedPosition> _positionHistory = new LinkedList<TimedPosition>();
         private const int MaxHistoryMs = 5000;
 
         public void RecordPosition(long timestamp, Vector3 position)
         {
-            _positions.AddLast(new TimedPosition { timestamp = timestamp, position = position });
+            _positionHistory.AddLast(new TimedPosition { timestamp = timestamp, position = position });
 
             // 오래된 데이터 제거
             long threshold = timestamp - MaxHistoryMs;
-            while (_positions.Count > 0 && _positions.First.Value.timestamp < threshold)
+            while (_positionHistory.Count > 0 && _positionHistory.First.Value.timestamp < threshold)
             {
-                _positions.RemoveFirst();
+                _positionHistory.RemoveFirst();
             }
         }
 
@@ -32,14 +32,14 @@ namespace SwordFighterServer
         {
             pos = default;
 
-            if (_positions.Count == 0)
+            if (_positionHistory.Count == 0)
                 return false;
 
             LinkedListNode<TimedPosition> before = null;
             LinkedListNode<TimedPosition> after = null;
 
-            var node = _positions.First;
-            while (node != null)
+            var node = _positionHistory.First;
+            while (node != null) // before <= target < after 가 되는 timestamp 찾기
             {
                 if (node.Value.timestamp <= targetTimestamp)
                 {
@@ -55,12 +55,12 @@ namespace SwordFighterServer
 
             if (before == null)
             {
-                pos = _positions.First.Value.position;
+                pos = _positionHistory.First.Value.position;
                 return true;
             }
             if (after == null)
             {
-                pos = _positions.Last.Value.position;
+                pos = _positionHistory.Last.Value.position;
                 return true;
             }
 
@@ -75,7 +75,7 @@ namespace SwordFighterServer
 
             float lerpT = (float)(targetTimestamp - t1) / (t2 - t1);
 
-            pos = Vector3.Lerp(before.Value.position, after.Value.position, lerpT);
+            pos = Vector3.Lerp(before.Value.position, after.Value.position, lerpT); // 보간
             return true;
         }
     }
