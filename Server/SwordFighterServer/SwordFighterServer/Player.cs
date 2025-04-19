@@ -154,6 +154,11 @@ namespace SwordFighterServer
             }
         }
 
+        public void AddClientInput(IClientInput clientInput)
+        {
+            _clientInputs.Add(clientInput.SeqNum, clientInput);
+        }
+
         private void SimulateInput()
         {
             while (_clientInputs.TryGetValue(_lastSeqNum, out var curInput))
@@ -163,11 +168,6 @@ namespace SwordFighterServer
                 _clientInputs.Remove(_lastSeqNum);
                 _lastSeqNum++;
             }
-        }
-
-        public void AddClientInput(IClientInput clientInput)
-        {
-            _clientInputs.Add(clientInput.SeqNum, clientInput);
         }
 
         public void ApplyMovementInput(MoveInput input)
@@ -206,7 +206,7 @@ namespace SwordFighterServer
                         break;
 
                     case PlayerSkill.Attack1:
-                        AddSchedule(() => PlayerAttack(), 500);
+                        AddSchedule(() => PlayerAttack(skillInput.Timestamp), 500);
                         break;
                 }
 
@@ -231,20 +231,18 @@ namespace SwordFighterServer
             return (dot < 0); // 캐릭터의 방향을 계산하여 막기 판정
         }
 
-        public void PlayerAttack()
+        public void PlayerAttack(long timestamp)
         {
             foreach (int targetPlayerID in Server.spawnedPlayers)
             {
                 if (targetPlayerID == id) // 자기자신 제외
                     continue;
 
-                var serverTime = Server.GetUnixTime();
-
                 var otherPlayer = Server.clients[targetPlayerID].player;
 
-                if (otherPlayer.positionHistory.TryGetPositionAt(serverTime, out var otherPosition) == false)
+                if (otherPlayer.positionHistory.TryGetPositionAt(timestamp, out var otherPosition) == false)
                     continue;
-                if (positionHistory.TryGetPositionAt(serverTime, out var myPosition) == false)
+                if (positionHistory.TryGetPositionAt(timestamp, out var myPosition) == false)
                     continue;
                 if (otherPosition == null || myPosition == null)
                     continue;
