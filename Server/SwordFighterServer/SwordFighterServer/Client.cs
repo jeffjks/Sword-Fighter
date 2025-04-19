@@ -4,6 +4,7 @@ using System.Text;
 using System.Net;
 using System.Net.Sockets;
 using System.Numerics;
+using System.Threading.Tasks;
 
 namespace SwordFighterServer
 {
@@ -46,47 +47,50 @@ namespace SwordFighterServer
                 receivedData = new Packet();
                 receiveBuffer = new byte[dataBufferSize];
 
-                stream.BeginRead(receiveBuffer, 0, dataBufferSize, ReceiveCallback, null);
+                _ = ReceiveLoopAsync();
 
                 ServerSend.Welcome(id, "Welcome to the server!");
             }
 
-            public void SendData(Packet packet)
+            private async Task ReceiveLoopAsync()
             {
                 try
                 {
-                    if (socket != null)
+                    while (true)
                     {
-                        stream.BeginWrite(packet.ToArray(), 0, packet.Length(), null, null);
+                        int byteLength = await stream.ReadAsync(receiveBuffer, 0, dataBufferSize);
+
+                        if (byteLength <= 0)
+                        {
+                            Server.clients[id].Disconnect();
+                            break;
+                        }
+
+                        byte[] data = new byte[byteLength];
+                        Array.Copy(receiveBuffer, data, byteLength);
+
+                        receivedData.Reset(HandleData(data));
                     }
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine($"Error sending data to player {id} via TCP: {e}");
-                }
-            }
-
-            private void ReceiveCallback(IAsyncResult result)
-            {
-                try
-                {
-                    int byteLength = stream.EndRead(result);
-                    if (byteLength <= 0)
-                    {
-                        Server.clients[id].Disconnect();
-                        return;
-                    }
-
-                    byte[] data = new byte[byteLength];
-                    Array.Copy(receiveBuffer, data, byteLength);
-
-                    receivedData.Reset(HandleData(data)); // handle data. true -> reset, false -> unread (4 bytes)
-                    stream.BeginRead(receiveBuffer, 0, dataBufferSize, ReceiveCallback, null);
                 }
                 catch (Exception e)
                 {
                     Console.WriteLine($"Error receiving TCP data: {e}");
                     Server.clients[id].Disconnect();
+                }
+            }
+
+            public async Task SendDataAsync(Packet packet)
+            {
+                try
+                {
+                    if (socket != null && stream != null)
+                    {
+                        await stream.WriteAsync(packet.ToArray(), 0, packet.Length());
+                    }
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine($"Error sending data to player {id} via TCP: {e}");
                 }
             }
 

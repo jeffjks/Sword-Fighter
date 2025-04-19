@@ -36,11 +36,11 @@ public abstract class ClientBase : MonoBehaviour
         Disconnect();
     }
 
-    public void ConnectToServer(string ip) {
+    public async Task ConnectToServer(string ip) {
         InitializeClientData();
 
         isConnected = true;
-        tcp.Connect(ip);
+        await tcp.ConnectAsync(ip);
     }
 
     public class TCP
@@ -56,7 +56,8 @@ public abstract class ClientBase : MonoBehaviour
             this.instance = instance;
         }
 
-        public void Connect(string ip) {
+        public async UniTask ConnectAsync(string ip)
+        {
             socket = new TcpClient
             {
                 ReceiveBufferSize = dataBufferSize,
@@ -64,26 +65,54 @@ public abstract class ClientBase : MonoBehaviour
             };
 
             receiveBuffer = new byte[dataBufferSize];
-            IAsyncResult result = socket.BeginConnect(System.Net.IPAddress.Parse(ip), instance.port, ConnectCallback, socket);
+            
+            var connectTask = socket.ConnectAsync(System.Net.IPAddress.Parse(ip), instance.port);
 
-            result.AsyncWaitHandle.WaitOne(5000, true);
+            var timeoutTask = Task.Delay(5000);
+            var completedTask = await Task.WhenAny(connectTask, timeoutTask);
 
-            if (!socket.Connected) {
+            if (completedTask == timeoutTask)
+            {
                 socket.Close();
-                throw new TimeoutException();
+                throw new TimeoutException("TCP connect timeout");
             }
-        }
 
-        private void ConnectCallback(IAsyncResult result) {
-            socket.EndConnect(result);
-
-            if (!socket.Connected) {
-                return;
+            if (!socket.Connected)
+            {
+                socket.Close();
+                throw new Exception("Failed to connect to server");
             }
 
             stream = socket.GetStream();
             receivedData = new Packet();
-            stream.BeginRead(receiveBuffer, 0, dataBufferSize, ReceiveCallback, null);
+
+            _ = ReceiveLoopAsync(); // 비동기 수신 시작
+        }
+
+        private async UniTask ReceiveLoopAsync()
+        {
+            try
+            {
+                while (true)
+                {
+                    int byteLength = await stream.ReadAsync(receiveBuffer, 0, dataBufferSize);
+
+                    if (byteLength <= 0)
+                    {
+                        Disconnect();
+                        break;
+                    }
+
+                    byte[] data = new byte[byteLength];
+                    Array.Copy(receiveBuffer, data, byteLength);
+
+                    receivedData.Reset(HandleData(data)); // 기존 동작 유지
+                }
+            }
+            catch
+            {
+                Disconnect();
+            }
         }
 
         public async UniTask SendDataAsync(Packet packet)
@@ -98,24 +127,6 @@ public abstract class ClientBase : MonoBehaviour
             catch (Exception e)
             {
                 Debug.Log($"Error sending data to server via TCP: {e}");
-            }
-        }
-
-        private void ReceiveCallback(IAsyncResult result) {
-            try {
-                int byteLength = stream.EndRead(result);
-                if (byteLength <= 0) {
-                    Disconnect();
-                }
-
-                byte[] data = new byte[byteLength];
-                Array.Copy(receiveBuffer, data, byteLength);
-
-                receivedData.Reset(HandleData(data)); 
-                stream.BeginRead(receiveBuffer, 0, dataBufferSize, ReceiveCallback, null);
-            }
-            catch {
-                Disconnect();
             }
         }
         

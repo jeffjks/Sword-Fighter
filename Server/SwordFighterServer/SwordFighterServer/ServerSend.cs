@@ -9,7 +9,7 @@ namespace SwordFighterServer
         private static void SendTCPData(int toClient, Packet packet)
         {
             packet.WriteLength();
-            Server.clients[toClient].tcp.SendData(packet);
+            _ = Server.clients[toClient].tcp.SendDataAsync(packet);
         }
 
         private static void SendTCPDataToAll(int fromId, Packet packet)
@@ -19,7 +19,7 @@ namespace SwordFighterServer
             {
                 if (Server.IsReady(fromId)) // SpawnPlayer 패킷을 보낸 플레이어에게만 전송
                 {
-                    Server.clients[i].tcp.SendData(packet);
+                    _ = Server.clients[i].tcp.SendDataAsync(packet);
                 }
             }
         }
@@ -33,7 +33,7 @@ namespace SwordFighterServer
                 {
                     if (i != exceptClient)
                     {
-                        Server.clients[i].tcp.SendData(packet);
+                        _ = Server.clients[i].tcp.SendDataAsync(packet);
                     }
                 }
             }

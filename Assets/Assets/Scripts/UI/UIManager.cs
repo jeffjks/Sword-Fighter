@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using Cysharp.Threading.Tasks;
 using System;
 
 public class UIManager : MonoBehaviour
@@ -39,10 +40,10 @@ public class UIManager : MonoBehaviour
         m_IpAdressField.text = ChatClient.instance.defaultIp;
     }
 
-    private bool ConnetcToServer() {
+    private async UniTask<bool> ConnetcToServer() {
         try {
             if (Client.instance.enabled) {
-                Client.instance.ConnectToServer(m_IpAdressField.text);
+                await Client.instance.ConnectToServer(m_IpAdressField.text);
                 Client.instance.myUsername = m_UsernameField.text;
             }
         }
@@ -51,23 +52,18 @@ public class UIManager : MonoBehaviour
             Debug.LogError(e);
             return false;
         }
-        catch (TimeoutException e) {
-            m_ErrorText.text = "Failed to connect server.";
-            Debug.LogError(e);
-            return false;
-        }
         catch (Exception e) {
-            m_ErrorText.text = "Unknown error has occured";
+            m_ErrorText.text = e.Message;
             Debug.LogError(e);
             return false;
         }
         return true;
     }
 
-    private bool ConnetcToChatServer() {
+    private async UniTask<bool> ConnetcToChatServer() {
         try {
             if (ChatClient.instance.enabled) {
-                ChatClient.instance.ConnectToServer(m_IpAdressField.text);
+                await ChatClient.instance.ConnectToServer(m_IpAdressField.text);
             }
         }
         catch (FormatException e) {
@@ -75,26 +71,21 @@ public class UIManager : MonoBehaviour
             Debug.LogError(e);
             return false;
         }
-        catch (TimeoutException e) {
-            //m_ErrorText.text = "Failed to connect chat server.";
-            Debug.LogError(e);
-            return false;
-        }
         catch (Exception e) {
-            //m_ErrorText.text = "Unknown error has occured";
+            m_ErrorText.text = e.Message;
             Debug.LogError(e);
             return false;
         }
         return true;
     }
 
-    public void ButtonConnectToServer() {
+    public async void ButtonConnectToServer() {
         if (m_UsernameField.text.Length < 4) {
             m_ErrorText.text = "Username is too short!";
             return;
         }
 
-        if (!ConnetcToServer()) {
+        if (!await ConnetcToServer()) {
             Client.instance.Disconnect();
             return;
         }
@@ -106,7 +97,7 @@ public class UIManager : MonoBehaviour
         m_Ingame = true;
         m_ObjectPooling.Init(3);
 
-        if (!ConnetcToChatServer()) {
+        if (!await ConnetcToChatServer()) {
             ChatClient.instance.Disconnect();
             m_UI_ChatWindow.PushTextMessage(-1, "채팅 서버에 접속할 수 없습니다.");
         }
