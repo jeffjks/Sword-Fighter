@@ -16,7 +16,7 @@ public class PlayerOthers : PlayerManager
     protected override void Update() {
         base.Update();
         
-        ProcessMovement();
+        DeadReckoning();
     }
 
     public override void Start_DealDamage_Attack1() {
@@ -43,7 +43,7 @@ public class PlayerOthers : PlayerManager
         _prevPosition = m_RealPosition;
         _nextPosition = position + m_DeltaPos * (delay / 1000f);
         _deltaPos = _nextPosition - position;
-        _nextDeltaPos = m_DeltaPos;
+        _nextDeltaPos = deltaPos;
         _hasTarget = true;
         _moveTimer = 0f;
         
@@ -63,9 +63,9 @@ public class PlayerOthers : PlayerManager
         ExecutePlayerSkill(timestamp, playerSkill, facingDirection, targetPosition);
     }
 
-    private void ProcessMovement()
+    private void DeadReckoning()
     {
-        if (!_hasTarget)
+        if (!_hasTarget) // 목표 지점이 없으면 deltaPos 방향으로 이동
         {
             m_RealPosition += _deltaPos;
             return;
@@ -74,7 +74,7 @@ public class PlayerOthers : PlayerManager
         _moveTimer += Time.deltaTime;
         float t = _moveTimer / (UpdateInterval / 1000f);
 
-        if (t >= 1f)
+        if (t >= 1f) // 목표 지점 도착
         {
             t = 1f;
             _hasTarget = false;
@@ -82,6 +82,7 @@ public class PlayerOthers : PlayerManager
             _moveTimer = 0f;
         }
 
+        // UpdateInterval millisecond 동안 목표 지점으로 이동
         m_RealPosition = Vector3.Lerp(_prevPosition, _nextPosition, t);
     }
 }

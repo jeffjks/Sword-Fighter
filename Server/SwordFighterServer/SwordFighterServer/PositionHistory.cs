@@ -17,7 +17,7 @@ namespace SwordFighterServer
         private const int MaxHistoryMs = 5000;
 
         public void RecordPosition(long timestamp, Vector3 position)
-        {
+        {   
             _positionHistory.AddLast(new TimedPosition { timestamp = timestamp, position = position });
 
             // 오래된 데이터 제거
