@@ -6,7 +6,6 @@ public class PlayerOthers : PlayerManager
 {
     private Vector3 _prevPosition, _nextPosition;
     private bool _hasTarget;
-    private Vector3 _deltaPos;
     private Vector3 _nextDeltaPos;
     private float _moveTimer;
 
@@ -41,11 +40,11 @@ public class PlayerOthers : PlayerManager
         int delay = Mathf.Clamp((int) (now - timestamp), 0, MaxPredictionTime); // 예측 제한 500ms
         
         _prevPosition = m_RealPosition;
-        _nextPosition = position + m_DeltaPos * (delay / 1000f);
-        _deltaPos = _nextPosition - position;
+        _nextPosition = position + deltaPos * (delay / 1000f);
         _nextDeltaPos = deltaPos;
         _hasTarget = true;
         _moveTimer = 0f;
+        m_DeltaPos = _nextPosition - position;
         
         if (CurrentState == PlayerState.Idle || CurrentState == PlayerState.Move)
             CurrentState = (deltaPos == Vector3.zero) ? PlayerState.Idle : PlayerState.Move;
@@ -67,7 +66,7 @@ public class PlayerOthers : PlayerManager
     {
         if (!_hasTarget) // 목표 지점이 없으면 deltaPos 방향으로 이동
         {
-            m_RealPosition += _deltaPos;
+            m_RealPosition += m_DeltaPos;
             return;
         }
 
@@ -78,8 +77,8 @@ public class PlayerOthers : PlayerManager
         {
             t = 1f;
             _hasTarget = false;
-            _deltaPos = _nextDeltaPos;
             _moveTimer = 0f;
+            m_DeltaPos = _nextDeltaPos;
         }
 
         // UpdateInterval millisecond 동안 목표 지점으로 이동
