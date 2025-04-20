@@ -39,9 +39,9 @@ public class PlayerOthers : PlayerManager
         long now = TimeSync.GetSyncTime();
         int delay = Mathf.Clamp((int) (now - timestamp), 0, MaxPredictionTime); // 예측 제한 500ms
         
-        _prevPosition = m_RealPosition;
-        _nextPosition = position + deltaPos * (delay / 1000f);
-        _nextDeltaPos = deltaPos;
+        _prevPosition = m_RealPosition; // 현재 위치
+        _nextPosition = position + deltaPos * (delay / 1000f); // 다음 타겟 위치
+        _nextDeltaPos = deltaPos; // 타겟 도착 후 이동 방향
         _hasTarget = true;
         _moveTimer = 0f;
         m_DeltaPos = _nextPosition - position;
