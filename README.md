@@ -1,4 +1,5 @@
-![샘플 이미지](img/sample1.png)
+[![Gameplay Demo](img/sample1.png)](https://www.youtube.com/watch?v=qITD623zyWI)
+이미지 클릭 시 시연 유튜브 영상으로 이동
 
 # 프로젝트 개요
 - 유니티와 C# 데디케이티드 서버를 사용한 최대 4인 실시간 대전 게임.
