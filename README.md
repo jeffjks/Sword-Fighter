@@ -1,4 +1,5 @@
 [![Gameplay Demo](img/sample1.png)](https://www.youtube.com/watch?v=qITD623zyWI)
+
 이미지 클릭 시 시연 유튜브 영상으로 이동
 
 # 프로젝트 개요
