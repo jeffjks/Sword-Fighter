@@ -41,12 +41,9 @@ namespace SwordFighterServer
             var node = _positionHistory.First;
             while (node != null) // before <= target < after 가 되는 timestamp 찾기
             {
-                if (node.Value.timestamp <= targetTimestamp)
+                if (node.Value.timestamp > targetTimestamp)
                 {
-                    before = node;
-                }
-                else if (node.Value.timestamp > targetTimestamp)
-                {
+                    before = node.Previous;
                     after = node;
                     break;
                 }
