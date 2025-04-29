@@ -9,23 +9,17 @@ namespace SwordFighterServer
     {
         private struct TimedPosition
         {
-            public long timestamp;
+            public int tick;
             public Vector3 position;
         }
 
-        private readonly LinkedList<TimedPosition> _positionHistory = new LinkedList<TimedPosition>();
-        private const int MaxHistoryMs = 5000;
+        private const int MaxHistoryTick = 120;
 
-        public void RecordPosition(long timestamp, Vector3 position)
+        private readonly RingBuffer<TimedPosition> _positionHistory = new RingBuffer<TimedPosition>(MaxHistoryTick);
+
+        public void RecordPosition(Vector3 position)
         {   
-            _positionHistory.AddLast(new TimedPosition { timestamp = timestamp, position = position });
-
-            // 오래된 데이터 제거
-            long threshold = timestamp - MaxHistoryMs;
-            while (_positionHistory.Count > 0 && _positionHistory.First.Value.timestamp < threshold)
-            {
-                _positionHistory.RemoveFirst();
-            }
+            _positionHistory.Add(new TimedPosition { tick = GameLogic.CurrentTick, position = position });
         }
 
         public bool TryGetPositionAt(long targetTimestamp, out Vector3 pos)
@@ -35,44 +29,48 @@ namespace SwordFighterServer
             if (_positionHistory.Count == 0)
                 return false;
 
-            LinkedListNode<TimedPosition> before = null;
-            LinkedListNode<TimedPosition> after = null;
+            var targetTick = GameLogic.GetTickFromTimestamp(targetTimestamp);
 
-            var node = _positionHistory.First;
-            while (node != null) // before <= target < after 가 되는 timestamp 찾기
+            var afterIndex = -1;
+
+            for (var i = 0; i < _positionHistory.Count; i++)
             {
-                if (node.Value.timestamp > targetTimestamp)
+                var cur = _positionHistory.Get(i);
+                if (cur.tick == targetTick)
                 {
-                    before = node.Previous;
-                    after = node;
+                    pos = cur.position;
+                    return true;
+                }
+                else if (cur.tick > targetTick)
+                {
+                    afterIndex = i;
                     break;
                 }
-                node = node.Next;
             }
 
-            if (before == null)
+            var beforeIndex = afterIndex - 1;
+
+            if (beforeIndex == -1)
             {
-                pos = _positionHistory.First.Value.position;
+                pos = _positionHistory.Get(0).position;
                 return true;
             }
-            if (after == null)
+            if (afterIndex == -1)
             {
-                pos = _positionHistory.Last.Value.position;
-                return true;
-            }
-
-            long t1 = before.Value.timestamp;
-            long t2 = after.Value.timestamp;
-
-            if (t1 == t2)
-            {
-                pos = after.Value.position;
+                var lastIndex = _positionHistory.Count - 1;
+                pos = _positionHistory.Get(lastIndex).position;
                 return true;
             }
 
-            float lerpT = (float)(targetTimestamp - t1) / (t2 - t1);
+            var before = _positionHistory.Get(beforeIndex);
+            var after = _positionHistory.Get(afterIndex);
 
-            pos = Vector3.Lerp(before.Value.position, after.Value.position, lerpT); // 보간
+            int t1 = before.tick;
+            int t2 = after.tick;
+
+            float lerpT = (float)(targetTick - t1) / (t2 - t1);
+
+            pos = Vector3.Lerp(before.position, after.position, lerpT); // 보간
             return true;
         }
     }

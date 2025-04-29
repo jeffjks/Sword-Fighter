@@ -127,7 +127,7 @@ namespace SwordFighterServer
         {
             ExecuteSchedule();
             SimulateInput();
-            positionHistory.RecordPosition(Server.GetUnixTime(), position);
+            positionHistory.RecordPosition(position);
         }
 
         public void AddSchedule(Action action, int delayMs)
