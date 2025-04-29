@@ -10,7 +10,7 @@ namespace SwordFighterServer
 {
     class Server
     {
-        public static DateTime serverStartTime = DateTime.UtcNow;
+        public static long serverStartTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
 
         public static int MaxPlayers { get; private set; }
         public static int Port { get; private set; }
