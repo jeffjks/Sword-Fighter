@@ -31,6 +31,10 @@
 - 피격 이펙트 등 그래픽 개선
 - 다양한 스킬 추가
 
+## Based On
+Packet 구조 및 직렬화 방식은 해당 프로젝트를 기반으로 확장/최적화 하였습니다.
+[tom-weiland/tcp-udp-networking](https://github.com/tom-weiland/tcp-udp-networking)
+
 ## 참고 자료
 https://www.gabrielgambetta.com/client-server-game-architecture.html
 https://developer.valvesoftware.com/wiki/Source_Multiplayer_Networking
