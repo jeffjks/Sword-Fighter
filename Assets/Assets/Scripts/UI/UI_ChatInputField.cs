@@ -9,6 +9,11 @@ public class UI_ChatInputField : MonoBehaviour
     public InputField m_UI_ChatInputField;
     public UI_ChatWindow m_UI_ChatWindow;
 
+    public bool IsWritingChat {
+        get {
+            return _isWritingChat;
+        }
+    }
     private bool _isWritingChat = false;
 
     public void SubmitChatMessage(string chatText) {
@@ -44,9 +49,5 @@ public class UI_ChatInputField : MonoBehaviour
         _isWritingChat = false;
         m_UI_ChatInputField.text = string.Empty;
         m_UI_ChatInputField.gameObject.SetActive(false);
-    }
-
-    public bool GetWritingChat() {
-        return _isWritingChat;
     }
 }

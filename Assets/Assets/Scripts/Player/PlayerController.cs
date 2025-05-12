@@ -78,13 +78,18 @@ public class PlayerController : MonoBehaviour
         m_PlayerMe.m_RealPosition = new Vector3(m_PlayerMe.m_RealPosition.x + 12f, m_PlayerMe.m_RealPosition.y, m_PlayerMe.m_RealPosition.z);
     }
 
-    private bool CanUseSkill() // 최적화 예정
+    private bool CanUseSkill()
     {
-        if (m_UIManager.m_UI_ChatInputField.GetWritingChat())
+        if (m_UIManager.m_UI_ChatInputField.IsWritingChat)
             return false;
-        if (m_PlayerMe.CurrentState == PlayerState.Dead || m_PlayerMe.CurrentState == PlayerState.UsingSkill)
+        if (IsPlayerControllable())
             return false;
         return true;
+    }
+
+    private bool IsPlayerControllable()
+    {
+        return m_PlayerMe.CurrentState != PlayerState.Dead && m_PlayerMe.CurrentState != PlayerState.UsingSkill;
     }
 
     public Vector3 GetForwardDirection()
