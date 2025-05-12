@@ -82,14 +82,14 @@ public class PlayerController : MonoBehaviour
     {
         if (m_UIManager.m_UI_ChatInputField.IsWritingChat)
             return false;
-        if (IsPlayerControllable())
+        if (IsPlayerControllable() == false)
             return false;
         return true;
     }
 
     private bool IsPlayerControllable()
     {
-        return m_PlayerMe.CurrentState != PlayerState.Dead && m_PlayerMe.CurrentState != PlayerState.UsingSkill;
+        return !m_PlayerMe.IsCurrentState(PlayerState.Dead) && !m_PlayerMe.IsCurrentState(PlayerState.UsingSkill);
     }
 
     public Vector3 GetForwardDirection()
@@ -99,7 +99,7 @@ public class PlayerController : MonoBehaviour
 
     private void FixedUpdate() // Camera
     {
-        if (m_PlayerMe.CurrentState == PlayerState.Idle || m_PlayerMe.CurrentState == PlayerState.Move)
+        if (m_PlayerMe.IsCurrentState(PlayerState.Idle) || m_PlayerMe.IsCurrentState(PlayerState.Move))
         {
             m_PlayerMe.SetRotation(m_CameraObject.forward);
         }

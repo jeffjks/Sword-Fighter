@@ -13,10 +13,6 @@ public class PlayerMe : PlayerManager
 
     private const float PositionCorrectionThreshold = 0.25f;
 
-    private void Awake() {
-        m_UI_HpBar = GameManager.instance.m_UIManager.m_UI_HpBarMain;
-    }
-
     public override void Start_DealDamage_Attack1() {
         //m_Sword.StartDeal();
         //ClientSend.PlayerAttack();

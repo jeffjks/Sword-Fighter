@@ -273,6 +273,7 @@ public abstract class PlayerManager : MonoBehaviour
     }
 
     public void SetUserNameUI(string _username) {
+        m_UI_HpBar = GameManager.instance.m_UIManager.m_UI_HpBarMain;
         m_UI_HpBar.SetUserNameUI(_username);
     }
 
