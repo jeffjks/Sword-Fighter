@@ -14,8 +14,7 @@ public enum PlayerSkill
 {
     None,
     Block,
-    Attack1,
-    Attack2,
+    Basic,
     Roll
 }
 
@@ -118,7 +117,7 @@ namespace SwordFighterServer
             hitPoints = hitPoints_max;
             currentState = PlayerState.Idle;
 
-            _skillDuration.Add(PlayerSkill.Attack1, 800);
+            _skillDuration.Add(PlayerSkill.Basic, 800);
             _skillDuration.Add(PlayerSkill.Block, 1500);
             _skillDuration.Add(PlayerSkill.Roll, 1000);
         }
@@ -176,7 +175,7 @@ namespace SwordFighterServer
             position = ClampPosition(position + input.deltaPos);
             deltaPos = input.deltaPos;
             inputVector = input.inputVector;
-            Console.WriteLine($"[{input.SeqNum}, {input.Timestamp}] {position}");
+            // Console.WriteLine($"[{input.SeqNum}, {input.Timestamp}] {position}");
         }
 
         public void ApplySkillInput(SkillInput input)
@@ -205,7 +204,7 @@ namespace SwordFighterServer
                         position = targetPosition;
                         break;
 
-                    case PlayerSkill.Attack1:
+                    case PlayerSkill.Basic:
                         AddSchedule(() => PlayerAttack(skillInput.Timestamp), 500);
                         break;
                 }
@@ -246,6 +245,7 @@ namespace SwordFighterServer
                     continue;
                 if (otherPosition == null || myPosition == null)
                     continue;
+                Console.WriteLine($"\tPlayer {targetPlayerID} Position in timestamp: {otherPosition} (currentPosition: {myPosition})");
 
                 float distance_squared = Vector3.DistanceSquared(myPosition, otherPosition);
 

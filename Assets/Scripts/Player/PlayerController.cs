@@ -27,7 +27,7 @@ public class PlayerController : MonoBehaviour
 
     private readonly Dictionary<PlayerSkill, float> _skillDistances = new()
     {
-        { PlayerSkill.Attack1, 0f },
+        { PlayerSkill.Basic, 0f },
         { PlayerSkill.Block, 0f },
         { PlayerSkill.Roll, 5f }
     };
@@ -44,7 +44,7 @@ public class PlayerController : MonoBehaviour
         m_PlayerMe.SetMovementAnimation(InputVector);
     }
 
-    public void OnAttack() => UsePlayerSkill(PlayerSkill.Attack1);
+    public void OnAttack() => UsePlayerSkill(PlayerSkill.Basic);
 
     public void OnBlock() => UsePlayerSkill(PlayerSkill.Block);
 

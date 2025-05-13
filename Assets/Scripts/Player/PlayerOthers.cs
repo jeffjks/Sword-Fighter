@@ -19,11 +19,11 @@ public class PlayerOthers : PlayerManager
         DeadReckoning();
     }
 
-    public override void Start_DealDamage_Attack1() {
+    public override void Start_DealDamage_Basic() {
         return;
     }
 
-    public override void Finish_DealDamage_Attack1() {
+    public override void Finish_DealDamage_Basic() {
         return;
     }
 

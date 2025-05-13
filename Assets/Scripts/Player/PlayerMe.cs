@@ -14,12 +14,12 @@ public class PlayerMe : PlayerManager
 
     private const float PositionCorrectionThreshold = 0.25f;
 
-    public override void Start_DealDamage_Attack1() {
+    public override void Start_DealDamage_Basic() {
         //m_Sword.StartDeal();
         //ClientSend.PlayerAttack();
     }
 
-    public override void Finish_DealDamage_Attack1() {
+    public override void Finish_DealDamage_Basic() {
         //m_Sword.FinishDeal();
     }
     

@@ -21,7 +21,7 @@ public abstract class PlayerManager : MonoBehaviour
     public PlayerStateMachine CurrentStateMachine;
     public readonly Dictionary<PlayerSkill, int> m_SkillDurations = new()
     {
-        { PlayerSkill.Attack1, 800 },
+        { PlayerSkill.Basic, 800 },
         { PlayerSkill.Block, 1500 },
         { PlayerSkill.Roll, 1000 }
     };
@@ -143,9 +143,9 @@ public abstract class PlayerManager : MonoBehaviour
         m_CharacterModel.rotation = Quaternion.LookRotation(rotationDirection);
     }
 
-    public abstract void Start_DealDamage_Attack1();
+    public abstract void Start_DealDamage_Basic();
 
-    public abstract void Finish_DealDamage_Attack1();
+    public abstract void Finish_DealDamage_Basic();
 
     public abstract void OnStateReceived(int seqNum, long timestamp, Vector3 facingDirection, Vector3 deltaPos, Vector2 inputVector, Vector3 position);
     public abstract void OnStateReceived(long timestamp, PlayerSkill playerSkill, Vector3 facingDirection, Vector3 targetPosition);

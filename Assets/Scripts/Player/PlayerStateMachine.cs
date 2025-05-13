@@ -61,7 +61,7 @@ public class UsingSkillState : PlayerStateBase
         {
             { PlayerSkill.None, new NoneSkill(manager) },
             { PlayerSkill.Block, new BlockSkill(manager) },
-            { PlayerSkill.Attack1, new AttckSkill(manager) },
+            { PlayerSkill.Basic, new AttckSkill(manager) },
             { PlayerSkill.Roll, new RollSkill(manager) }
         };
     }
@@ -113,7 +113,7 @@ public class NoneSkill : SkillStateBase
 public class AttckSkill : SkillStateBase
 {
     public AttckSkill(PlayerManager manager) : base(manager) { }
-    public override PlayerSkill Type => PlayerSkill.Attack1;
+    public override PlayerSkill Type => PlayerSkill.Basic;
     public override void Enter() {
         _playerManager.SetSkillAnimation(Type);
     }
