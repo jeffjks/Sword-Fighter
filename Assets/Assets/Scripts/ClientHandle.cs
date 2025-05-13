@@ -71,7 +71,7 @@ public class ClientHandle : MonoBehaviour
         int state = packet.ReadInt();
         
         try {
-            GameManager.players[id].CurrentState = (PlayerState) state;
+            GameManager.players[id].CurrentStateMachine.SetState((PlayerState) state);
         }
         catch (KeyNotFoundException e) {
             Debug.Log(e);

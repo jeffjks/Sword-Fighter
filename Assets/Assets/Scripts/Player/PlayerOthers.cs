@@ -46,8 +46,10 @@ public class PlayerOthers : PlayerManager
         _moveTimer = 0f;
         m_DeltaPos = _nextPosition - position;
         
-        if (CurrentState == PlayerState.Idle || CurrentState == PlayerState.Move)
-            CurrentState = (deltaPos == Vector3.zero) ? PlayerState.Idle : PlayerState.Move;
+        if (IsCurrentState(PlayerState.Idle) || IsCurrentState(PlayerState.Move))
+        {
+            CurrentStateMachine.SetState((deltaPos == Vector3.zero) ? PlayerState.Idle : PlayerState.Move);
+        }
 
         SetMovementAnimation(inputVector);
 

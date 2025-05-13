@@ -1,10 +1,12 @@
-using UnityEngine;
+using System.Collections.Generic;
 
 public abstract class PlayerStateBase
 {
-    protected PlayerStateMachine _fsm;
+    public abstract PlayerState Type { get; }
 
-    public PlayerStateBase(PlayerStateMachine _fsm) => this._fsm = _fsm;
+    protected PlayerManager _playerManager;
+
+    public PlayerStateBase(PlayerManager manager) => _playerManager = manager;
 
     public virtual void Enter() { }
     public virtual void Exit() { }
@@ -15,108 +17,187 @@ public abstract class PlayerStateBase
 
 public class DeadState : PlayerStateBase
 {
-    public DeadState(PlayerStateMachine _fsm) : base(_fsm) { }
-    public override void Enter() { }
+    public DeadState(PlayerManager manager) : base(manager) { }
+    public override PlayerState Type => PlayerState.Dead;
+    public override void Enter() {
+        _playerManager.m_IsMovable = false;
+        _playerManager.m_PlayerCollider.enabled = false;
+        _playerManager.SetStateAnimation(Type);
+    }
     public override void Update() { }
 }
 
 public class IdleState : PlayerStateBase
 {
-    public IdleState(PlayerStateMachine _fsm) : base(_fsm) { }
-    public override void Enter() { }
+    public IdleState(PlayerManager manager) : base(manager) { }
+    public override PlayerState Type => PlayerState.Idle;
+    public override void Enter() {
+        _playerManager.SetStateAnimation(Type);
+    }
     public override void Update() { }
 }
 
 public class MoveState : PlayerStateBase
 {
-    public MoveState(PlayerStateMachine _fsm) : base(_fsm) { }
-    public override void Enter() { }
+    public MoveState(PlayerManager manager) : base(manager) { }
+    public override PlayerState Type => PlayerState.Move;
+    public override void Enter() {
+        _playerManager.SetStateAnimation(Type);
+    }
     public override void Update() { }
 }
 
 public class UsingSkillState : PlayerStateBase
 {
-    private SkillStateBase subState;
+    private SkillStateBase _subState;
 
-    public UsingSkillState(PlayerStateMachine _fsm) : base(_fsm) { }
+    private readonly Dictionary<PlayerSkill, SkillStateBase> _playerSkills;
 
-    public void SetSubState(SkillStateBase skillState)
+    public UsingSkillState(PlayerManager manager) : base(manager)
     {
-        subState?.Exit();
-        subState = skillState;
-        subState.Enter();
+        // 여기서 상태 초기화
+        _playerSkills = new Dictionary<PlayerSkill, SkillStateBase>
+        {
+            { PlayerSkill.None, new NoneSkill(manager) },
+            { PlayerSkill.Block, new BlockSkill(manager) },
+            { PlayerSkill.Attack1, new AttckSkill(manager) },
+            { PlayerSkill.Roll, new RollSkill(manager) }
+        };
     }
 
-    public override void Enter() { }
-    public override void Update() => subState?.Update();
-    public override void Exit() => subState?.Exit();
+    public override PlayerState Type => PlayerState.UsingSkill;
+
+    public void SetSubState(PlayerSkill newPlayerSkill)
+    {
+        if (_playerSkills.TryGetValue(newPlayerSkill, out var newStateBase))
+        {
+            _subState?.Exit();
+            _subState = newStateBase;
+            _subState.Enter();
+        }
+    }
+
+    public override void Enter() {
+        _playerManager.SetStateAnimation(Type);
+    }
+    public override void Update() => _subState?.Update();
+    public override void Exit() {
+        SetSubState(PlayerSkill.None);
+    }
 }
 
 // ───────── 하위 스킬 상태들 ─────────
 
 public abstract class SkillStateBase
 {
-    protected PlayerStateMachine _fsm;
-    public SkillStateBase(PlayerStateMachine _fsm) => this._fsm = _fsm;
+    public abstract PlayerSkill Type { get; }
+    protected PlayerManager _playerManager;
+    public SkillStateBase(PlayerManager manager) => _playerManager = manager;
 
     public virtual void Enter() { }
     public virtual void Update() { }
     public virtual void Exit() { }
 }
 
-public class AttackState : SkillStateBase
+public class NoneSkill : SkillStateBase
 {
-    public AttackState(PlayerStateMachine _fsm) : base(_fsm) { }
-    public override void Enter() { }
+    public NoneSkill(PlayerManager manager) : base(manager) { }
+    public override PlayerSkill Type => PlayerSkill.None;
+    public override void Enter() {
+        _playerManager.SetSkillAnimation(Type);
+    }
     public override void Update() { }
 }
 
-public class BlockState : SkillStateBase
+public class AttckSkill : SkillStateBase
 {
-    public BlockState(PlayerStateMachine _fsm) : base(_fsm) { }
-    public override void Enter() { }
+    public AttckSkill(PlayerManager manager) : base(manager) { }
+    public override PlayerSkill Type => PlayerSkill.Attack1;
+    public override void Enter() {
+        _playerManager.SetSkillAnimation(Type);
+    }
     public override void Update() { }
 }
 
-public class RollState : SkillStateBase
+public class BlockSkill : SkillStateBase
 {
-    public RollState(PlayerStateMachine _fsm) : base(_fsm) { }
-    public override void Enter() { }
+    public BlockSkill(PlayerManager manager) : base(manager) { }
+    public override PlayerSkill Type => PlayerSkill.Block;
+    public override void Enter() {
+        _playerManager.SetSkillAnimation(Type);
+    }
     public override void Update() { }
+}
+
+public class RollSkill : SkillStateBase
+{
+    public RollSkill(PlayerManager manager) : base(manager) { }
+    public override PlayerSkill Type => PlayerSkill.Roll;
+    public override void Enter() {
+        _playerManager.SetSkillAnimation(Type);
+        _playerManager.m_EnableInterpolate = false;
+    }
+    public override void Update() { }
+    public override void Exit() {
+        _playerManager.m_EnableInterpolate = true;
+    }
 }
 
 // ───────── 상태머신 ─────────
 
 public class PlayerStateMachine
 {
-    private PlayerStateBase currentState;
-    private UsingSkillState usingSkillState;
+    private PlayerStateBase _currentStateBase;
+    private UsingSkillState _usingSkillState;
 
-    public void SetState(PlayerStateBase newState)
+    private readonly Dictionary<PlayerState, PlayerStateBase> _playerStates;
+
+    public PlayerStateBase CurrentState => _currentStateBase;
+
+    public PlayerStateMachine(PlayerManager manager)
     {
-        currentState?.Exit();
-        currentState = newState;
-        currentState.Enter();
+        // 여기서 상태 초기화
+        _playerStates = new Dictionary<PlayerState, PlayerStateBase>
+        {
+            { PlayerState.Idle, new IdleState(manager) },
+            { PlayerState.Move, new MoveState(manager) },
+            { PlayerState.UsingSkill, new UsingSkillState(manager) },
+            { PlayerState.Dead, new DeadState(manager) }
+        };
+
+        _usingSkillState = new(manager);
     }
 
-    public void SetSkill(SkillStateBase skillState)
+    public void SetState(PlayerState newState)
     {
-        if (currentState is not UsingSkillState)
+        if (_currentStateBase?.Type == newState) // 현재 상태와 동일하면 무시
+            return;
+        
+        if (_playerStates.TryGetValue(newState, out var newStateBase))
         {
-            usingSkillState ??= new UsingSkillState(this);
-            SetState(usingSkillState);
+            _currentStateBase?.Exit();
+            _currentStateBase = newStateBase;
+            _currentStateBase.Enter();
+        }
+    }
+
+    public void SetSkill(PlayerSkill skillState)
+    {
+        if (_currentStateBase is not UsingSkillState)
+        {
+            SetState(PlayerState.UsingSkill);
         }
 
-        usingSkillState.SetSubState(skillState);
+        _usingSkillState.SetSubState(skillState);
     }
 
-    public void Update() => currentState?.Update();
+    public void Update() => _currentStateBase?.Update();
 
     // 상태 전환 예시
-    public void OnDead() => SetState(new DeadState(this));
-    public void OnMove() => SetState(new MoveState(this));
-    public void OnIdle() => SetState(new IdleState(this));
-    public void OnAttack() => SetSkill(new AttackState(this));
-    public void OnBlock() => SetSkill(new BlockState(this));
-    public void OnRoll() => SetSkill(new RollState(this));
+    public void OnDead() => SetState(PlayerState.Dead);
+    public void OnMove() => SetState(PlayerState.Move);
+    public void OnIdle() => SetState(PlayerState.Idle);
+    public void OnAttack() => SetSkill(PlayerSkill.Attack1);
+    public void OnBlock() => SetSkill(PlayerSkill.Block);
+    public void OnRoll() => SetSkill(PlayerSkill.Roll);
 }

@@ -21,18 +21,20 @@ public class PlayerMotor : MonoBehaviour
 
         if (inputVector == Vector2.zero && _prevInputVector == Vector2.zero)
         {
-            if (m_PlayerMe.CurrentState == PlayerState.Move)
-                m_PlayerMe.CurrentState = PlayerState.Idle;
+            if (m_PlayerMe.IsCurrentState(PlayerState.Move))
+            {
+                m_PlayerMe.CurrentStateMachine.SetState(PlayerState.Idle);
+            }
             return;
         }
         _prevInputVector = inputVector;
 
-        if ((m_PlayerMe.CurrentState == PlayerState.Idle || m_PlayerMe.CurrentState == PlayerState.Move) == false)
+        if ((m_PlayerMe.IsCurrentState(PlayerState.Idle) || m_PlayerMe.IsCurrentState(PlayerState.Move)) == false)
             return;
         if (!m_PlayerMe.m_IsMovable)
             return;
         
-        m_PlayerMe.CurrentState = PlayerState.Move;
+        m_PlayerMe.CurrentStateMachine.SetState(PlayerState.Move);
         Vector3 forwardDirection = m_PlayerController.GetForwardDirection();
 
         var timestamp = TimeSync.GetSyncTime();

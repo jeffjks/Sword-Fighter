@@ -34,6 +34,8 @@ public abstract class PlayerManager : MonoBehaviour
     public Vector3 m_DeltaPos;
     public Animator m_Animator;
     public bool m_IsMovable = true;
+    public bool m_EnableInterpolate = true;
+    public PlayerStateMachine CurrentStateMachine;
     public readonly Dictionary<PlayerSkill, int> m_SkillDurations = new()
     {
         { PlayerSkill.Attack1, 800 },
@@ -47,39 +49,6 @@ public abstract class PlayerManager : MonoBehaviour
     protected int _lastSeqNum;
 
     private CancellationTokenSource _cts;
-    private PlayerState _currentState;
-    private PlayerSkill _currentSkill;
-
-    public PlayerState CurrentState
-    {
-        get {
-            return _currentState;
-        }
-        set
-        {
-            if (_currentState == value)
-                return;
-            _currentState = value;
-            OnPlayerStateChanged?.Invoke(_currentState);
-        }
-    }
-
-    public PlayerSkill CurrentSkill
-    {
-        get {
-            return _currentSkill;
-        }
-        set
-        {
-            if (_currentSkill == value)
-                return;
-            _currentSkill = value;
-            OnPlayerSkillChanged?.Invoke(_currentSkill);
-        }
-    }
-
-    public event UnityAction<PlayerState> OnPlayerStateChanged;
-    public event UnityAction<PlayerSkill> OnPlayerSkillChanged;
 
     // [HideInInspector] public PlayerState m_PlayerState = PlayerState.Idle;
     // [HideInInspector] public PlayerSkill m_PlayerSkill = PlayerSkill.None;
@@ -94,63 +63,30 @@ public abstract class PlayerManager : MonoBehaviour
     private readonly int _animatorPlayerSkill = Animator.StringToHash("Skill");
     private const float ROLL_DISTANCE = 5f;
 
+    private void Awake()
+    {
+        CurrentStateMachine = new(this);
+    }
+
     public void Init() {
         SetUserNameUI(_username);
         SetCurrentHitPoint(m_CurrentHp);
     }
 
-    private void OnEnable()
-    {
-        OnPlayerStateChanged += HandleStateChange;
-        OnPlayerStateChanged += SetStateAnimation;
-        OnPlayerSkillChanged += SetSkillAnimation;
-    }
-
-    private void OnDisable()
-    {
-        OnPlayerStateChanged -= HandleStateChange;
-        OnPlayerStateChanged -= SetStateAnimation;
-        OnPlayerSkillChanged -= SetSkillAnimation;
-    }
-
-    private void HandleStateChange(PlayerState playerState)
-    {
-        switch (playerState)
-        {
-            case PlayerState.Dead:
-                m_IsMovable = false;
-                m_PlayerCollider.enabled = false;
-                //m_Animator.SetInteger("State", (int)playerState);
-                // m_Movement = Vector2.zero;
-                break;
-            case PlayerState.Idle:
-            case PlayerState.Move:
-                CurrentSkill = PlayerSkill.None;
-                break;
-            case PlayerState.UsingSkill:
-                // m_Movement = Vector2.zero;
-                break;
-        }
-    }
-
     protected virtual void Update()
     {
-        if (CurrentState == PlayerState.Dead) {
+        PlayMovementAnimation();
+        InterpolatePosition();
+    }
+
+    private void PlayMovementAnimation()
+    {
+        if (IsCurrentState(PlayerState.Dead)) {
             return;
         }
 
         m_Animator.SetFloat(_animatorMovementHorizontal, _animationMovement.x, 0.25f, Time.deltaTime);
         m_Animator.SetFloat(_animatorMovementVertical, _animationMovement.y, 0.25f, Time.deltaTime);
-
-        //Debug.Log($"Skill: {CurrentSkill}, State: {CurrentState}");
-
-        if (CurrentSkill != PlayerSkill.Attack1) {
-            Finish_DealDamage_Attack1();
-        }
-        
-        InterpolatePosition();
-
-        //Debug.Log(m_State);
     }
 
     public bool ExecutePlayerSkill(long timestamp, PlayerSkill playerSkill, Vector3 facingDirection, Vector3? targetPosition = null)
@@ -168,10 +104,7 @@ public abstract class PlayerManager : MonoBehaviour
         if (this is PlayerMe)
             ClientSend.PlayerSkill(timestamp, facingDirection, playerSkill);
 
-
-        CurrentSkill = playerSkill;
-        
-        CurrentState = PlayerState.UsingSkill;
+        CurrentStateMachine.SetSkill(playerSkill);
 
         switch(playerSkill)
         {
@@ -187,7 +120,7 @@ public abstract class PlayerManager : MonoBehaviour
         try
         {
             await UniTask.Delay(delayMilliseconds, cancellationToken: token);
-            CurrentState = PlayerState.Idle;
+            CurrentStateMachine.SetState(PlayerState.Idle);
         }
         catch (OperationCanceledException)
         {
@@ -244,12 +177,12 @@ public abstract class PlayerManager : MonoBehaviour
         );
     }
 
-    private void SetStateAnimation(PlayerState playerState)
+    public void SetStateAnimation(PlayerState playerState)
     {
         m_Animator.SetInteger(_animatorPlayerState, (int) playerState);
     }
 
-    private void SetSkillAnimation(PlayerSkill playerSkill)
+    public void SetSkillAnimation(PlayerSkill playerSkill)
     {
         m_Animator.SetInteger(_animatorPlayerSkill, (int) playerSkill);
     }
@@ -278,8 +211,13 @@ public abstract class PlayerManager : MonoBehaviour
     }
 
     private void InterpolatePosition() {
-        if (CurrentSkill == PlayerSkill.Roll)
+        if (m_EnableInterpolate == false)
             return;
         transform.position = Vector3.Slerp(transform.position, m_RealPosition, 0.25f);
+    }
+
+    public bool IsCurrentState(PlayerState type)
+    {
+        return CurrentStateMachine.CurrentState?.Type == type;
     }
 }

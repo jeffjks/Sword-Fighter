@@ -65,7 +65,7 @@ public class GameManager : MonoBehaviour
 
         playerManager.id = id;
         playerManager.m_CurrentHp = hp;
-        playerManager.CurrentState = (PlayerState) state;
+        playerManager.CurrentStateMachine.SetState((PlayerState) state);
         playerManager.m_RealPosition = position;
         playerManager.transform.position = position;
         playerManager.SetUserName(username);
