@@ -65,6 +65,16 @@ public class PlayerController : MonoBehaviour
             var result = m_PlayerMe.ExecutePlayerSkill(timestamp, playerSkill, facingDirection);
             if (result == false)
                 return;
+            
+            var debugStr = string.Empty;
+            for (var i = 1; i <= 4; ++i)
+            {
+                if (GameManager.players.ContainsKey(i) == false)
+                    continue;
+                var pos = GameManager.players[i].m_RealPosition;
+                debugStr += $"\n\tPlayer {i} position: {pos}";
+            }
+            Debug.Log($"UseSkill: {playerSkill}{debugStr}");
 
             var clientInput = new ClientInput(timestamp, facingDirection * distance);
             m_PlayerMe.m_ClientInputQueue.Enqueue(clientInput);
