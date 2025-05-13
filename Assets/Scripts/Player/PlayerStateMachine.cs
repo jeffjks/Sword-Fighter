@@ -16,133 +16,20 @@ public abstract class PlayerStateBase
 
 // ───────── 상위 상태들 ─────────
 
-public class DeadState : PlayerStateBase
-{
-    public DeadState(PlayerManager manager) : base(manager) { }
-    public override PlayerState Type => PlayerState.Dead;
-    public override void Enter() {
-        _playerManager.m_IsMovable = false;
-        _playerManager.m_PlayerCollider.enabled = false;
-        _playerManager.SetStateAnimation(Type);
-    }
-    public override void Update() { }
-}
-
-public class IdleState : PlayerStateBase
-{
-    public IdleState(PlayerManager manager) : base(manager) { }
-    public override PlayerState Type => PlayerState.Idle;
-    public override void Enter() {
-        _playerManager.SetStateAnimation(Type);
-    }
-    public override void Update() { }
-}
-
-public class MoveState : PlayerStateBase
-{
-    public MoveState(PlayerManager manager) : base(manager) { }
-    public override PlayerState Type => PlayerState.Move;
-    public override void Enter() {
-        _playerManager.SetStateAnimation(Type);
-    }
-    public override void Update() { }
-}
-
-public class UsingSkillState : PlayerStateBase
-{
-    private SkillStateBase _subState;
-
-    private readonly Dictionary<PlayerSkill, SkillStateBase> _playerSkills;
-
-    public UsingSkillState(PlayerManager manager) : base(manager)
-    {
-        // 여기서 상태 초기화
-        _playerSkills = new Dictionary<PlayerSkill, SkillStateBase>
-        {
-            { PlayerSkill.None, new NoneSkill(manager) },
-            { PlayerSkill.Block, new BlockSkill(manager) },
-            { PlayerSkill.Basic, new AttckSkill(manager) },
-            { PlayerSkill.Roll, new RollSkill(manager) }
-        };
-    }
-
-    public override PlayerState Type => PlayerState.UsingSkill;
-
-    public void SetSubState(PlayerSkill newPlayerSkill)
-    {
-        if (_playerSkills.TryGetValue(newPlayerSkill, out var newStateBase))
-        {
-            _subState?.Exit();
-            _subState = newStateBase;
-            _subState.Enter();
-        }
-    }
-
-    public override void Enter() {
-        _playerManager.SetStateAnimation(Type);
-    }
-    public override void Update() => _subState?.Update();
-    public override void Exit() {
-        SetSubState(PlayerSkill.None);
-    }
-}
 
 // ───────── 하위 스킬 상태들 ─────────
 
-public abstract class SkillStateBase
+public abstract class PlayerSkillBase
 {
     public abstract PlayerSkill Type { get; }
     protected PlayerManager _playerManager;
-    public SkillStateBase(PlayerManager manager) => _playerManager = manager;
+    public PlayerSkillBase(PlayerManager manager) => _playerManager = manager;
 
     public virtual void Enter() { }
     public virtual void Update() { }
     public virtual void Exit() { }
 }
 
-public class NoneSkill : SkillStateBase
-{
-    public NoneSkill(PlayerManager manager) : base(manager) { }
-    public override PlayerSkill Type => PlayerSkill.None;
-    public override void Enter() {
-        _playerManager.SetSkillAnimation(Type);
-    }
-    public override void Update() { }
-}
-
-public class AttckSkill : SkillStateBase
-{
-    public AttckSkill(PlayerManager manager) : base(manager) { }
-    public override PlayerSkill Type => PlayerSkill.Basic;
-    public override void Enter() {
-        _playerManager.SetSkillAnimation(Type);
-    }
-    public override void Update() { }
-}
-
-public class BlockSkill : SkillStateBase
-{
-    public BlockSkill(PlayerManager manager) : base(manager) { }
-    public override PlayerSkill Type => PlayerSkill.Block;
-    public override void Enter() {
-        _playerManager.SetSkillAnimation(Type);
-    }
-    public override void Update() { }
-}
-
-public class RollSkill : SkillStateBase
-{
-    public RollSkill(PlayerManager manager) : base(manager) { }
-    public override PlayerSkill Type => PlayerSkill.Roll;
-    public override void Enter() {
-        _playerManager.SetSkillAnimation(Type);
-        _playerManager.m_EnableInterpolate = false;
-    }
-    public override void Update() { }
-    public override void Exit() {
-        _playerManager.m_EnableInterpolate = true;
-    }
-}
 
 // ───────── 상태머신 ─────────
 
