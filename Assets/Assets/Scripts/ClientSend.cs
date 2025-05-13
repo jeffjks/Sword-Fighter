@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Cysharp.Threading.Tasks;
 using System.IO;
+using Shared.Enums;
 
 public class ClientSend : MonoBehaviour
 {

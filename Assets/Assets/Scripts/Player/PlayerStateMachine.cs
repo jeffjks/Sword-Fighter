@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Shared.Enums;
 
 public abstract class PlayerStateBase
 {
@@ -190,14 +191,4 @@ public class PlayerStateMachine
 
         _usingSkillState.SetSubState(skillState);
     }
-
-    public void Update() => _currentStateBase?.Update();
-
-    // 상태 전환 예시
-    public void OnDead() => SetState(PlayerState.Dead);
-    public void OnMove() => SetState(PlayerState.Move);
-    public void OnIdle() => SetState(PlayerState.Idle);
-    public void OnAttack() => SetSkill(PlayerSkill.Attack1);
-    public void OnBlock() => SetSkill(PlayerSkill.Block);
-    public void OnRoll() => SetSkill(PlayerSkill.Roll);
 }

@@ -1,27 +1,10 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Events;
 using Cysharp.Threading.Tasks;
 using System.Threading;
 using System;
-
-public enum PlayerState
-{
-    Dead = -1,
-    Idle,
-    Move,
-    UsingSkill
-}
-
-public enum PlayerSkill
-{
-    None,
-    Block,
-    Attack1,
-    Attack2,
-    Roll
-}
+using Shared.Enums;
 
 public abstract class PlayerManager : MonoBehaviour
 {

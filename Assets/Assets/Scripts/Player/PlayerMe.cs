@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
 using System.Linq;
+using Shared.Enums;
 
 public class PlayerMe : PlayerManager
 {

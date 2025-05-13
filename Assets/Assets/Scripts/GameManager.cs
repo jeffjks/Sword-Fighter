@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
+using Shared.Enums;
 
 public class GameManager : MonoBehaviour
 {
