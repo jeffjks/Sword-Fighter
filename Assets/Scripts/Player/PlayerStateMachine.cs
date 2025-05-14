@@ -28,7 +28,6 @@ public abstract class PlayerSkillBase
 public class PlayerStateMachine
 {
     private PlayerStateBase _currentStateBase;
-    private UsingSkillState _usingSkillState;
 
     private readonly Dictionary<PlayerState, PlayerStateBase> _playerStates;
 
@@ -37,8 +36,6 @@ public class PlayerStateMachine
     public PlayerStateMachine(PlayerManager manager)
     {
         _playerStates = PlayerStateInitializer.GetPlayerStateDictionary(manager);
-
-        _usingSkillState = new(manager);
     }
 
     public void SetState(PlayerState newState)
@@ -61,6 +58,9 @@ public class PlayerStateMachine
             SetState(PlayerState.UsingSkill);
         }
 
-        _usingSkillState.SetSubState(skillState);
+        if (_currentStateBase is UsingSkillState usingSkillState)
+        {
+            usingSkillState.SetSubState(skillState);
+        }
     }
 }

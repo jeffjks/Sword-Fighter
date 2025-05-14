@@ -71,7 +71,7 @@ namespace Editors
                         WritePlayerStateClass(writer, stateName);
                         writer.Close();
                     }
-                    Debug.Log($"{path}  Create Complete");
+                    Debug.Log($"{path} Create Complete");
                 }
             }
         }
@@ -95,7 +95,7 @@ namespace Editors
             {
                 WritePlayerStateInitializerClass(writer);
             }
-            Debug.Log($"{path}  Create Complete");
+            Debug.Log($"{path} Create Complete");
         }
 
         private void WritePlayerStateInitializerClass(StreamWriter writer)

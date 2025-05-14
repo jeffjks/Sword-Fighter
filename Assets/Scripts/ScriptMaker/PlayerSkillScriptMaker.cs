@@ -51,26 +51,28 @@ namespace Editors
         {
             Directory.CreateDirectory(scriptPath);
 
-            foreach (PlayerSkill skill in Enum.GetValues(typeof(PlayerSkill)))
-            {
-                WritePlayerSkillCodes(skill.ToString());
-            }
+            WritePlayerSkillCodes();
+            WritePlayerSkillInitializerCode();
         }
         
-        private void WritePlayerSkillCodes(string skillName)
+        private void WritePlayerSkillCodes()
         {
-            var path = scriptPath + skillName + "Skill.cs";
-            if (File.Exists(path) == false)
+            foreach (PlayerSkill skill in Enum.GetValues(typeof(PlayerSkill)))
             {
-                using (var writer = new StreamWriter(path))
+                var skillName = skill.ToString();
+                var path = scriptPath + skillName + "Skill.cs";
+                if (File.Exists(path) == false)
                 {
-                    writer.WriteLine($"// This is Auto Generated Code by{this}");
-                    writer.WriteLine("using Shared.Enums;");
-                    writer.WriteLine("");
-                    WritePlayerSkillClass(writer, skillName);
-                    writer.Close();
+                    using (var writer = new StreamWriter(path))
+                    {
+                        writer.WriteLine($"// This is Auto Generated Code by{this}");
+                        writer.WriteLine("using Shared.Enums;");
+                        writer.WriteLine("");
+                        WritePlayerSkillClass(writer, skillName);
+                        writer.Close();
+                    }
+                    Debug.Log($"{path} Create Complete");
                 }
-                Debug.Log($"{path}  Create Complete");
             }
         }
 
@@ -84,6 +86,43 @@ namespace Editors
             writer.WriteLine("    public override void Update() { }");
             writer.WriteLine("}");
             writer.WriteLine("");
+        }
+
+        private void WritePlayerSkillInitializerCode()
+        {
+            var path = scriptPath + "PlayerSkillInitializer.cs";
+            using (var writer = new StreamWriter(path))
+            {
+                WritePlayerSkillInitializerClass(writer);
+            }
+            Debug.Log($"{path} Create Complete");
+        }
+
+        private void WritePlayerSkillInitializerClass(StreamWriter writer)
+        {
+            writer.WriteLine($"// This is Auto Generated Code by{this}. Do not modify the code.");
+            writer.WriteLine("using System.Collections.Generic;");
+            writer.WriteLine("using UnityEngine;");
+            writer.WriteLine("using Shared.Enums;");
+            writer.WriteLine("");
+            writer.WriteLine("public class PlayerSkillInitializer : MonoBehaviour");
+            writer.WriteLine("{");
+            writer.WriteLine("    public static Dictionary<PlayerSkill, PlayerSkillBase> GetPlayerSkillDictionary(PlayerManager manager)");
+            writer.WriteLine("    {");
+            writer.WriteLine("        var playerSkills = new Dictionary<PlayerSkill, PlayerSkillBase>");
+            writer.WriteLine("        {");
+            foreach (PlayerSkill skill in Enum.GetValues(typeof(PlayerSkill)))
+            {
+                var skillName = skill.ToString();
+                writer.WriteLine($"            {{ PlayerSkill.{skillName}, new {skillName}Skill(manager) }},");
+            }
+            writer.WriteLine("        };");
+            writer.WriteLine("");
+            writer.WriteLine("        return playerSkills;");
+            writer.WriteLine("    }");
+            writer.WriteLine("}");
+            writer.WriteLine("");
+            writer.Close();
         }
     }
 }

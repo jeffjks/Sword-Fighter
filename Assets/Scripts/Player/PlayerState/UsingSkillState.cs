@@ -10,14 +10,7 @@ public class UsingSkillState : PlayerStateBase
 
     public UsingSkillState(PlayerManager manager) : base(manager)
     {
-        // 여기서 상태 초기화
-        _playerSkills = new Dictionary<PlayerSkill, PlayerSkillBase>
-        {
-            { PlayerSkill.None, new NoneSkill(manager) },
-            { PlayerSkill.Block, new BlockSkill(manager) },
-            { PlayerSkill.Basic, new BasicSkill(manager) },
-            { PlayerSkill.Roll, new RollSkill(manager) }
-        };
+        _playerSkills = PlayerSkillInitializer.GetPlayerSkillDictionary(manager);
     }
     public override PlayerState Type => PlayerState.UsingSkill;
     public override void Enter() {
