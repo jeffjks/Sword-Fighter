@@ -14,11 +14,6 @@ public abstract class PlayerStateBase
     public virtual void Update() { }
 }
 
-// ───────── 상위 상태들 ─────────
-
-
-// ───────── 하위 스킬 상태들 ─────────
-
 public abstract class PlayerSkillBase
 {
     public abstract PlayerSkill Type { get; }
@@ -29,9 +24,6 @@ public abstract class PlayerSkillBase
     public virtual void Update() { }
     public virtual void Exit() { }
 }
-
-
-// ───────── 상태머신 ─────────
 
 public class PlayerStateMachine
 {
@@ -44,14 +36,7 @@ public class PlayerStateMachine
 
     public PlayerStateMachine(PlayerManager manager)
     {
-        // 여기서 상태 초기화
-        _playerStates = new Dictionary<PlayerState, PlayerStateBase>
-        {
-            { PlayerState.Idle, new IdleState(manager) },
-            { PlayerState.Move, new MoveState(manager) },
-            { PlayerState.UsingSkill, new UsingSkillState(manager) },
-            { PlayerState.Dead, new DeadState(manager) }
-        };
+        _playerStates = PlayerStateInitializer.GetPlayerStateDictionary(manager);
 
         _usingSkillState = new(manager);
     }

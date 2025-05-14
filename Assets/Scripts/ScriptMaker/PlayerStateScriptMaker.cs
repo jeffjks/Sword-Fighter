@@ -51,26 +51,28 @@ namespace Editors
         {
             Directory.CreateDirectory(scriptPath);
 
-            foreach (PlayerState state in Enum.GetValues(typeof(PlayerState)))
-            {
-                WritePlayerStateCodes(state.ToString());
-            }
+            WritePlayerStateCodes();
+            WritePlayerStateInitializerCode();
         }
         
-        private void WritePlayerStateCodes(string stateName)
+        private void WritePlayerStateCodes()
         {
-            var path = scriptPath + stateName + "State.cs";
-            if (File.Exists(path) == false)
+            foreach (PlayerState state in Enum.GetValues(typeof(PlayerState)))
             {
-                using (var writer = new StreamWriter(path))
+                var stateName = state.ToString();
+                var path = scriptPath + stateName + "State.cs";
+                if (File.Exists(path) == false)
                 {
-                    writer.WriteLine($"// This is Auto Generated Code by{this}");
-                    writer.WriteLine("using Shared.Enums;");
-                    writer.WriteLine("");
-                    WritePlayerStateClass(writer, stateName);
-                    writer.Close();
+                    using (var writer = new StreamWriter(path))
+                    {
+                        writer.WriteLine($"// This is Auto Generated Code by{this}");
+                        writer.WriteLine("using Shared.Enums;");
+                        writer.WriteLine("");
+                        WritePlayerStateClass(writer, stateName);
+                        writer.Close();
+                    }
+                    Debug.Log($"{path}  Create Complete");
                 }
-                Debug.Log($"{path}  Create Complete");
             }
         }
 
@@ -84,6 +86,43 @@ namespace Editors
             writer.WriteLine("    public override void Update() { }");
             writer.WriteLine("}");
             writer.WriteLine("");
+        }
+
+        private void WritePlayerStateInitializerCode()
+        {
+            var path = scriptPath + "PlayerStateInitializer.cs";
+            using (var writer = new StreamWriter(path))
+            {
+                WritePlayerStateInitializerClass(writer);
+            }
+            Debug.Log($"{path}  Create Complete");
+        }
+
+        private void WritePlayerStateInitializerClass(StreamWriter writer)
+        {
+            writer.WriteLine($"// This is Auto Generated Code by{this}. Do not modify the code.");
+            writer.WriteLine("using System.Collections.Generic;");
+            writer.WriteLine("using UnityEngine;");
+            writer.WriteLine("using Shared.Enums;");
+            writer.WriteLine("");
+            writer.WriteLine("public class PlayerStateInitializer : MonoBehaviour");
+            writer.WriteLine("{");
+            writer.WriteLine("    public static Dictionary<PlayerState, PlayerStateBase> GetPlayerStateDictionary(PlayerManager manager)");
+            writer.WriteLine("    {");
+            writer.WriteLine("        var playerStates = new Dictionary<PlayerState, PlayerStateBase>");
+            writer.WriteLine("        {");
+            foreach (PlayerState state in Enum.GetValues(typeof(PlayerState)))
+            {
+                var stateName = state.ToString();
+                writer.WriteLine($"            {{ PlayerState.{stateName}, new {stateName}State(manager) }},");
+            }
+            writer.WriteLine("        };");
+            writer.WriteLine("");
+            writer.WriteLine("        return playerStates;");
+            writer.WriteLine("    }");
+            writer.WriteLine("}");
+            writer.WriteLine("");
+            writer.Close();
         }
     }
 }
