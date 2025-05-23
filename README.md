@@ -30,6 +30,7 @@
 - 상태 패턴(State Pattern)을 사용하여 플레이어의 상태를 모듈화
 - 각 상태(`Idle`, `Move`, `UsingSkill`, `Dead`)는 독립 클래스로 구현되어, 책임이 명확하고 확장에 유리
 - Enter(), Exit(), Update() 메소드를 구현하여 상태 전환을 관리
+- 상태 등록 딕셔너리와 상태 클래스 템플릿을 자동 생성하는 Editor 확장 도구(ScriptMaker)를 구현
 
 ### 🧠 서버 아키텍처
 - 권위적인(Authoritative) 서버 모델
