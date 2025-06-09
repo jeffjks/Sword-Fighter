@@ -20,10 +20,11 @@ public class PlayerController : MonoBehaviour
     public PlayerMe m_PlayerMe;
     //public Animator m_Animator;
     public Transform m_CameraObject;
-    
+    public PlayerInput m_PlayerInput;
+
     public Vector2 InputVector { get; private set; }
     
-    private UIManager m_UIManager;
+    private UIManager _uiManager;
 
     private readonly Dictionary<PlayerSkill, float> _skillDistances = new()
     {
@@ -34,21 +35,23 @@ public class PlayerController : MonoBehaviour
 
     private void Awake()
     {
-        m_UIManager = GameManager.instance.m_UIManager;
+        _uiManager = GameManager.instance.m_UIManager;
+
+        _uiManager.m_UI_ChatInputField.Init(m_PlayerInput);
     }
 
-    public void OnMove(InputValue inputValue)
+    public void OnMove(InputAction.CallbackContext context)
     {
-        InputVector = inputValue.Get<Vector2>();
+        InputVector = context.ReadValue<Vector2>();
 
         m_PlayerMe.SetMovementAnimation(InputVector);
     }
 
-    public void OnAttack() => UsePlayerSkill(PlayerSkill.Basic);
+    public void OnAttack(InputAction.CallbackContext context) => UsePlayerSkill(PlayerSkill.Basic);
 
-    public void OnBlock() => UsePlayerSkill(PlayerSkill.Block);
+    public void OnBlock(InputAction.CallbackContext context) => UsePlayerSkill(PlayerSkill.Block);
 
-    public void OnRoll() => UsePlayerSkill(PlayerSkill.Roll);
+    public void OnRoll(InputAction.CallbackContext context) => UsePlayerSkill(PlayerSkill.Roll);
 
     private void UsePlayerSkill(PlayerSkill playerSkill)
     {
@@ -81,7 +84,7 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    public void OnJump()
+    public void OnJump(InputAction.CallbackContext context)
     {
         if (CanUseSkill() == false)
             return;
@@ -89,10 +92,24 @@ public class PlayerController : MonoBehaviour
         m_PlayerMe.m_RealPosition = new Vector3(m_PlayerMe.m_RealPosition.x + 12f, m_PlayerMe.m_RealPosition.y, m_PlayerMe.m_RealPosition.z);
     }
 
+    public void OnSubmit(InputAction.CallbackContext context)
+    {
+        if (!context.canceled)
+            return;
+        _uiManager.m_UI_ChatInputField.HandleSubmitInput();
+    }
+
+    public void OnExit(InputAction.CallbackContext context)
+    {
+        if (!context.canceled)
+            return;
+        _uiManager.OnExit();
+    }
+
     private bool CanUseSkill()
     {
-        if (m_UIManager.m_UI_ChatInputField.IsWritingChat)
-            return false;
+        //if (_uiManager.m_UI_ChatInputField.IsWritingChat)
+        //    return false;
         if (IsPlayerControllable() == false)
             return false;
         return true;

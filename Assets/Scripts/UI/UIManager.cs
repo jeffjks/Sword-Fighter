@@ -37,7 +37,7 @@ public class UIManager : MonoBehaviour
     private void Start()
     {
         m_IpAdressField.text = Client.instance.defaultIp;
-        m_IpAdressField.text = ChatClient.instance.defaultIp;
+        // m_IpAdressField.text = ChatClient.instance.defaultIp;
     }
 
     private async UniTask<bool> ConnetcToServer() {
@@ -108,7 +108,7 @@ public class UIManager : MonoBehaviour
         ChatClient.instance.Disconnect();
 
         m_UI_ChatWindow.ClearChatWindow();
-        m_UI_ChatInputField.WritingChatOff();
+        m_UI_ChatInputField.CloseChatInputField();
 
         m_StartMenu.SetActive(true);
         m_InGameMenu.SetActive(false);
@@ -116,19 +116,18 @@ public class UIManager : MonoBehaviour
         m_Ingame = false;
     }
 
+    public void OnExit()
+    {
+        if (m_Ingame == false)
+            return;
+        ReturnToMainMenu();
+    }
     
 
     void Update() {
         if (m_Ingame) {
             if (Client.instance.enabled && !Client.instance.IsConnected()) {
                 ReturnToMainMenu();
-            }
-            else if (Input.GetButtonDown("Exit")) {
-                ReturnToMainMenu();
-            }
-
-            if (Input.GetButtonDown("Submit")) {
-                m_UI_ChatInputField.ToggleWritingChat();
             }
         }
     }
