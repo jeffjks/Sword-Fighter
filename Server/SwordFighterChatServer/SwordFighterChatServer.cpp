@@ -51,7 +51,7 @@ public:
         try {
             std::cout << "[Info] "
                 << socket_.remote_endpoint().address().to_string()
-                << ":" << socket_.remote_endpoint().port() << " connected successfully" << std::endl;
+                << ":" << socket_.remote_endpoint().port() << " connected successfully." << std::endl;
         }
         catch (std::exception& e) {
             std::cout << "[Error] Failed to get ip adress: " << e.what() << "\n";
@@ -80,7 +80,7 @@ private:
                     do_read();
                 }
                 else {
-                    room_.leave(shared_from_this());
+                    disconnect();
                 }
             });
     }
@@ -91,15 +91,22 @@ private:
             boost::asio::buffer(write_msgs_.front()),
             [this, self](boost::system::error_code ec, std::size_t) {
                 if (!ec) {
-                    std::cout << "write: " << write_msgs_.front() << std::endl;
                     write_msgs_.pop_front();
                     if (!write_msgs_.empty())
                         do_write();
                 }
                 else {
-                    room_.leave(shared_from_this());
+                    disconnect();
                 }
             });
+    }
+
+    void disconnect()
+    {
+        room_.leave(shared_from_this());
+        std::cout << "[Info] "
+            << socket_.remote_endpoint().address().to_string()
+            << ":" << socket_.remote_endpoint().port() << " has disconnected." << std::endl;
     }
 
     tcp::socket socket_;
