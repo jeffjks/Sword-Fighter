@@ -36,8 +36,8 @@ public enum ClientPackets
 public enum ChatServerPackets
 {
     chatMessage = 1,
-    joinChatSession,
-    leaveChatSession
+    joinChatRoom,
+    leaveChatRoom
 }
 
 /// <summary>Chat from client to server.</summary>

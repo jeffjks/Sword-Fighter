@@ -29,8 +29,8 @@ public class ChatClient : ChatClientBase
         chatPacketHandlers = new Dictionary<ChatServerPackets, ChatPacketHandler>()
         {
             { ChatServerPackets.chatMessage, ChatClientHandle.GetChatMessage },
-            { ChatServerPackets.joinChatSession, ChatClientHandle.JoinChatSession },
-            { ChatServerPackets.leaveChatSession, ChatClientHandle.LeaveChatSession },
+            { ChatServerPackets.joinChatRoom, ChatClientHandle.JoinChatRoom },
+            { ChatServerPackets.leaveChatRoom, ChatClientHandle.LeaveChatRoom },
         };
         Debug.Log("Initialize packets.");
     }

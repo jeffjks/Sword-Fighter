@@ -16,7 +16,7 @@ public class ChatClientHandle : MonoBehaviour
         ChatClient.instance.HandleChatMessage(chatMessage.UserID, chatMessage.Message);
     }
 
-    public static void JoinChatSession(JToken payload) {
+    public static void JoinChatRoom(JToken payload) {
         /*
         int id = packet.ReadInt();
         string username = packet.ReadString();
@@ -37,6 +37,6 @@ public class ChatClientHandle : MonoBehaviour
         */
     }
 
-    public static void LeaveChatSession(JToken payload) {
+    public static void LeaveChatRoom(JToken payload) {
     }
 }
