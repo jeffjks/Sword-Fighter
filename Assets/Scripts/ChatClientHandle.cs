@@ -1,5 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using UnityEngine;
 
 enum ClientState {
@@ -9,22 +11,13 @@ enum ClientState {
 
 public class ChatClientHandle : MonoBehaviour
 {
-    public static void WelcomeMessage(Packet packet) {
-        ChatServerMessage(packet);
-        
-        ChatClientSend.WelcomeMessageReceived();
-    }
-    
-    public static void ChatServerMessage(Packet packet) { // msg 후 toClient 읽기
-        int id = packet.ReadInt();
-        string msg = packet.ReadString();
-
-        //Debug.Log($"Message from {id}: {msg}");
-        
-        ChatClient.instance.GetMessageFromServer(id, msg);
+    public static void GetChatMessage(JToken token) {
+        var chatMessage = token.ToObject<ChatMessage>();
+        ChatClient.instance.HandleChatMessage(chatMessage.UserID, chatMessage.Message);
     }
 
-    public static void ClientStateMessage(Packet packet) {
+    public static void JoinChatSession(JToken payload) {
+        /*
         int id = packet.ReadInt();
         string username = packet.ReadString();
         int state = packet.ReadInt();
@@ -40,6 +33,10 @@ public class ChatClientHandle : MonoBehaviour
             return;
         }
 
-        ChatClient.instance.GetMessageFromServer((int) MessageType.SYSTEM_MESSAGE, msg);
+        ChatClient.instance.HandleChatMessage((int) MessageType.SYSTEM_MESSAGE, msg);
+        */
+    }
+
+    public static void LeaveChatSession(JToken payload) {
     }
 }

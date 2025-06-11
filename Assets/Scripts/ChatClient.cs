@@ -4,13 +4,13 @@ using UnityEngine;
 using System;
 using System.Net.Sockets;
 
-public class ChatClient : ClientBase
+public class ChatClient : ChatClientBase
 {
     public static ChatClient instance;
     public UI_ChatWindow m_UI_ChatWindow;
     public override int port { get { return 26960; } }
 
-    protected override Dictionary<int, PacketHandler> packetHandlers { get; set; }
+    protected override Dictionary<ChatServerPackets, ChatPacketHandler> chatPacketHandlers { get; set; }
 
     protected override void Awake() // Singleton
     {
@@ -26,11 +26,11 @@ public class ChatClient : ClientBase
     }
 
     protected override void InitializeClientData() {
-        packetHandlers = new Dictionary<int, PacketHandler>()
+        chatPacketHandlers = new Dictionary<ChatServerPackets, ChatPacketHandler>()
         {
-            { (int) ChatServerPackets.welcomeMessage, ChatClientHandle.WelcomeMessage },
-            { (int) ChatServerPackets.chatServerMessage, ChatClientHandle.ChatServerMessage },
-            { (int) ChatServerPackets.clientStateNotice, ChatClientHandle.ClientStateMessage },
+            { ChatServerPackets.chatMessage, ChatClientHandle.GetChatMessage },
+            { ChatServerPackets.joinChatSession, ChatClientHandle.JoinChatSession },
+            { ChatServerPackets.leaveChatSession, ChatClientHandle.LeaveChatSession },
         };
         Debug.Log("Initialize packets.");
     }
@@ -44,7 +44,7 @@ public class ChatClient : ClientBase
         Debug.Log("Disconnceted from chat server.");
     }
 
-    public void GetMessageFromServer(int fromId, string message) {
+    public void HandleChatMessage(int fromId, string message) {
         m_UI_ChatWindow.PushTextMessage(fromId, message);
     }
 }

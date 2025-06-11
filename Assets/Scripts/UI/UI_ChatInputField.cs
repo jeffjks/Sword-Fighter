@@ -46,6 +46,8 @@ public class UI_ChatInputField : MonoBehaviour
 
     public void CloseChatInputField()
     {
+        if (IsWritingChat == false)
+            return;
         IsWritingChat = false;
         m_UI_ChatInputField.text = string.Empty;
         m_UI_ChatInputField.gameObject.SetActive(false);
@@ -69,6 +71,6 @@ public class UI_ChatInputField : MonoBehaviour
         }
         int fromId = Client.instance.myId;
         m_UI_ChatWindow.PushTextMessage(fromId, message);
-        ChatClientSend.SendChatMessage(ChatServerPackets.sendChatMessage, new ChatMessage(fromId, message));
+        ChatClientSend.SendChatMessage(new ChatMessage(fromId, message));
     }
 }
