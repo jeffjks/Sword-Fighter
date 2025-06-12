@@ -1,4 +1,6 @@
 #include "ChatSession.h"
+#include "ChatMessage.h"
+#include "NetworkMessage.h"
 #include <iostream>
 
 ChatSession::ChatSession(tcp::socket socket, ChatRoom& room, Dispatcher& dispatcher)
@@ -19,13 +21,21 @@ void ChatSession::start() {
 
 void ChatSession::deliver(const std::string& msg) {
     bool write_in_progress = !write_msgs_.empty();
-    write_msgs_.push_back(msg);
+
+    ChatMessage chatMessage{ userID_, msg };
+    std::string fullPacketStr = dispatcher_.makeNetworkPacket(ChatServerPackets::chatMessage, chatMessage);
+    write_msgs_.push_back(fullPacketStr + "\n");
+
+    if (!write_in_progress)
+        do_write();
+}
     if (!write_in_progress)
         do_write();
 }
 
 void ChatSession::broadcast(const std::string& msg) {
     room_.broadcast(msg, shared_from_this());
+    std::cout << "[Chat] " << userID_ << ": " << msg << std::endl;
 }
 
 void ChatSession::do_read() {
@@ -49,6 +59,7 @@ void ChatSession::do_read() {
 
 void ChatSession::do_write() {
     auto self(shared_from_this());
+
     boost::asio::async_write(socket_,
         boost::asio::buffer(write_msgs_.front()),
         [this, self](boost::system::error_code ec, std::size_t) {

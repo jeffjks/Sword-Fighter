@@ -12,6 +12,7 @@ class Dispatcher {
 public:
     Dispatcher();
     void dispatch(const std::string& msg, std::shared_ptr<ChatSession> session);
+    std::string makeNetworkPacket(ChatServerPackets type, const nlohmann::json& payloadJson);
 
 private:
     void setupHandlers();

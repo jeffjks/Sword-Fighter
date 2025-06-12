@@ -2,7 +2,9 @@
 
 enum ChatServerPackets
 {
-    chatMessage = 1,
+    none = 0,
+    welcome,
+    chatMessage = 101,
     joinChatRoom,
     leaveChatRoom
 };

@@ -6,12 +6,30 @@ using System;
 using System.Text;
 using Newtonsoft.Json;
 
-public interface IMessagePayload {}
+public interface IMessagePayload {
+    public ChatServerPackets PacketType { get; }
+}
+
+public class WelcomeMessage : IMessagePayload
+{
+    public int UserID { get; set; }
+
+    [JsonIgnore]
+    public ChatServerPackets PacketType => ChatServerPackets.welcome;
+
+    public WelcomeMessage(int userID)
+    {
+        UserID = userID;
+    }
+}
 
 public class ChatMessage : IMessagePayload
 {
     public int UserID { get; set; }
     public string Message { get; set; }
+
+    [JsonIgnore]
+    public ChatServerPackets PacketType => ChatServerPackets.chatMessage;
 
     public ChatMessage(int userID, string message)
     {
@@ -24,6 +42,9 @@ public class JoinRoomMessage : IMessagePayload
 {
     public int RoomID { get; set; }
 
+    [JsonIgnore]
+    public ChatServerPackets PacketType => ChatServerPackets.joinChatRoom;
+
     public JoinRoomMessage(int roomID)
     {
         RoomID = roomID;
@@ -33,8 +54,11 @@ public class JoinRoomMessage : IMessagePayload
 [Serializable]
 public class NetworkMessage<T> where T : IMessagePayload
 {
-    public ChatServerPackets Type { get; set; }
+    public ChatServerPackets Type;
     public T Payload { get; set; }
+
+    [JsonIgnore]
+    public ChatServerPackets PacketType => ChatServerPackets.none;
 
     public NetworkMessage(ChatServerPackets type, T payload)
     {
@@ -57,20 +81,24 @@ public class ChatClientSend : MonoBehaviour
         packet.Dispose();
     }*/
 
-    public static void SendChatMessage<T>(T payload) where T : IMessagePayload
+    private static void SendTCPData(byte[] data) {
+        SendTCPDataAsync(data).Forget();
+    }
+
+    private static async UniTaskVoid SendTCPDataAsync(byte[] data)
     {
-        SendChatMessageAsync(payload).Forget();
+        await ChatClient.instance.tcp.SendDataAsync(data);
     }
 
     #region Packets
-    private static async UniTaskVoid SendChatMessageAsync<T>(T payload) where T : IMessagePayload
+    public static void SendNetworkMessage<T>(T payload) where T : IMessagePayload
     {
-        var networkMessage = new NetworkMessage<T>(ChatServerPackets.chatMessage, payload);
+        var networkMessage = new NetworkMessage<T>(payload.PacketType, payload);
 
         string json = JsonConvert.SerializeObject(networkMessage);
         byte[] data = Encoding.UTF8.GetBytes(json + "\n");
 
-        await ChatClient.instance.tcp.SendDataAsync(data);
+        SendTCPData(data);
     }
     /*
     public static void WelcomeMessageReceived() {
