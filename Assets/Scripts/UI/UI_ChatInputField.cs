@@ -63,14 +63,14 @@ public class UI_ChatInputField : MonoBehaviour
     }
 
     private void SendChatMessage(string message) {
-        if (message == string.Empty) {
+        if (message == string.Empty)
             return;
-        }
-        if (!ChatClient.instance.IsConnected()) {
+        if (!ChatClient.instance.IsConnected())
             return;
-        }
+        if (!ChatClient.instance.IsReceivedWelcomeMessage())
+            return;
         int fromId = Client.instance.myId;
         m_UI_ChatWindow.PushTextMessage(fromId, message);
-        ChatClientSend.SendChatMessage(new ChatMessage(fromId, message));
+        ChatClientSend.SendNetworkMessage(new ChatMessage(fromId, message));
     }
 }
