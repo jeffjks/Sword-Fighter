@@ -32,6 +32,7 @@
 ExportedObj/
 Server/SwordFighterServer/SwordFighterServer/obj/
 Server/SwordFighterServer/SwordFighterServer/bin/
+Server/SwordFighterChatServer/x64/Debug/
 .consulo/
 *.csproj
 *.unityproj
