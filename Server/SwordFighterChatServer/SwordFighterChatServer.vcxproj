@@ -129,7 +129,19 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="SwordFighterChatServer.cpp" />
+    <ClCompile Include="ChatRoom.cpp" />
+    <ClCompile Include="ChatServer.cpp" />
+    <ClCompile Include="ChatSession.cpp" />
+    <ClCompile Include="Dispatcher.cpp" />
+    <ClCompile Include="main.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="ChatParticipant.h" />
+    <ClInclude Include="ChatRoom.h" />
+    <ClInclude Include="ChatServer.h" />
+    <ClInclude Include="ChatSession.h" />
+    <ClInclude Include="Dispatcher.h" />
+    <ClInclude Include="Packets.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
