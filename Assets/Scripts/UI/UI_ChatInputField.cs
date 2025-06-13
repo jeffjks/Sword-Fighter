@@ -71,6 +71,6 @@ public class UI_ChatInputField : MonoBehaviour
             return;
         int fromId = Client.instance.myId;
         m_UI_ChatWindow.PushTextMessage(fromId, message);
-        ChatClientSend.SendNetworkMessage(new ChatMessage(fromId, message));
+        ChatClientSend.SendNetworkMessage(new ChatMessageReqDTO(fromId, message));
     }
 }

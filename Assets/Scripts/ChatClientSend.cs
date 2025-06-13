@@ -2,70 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Cysharp.Threading.Tasks;
-using System;
 using System.Text;
 using Newtonsoft.Json;
-
-public interface IMessagePayload {
-    public ChatServerPackets PacketType { get; }
-}
-
-public class WelcomeMessage : IMessagePayload
-{
-    public int UserID { get; set; }
-
-    [JsonIgnore]
-    public ChatServerPackets PacketType => ChatServerPackets.welcome;
-
-    public WelcomeMessage(int userID)
-    {
-        UserID = userID;
-    }
-}
-
-public class ChatMessage : IMessagePayload
-{
-    public int UserID { get; set; }
-    public string Message { get; set; }
-
-    [JsonIgnore]
-    public ChatServerPackets PacketType => ChatServerPackets.chatMessage;
-
-    public ChatMessage(int userID, string message)
-    {
-        UserID = userID;
-        Message = message;
-    }
-}
-
-public class JoinRoomMessage : IMessagePayload
-{
-    public int RoomID { get; set; }
-
-    [JsonIgnore]
-    public ChatServerPackets PacketType => ChatServerPackets.joinChatRoom;
-
-    public JoinRoomMessage(int roomID)
-    {
-        RoomID = roomID;
-    }
-}
-
-[Serializable]
-public class NetworkMessage<T> where T : IMessagePayload
-{
-    public ChatServerPackets Type;
-    public T Payload { get; set; }
-
-    [JsonIgnore]
-    public ChatServerPackets PacketType => ChatServerPackets.none;
-
-    public NetworkMessage(ChatServerPackets type, T payload)
-    {
-        Type = type;
-        Payload = payload;
-    }
-}
 
 public class ChatClientSend : MonoBehaviour
 {

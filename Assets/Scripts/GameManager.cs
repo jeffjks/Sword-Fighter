@@ -77,7 +77,7 @@ public class GameManager : MonoBehaviour
     public string GetUserNameWithId(int id) {
         string userName;
         try {
-            userName = GameManager.players[id].GetUserName();
+            userName = players[id].GetUserName();
         }
         catch (KeyNotFoundException) {
             userName = "(Unknown)";
@@ -86,15 +86,15 @@ public class GameManager : MonoBehaviour
     }
 
     public void Reset() {
-        foreach (KeyValuePair<int, PlayerManager> playerManager in GameManager.players) {
+        foreach (KeyValuePair<int, PlayerManager> playerManager in players) {
             if (playerManager.Value.id == Client.instance.myId) {
                 playerManager.Value.gameObject.SetActive(false);
                 continue;
             }
             else {
-                GameManager.instance.m_ObjectPooling.ReturnOppositePlayer(playerManager.Value);
+                m_ObjectPooling.ReturnOppositePlayer(playerManager.Value);
             }
         }
-        GameManager.players.Clear();
+        players.Clear();
     }
 }

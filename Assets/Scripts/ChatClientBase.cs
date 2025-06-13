@@ -11,6 +11,7 @@ using Newtonsoft.Json.Linq;
 public abstract class ChatClientBase : MonoBehaviour
 {
     private ChatClientBase instance;
+
     public static int dataBufferSize = 4096;
 
     public string defaultIp = "127.0.0.1";
@@ -19,6 +20,7 @@ public abstract class ChatClientBase : MonoBehaviour
     public TCP tcp;
 
     protected bool isConnected = false;
+    protected bool isReceivedWelcomeMessage = false;
     protected delegate void ChatPacketHandler(JToken payload);
     protected abstract Dictionary<ChatServerPackets, ChatPacketHandler> chatPacketHandlers { get; set; }
 
@@ -184,5 +186,9 @@ public abstract class ChatClientBase : MonoBehaviour
 
     public bool IsConnected() {
         return isConnected;
+    }
+
+    public bool IsReceivedWelcomeMessage() {
+        return isReceivedWelcomeMessage;
     }
 }
