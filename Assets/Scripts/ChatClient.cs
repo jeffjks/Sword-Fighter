@@ -28,6 +28,7 @@ public class ChatClient : ChatClientBase
     protected override void InitializeClientData() {
         chatPacketHandlers = new Dictionary<ChatServerPackets, ChatPacketHandler>()
         {
+            { ChatServerPackets.welcome, ChatClientHandle.Welcome },
             { ChatServerPackets.chatMessage, ChatClientHandle.GetChatMessage },
             { ChatServerPackets.joinChatRoom, ChatClientHandle.JoinChatRoom },
             { ChatServerPackets.leaveChatRoom, ChatClientHandle.LeaveChatRoom },
@@ -42,6 +43,12 @@ public class ChatClient : ChatClientBase
         base.Disconnect();
 
         Debug.Log("Disconnceted from chat server.");
+    }
+
+    public void EnableChat()
+    {
+        isReceivedWelcomeMessage = true;
+        m_UI_ChatWindow.PushSpecialMessage(MessageType.SYSTEM_MESSAGE, "채팅 서버에 접속하였습니다.");
     }
 
     public void HandleChatMessage(int fromId, string message) {

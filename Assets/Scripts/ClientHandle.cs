@@ -11,6 +11,8 @@ public class ClientHandle : MonoBehaviour
 
         Debug.Log($"Message from server: {msg}");
         Client.instance.myId = myId;
+        
+        ChatClientSend.SendNetworkMessage(new WelcomeReqDTO(myId)); // 채팅 서버에 서버로부터 받은 userID 전송
 
         ClientSend.WelcomeReceived();
         ClientSend.RequestServerTime();

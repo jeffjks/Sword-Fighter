@@ -11,6 +11,11 @@ enum ClientState {
 
 public class ChatClientHandle : MonoBehaviour
 {
+    public static void Welcome(JToken token) {
+        // var welcome = token.ToObject<WelcomeRespDTO>();
+        ChatClient.instance.EnableChat();
+    }
+
     public static void GetChatMessage(JToken token) {
         var chatMessage = token.ToObject<ChatMessageRespDTO>();
         ChatClient.instance.HandleChatMessage(chatMessage.UserID, chatMessage.Message);

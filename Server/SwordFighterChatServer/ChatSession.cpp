@@ -1,6 +1,5 @@
 #include "ChatSession.h"
-#include "ChatMessage.h"
-#include "NetworkMessage.h"
+#include "PacketDTO.h"
 #include <iostream>
 
 ChatSession::ChatSession(tcp::socket socket, ChatRoom& room, Dispatcher& dispatcher)
@@ -19,22 +18,32 @@ void ChatSession::start() {
     do_read();
 }
 
-void ChatSession::deliver(const std::string& msg) {
+void ChatSession::deliver(const int fromUserID, const std::string& msg) {
     bool write_in_progress = !write_msgs_.empty();
 
-    ChatMessage chatMessage{ userID_, msg };
+    ChatMessageRespDTO chatMessage(fromUserID, msg);
     std::string fullPacketStr = dispatcher_.makeNetworkPacket(ChatServerPackets::chatMessage, chatMessage);
     write_msgs_.push_back(fullPacketStr + "\n");
 
     if (!write_in_progress)
         do_write();
 }
+
+void ChatSession::set_userID(const int userID) {
+    userID_ = userID;
+
+    bool write_in_progress = !write_msgs_.empty();
+
+    WelcomeRespDTO welcome;
+    std::string fullPacketStr = dispatcher_.makeNetworkPacket(ChatServerPackets::welcome, welcome);
+    write_msgs_.push_back(fullPacketStr + "\n");
+
     if (!write_in_progress)
         do_write();
 }
 
-void ChatSession::broadcast(const std::string& msg) {
-    room_.broadcast(msg, shared_from_this());
+void ChatSession::sendToRoom(const std::string& msg) {
+    room_.broadcast(userID_, msg, shared_from_this());
     std::cout << "[Chat] " << userID_ << ": " << msg << std::endl;
 }
 
@@ -44,7 +53,7 @@ void ChatSession::do_read() {
         [this, self](boost::system::error_code ec, std::size_t length) {
             if (!ec) {
                 std::string msg = read_msg_.substr(0, length);
-                std::cout << msg << std::endl;
+                //std::cout << msg << std::endl;
                 read_msg_.erase(0, length);
 
                 dispatcher_.dispatch(msg, self);

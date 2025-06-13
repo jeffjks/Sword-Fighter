@@ -4,5 +4,5 @@
 class ChatParticipant {
 public:
     virtual ~ChatParticipant() = default;
-    virtual void deliver(const std::string& msg) = 0;
+    virtual void deliver(const int fromUserID, const std::string& msg) = 0;
 };

@@ -24,23 +24,21 @@ void Dispatcher::dispatch(const std::string& msg, std::shared_ptr<ChatSession> s
     }
 }
 
-std::string Dispatcher::makeNetworkPacket(ChatServerPackets type, const nlohmann::json& payloadJson) {
-    nlohmann::json j;
-    j["Type"] = static_cast<int>(type);
-    j["Payload"] = payloadJson;
-    return j.dump() + "\n";
-}
-
 void Dispatcher::setupHandlers()
 {
     handlerMap_[welcome] = [](const nlohmann::json& jsonStr, std::shared_ptr<ChatSession> session) {
-        int userID = jsonStr["Payload"]["UserID"];
+        const auto& payloadJson = jsonStr["Payload"];
+        WelcomeReqDTO welcomeReqDTO = payloadJson.get<WelcomeReqDTO>();
+        const int userID = welcomeReqDTO.UserID;
+
         session->set_userID(userID);
         };
 
     handlerMap_[chatMessage] = [](const nlohmann::json& jsonStr, std::shared_ptr<ChatSession> session) {
-        int userID = jsonStr["Payload"]["UserID"];
-        std::string msg = jsonStr["Payload"]["Message"];
-        session->broadcast(msg);
+        const auto& payloadJson = jsonStr["Payload"];
+        ChatMessageReqDTO chatMessageReqDTO = payloadJson.get<ChatMessageReqDTO>();
+        const std::string& msg = chatMessageReqDTO.Message;
+
+        session->sendToRoom(msg);
         };
 }
