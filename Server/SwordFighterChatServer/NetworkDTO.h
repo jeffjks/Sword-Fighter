@@ -3,13 +3,15 @@
 #include "json.hpp"
 
 template <typename T>
-struct NetworkMessage {
+struct NetworkDTO {
     ChatServerPackets Type;
     T Payload;
+
+    NetworkDTO(const ChatServerPackets type, const T payload) : Type(type), Payload(payload) {}
 };
 
 template <typename T>
-void to_json(nlohmann::json& j, const NetworkMessage<T>& msg) {
+void to_json(nlohmann::json& j, const NetworkDTO<T>& msg) {
     j = nlohmann::json{
         {"Type", static_cast<int>(msg.Type)},
         {"Payload", msg.Payload}
@@ -17,7 +19,7 @@ void to_json(nlohmann::json& j, const NetworkMessage<T>& msg) {
 }
 
 template <typename T>
-void from_json(const nlohmann::json& j, NetworkMessage<T>& msg) {
+void from_json(const nlohmann::json& j, NetworkDTO<T>& msg) {
     int typeInt;
     j.at("Type").get_to(typeInt);
     msg.Type = static_cast<ChatServerPackets>(typeInt);

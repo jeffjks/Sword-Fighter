@@ -136,12 +136,18 @@
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ChatMessageReqDTO.h" />
+    <ClInclude Include="ChatMessageRespDTO.h" />
     <ClInclude Include="ChatParticipant.h" />
     <ClInclude Include="ChatRoom.h" />
     <ClInclude Include="ChatServer.h" />
     <ClInclude Include="ChatSession.h" />
     <ClInclude Include="Dispatcher.h" />
+    <ClInclude Include="NetworkDTO.h" />
+    <ClInclude Include="PacketDTO.h" />
     <ClInclude Include="Packets.h" />
+    <ClInclude Include="WelcomeReqDTO.h" />
+    <ClInclude Include="WelcomeRespDTO.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

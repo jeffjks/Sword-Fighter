@@ -13,6 +13,15 @@
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
+    <Filter Include="헤더 파일\PacketDTO">
+      <UniqueIdentifier>{1d023fe5-9169-4344-95e0-4b578517f4a0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="헤더 파일\PacketDTO\RespDTO">
+      <UniqueIdentifier>{19fa30ab-8209-4fa9-9c65-56614a62bd0e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="헤더 파일\PacketDTO\ReqDTO">
+      <UniqueIdentifier>{e7fad5b5-038f-4841-a22f-9a4b63e521cb}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -49,6 +58,24 @@
     </ClInclude>
     <ClInclude Include="Dispatcher.h">
       <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="NetworkDTO.h">
+      <Filter>헤더 파일\PacketDTO</Filter>
+    </ClInclude>
+    <ClInclude Include="ChatMessageRespDTO.h">
+      <Filter>헤더 파일\PacketDTO\RespDTO</Filter>
+    </ClInclude>
+    <ClInclude Include="WelcomeRespDTO.h">
+      <Filter>헤더 파일\PacketDTO\RespDTO</Filter>
+    </ClInclude>
+    <ClInclude Include="PacketDTO.h">
+      <Filter>헤더 파일\PacketDTO</Filter>
+    </ClInclude>
+    <ClInclude Include="ChatMessageReqDTO.h">
+      <Filter>헤더 파일\PacketDTO\ReqDTO</Filter>
+    </ClInclude>
+    <ClInclude Include="WelcomeReqDTO.h">
+      <Filter>헤더 파일\PacketDTO\ReqDTO</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

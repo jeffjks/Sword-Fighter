@@ -23,6 +23,7 @@ private:
     void do_write();
     void disconnect();
 
+    int userID_ = -1;
     tcp::socket socket_;
     ChatRoom& room_;
     Dispatcher& dispatcher_;
