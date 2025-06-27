@@ -18,11 +18,23 @@ int main(int argc, char* argv[]) {
         tcp::endpoint endpoint(tcp::v4(), std::atoi(argv[1]));
         ChatServer server(io_context, endpoint);
 
-        std::cout << "[Info] Chat Server Started. Listening on "
+        const auto thread_num = std::thread::hardware_concurrency();
+
+        std::cout << "[Info] Chat Server Started (Thread Number: " << thread_num << "). Listening on "
             << endpoint.address().to_string()
             << ":" << endpoint.port() << "\n";
 
-        io_context.run();
+        std::vector<std::thread> threads;
+
+        for (std::size_t i = 0; i < thread_num; ++i) {
+            threads.emplace_back([&io_context]() {
+                io_context.run();
+            });
+        }
+
+        for (auto& t : threads) {
+            t.join();
+        }
     }
     catch (std::exception& e) {
         std::cerr << "Exception: " << e.what() << "\n";

@@ -3,7 +3,7 @@
 #include <iostream>
 
 ChatSession::ChatSession(tcp::socket socket, ChatRoom& room, Dispatcher& dispatcher)
-    : socket_(std::move(socket)), room_(room), dispatcher_(dispatcher) {}
+    : socket_(std::move(socket)), room_(room), dispatcher_(dispatcher), strand_(socket_.get_executor()) {}
 
 void ChatSession::start() {
     try {
@@ -19,14 +19,16 @@ void ChatSession::start() {
 }
 
 void ChatSession::deliver(const int fromUserID, const std::string& msg) {
-    bool write_in_progress = !write_msgs_.empty();
+    boost::asio::post(strand_, [self = shared_from_this(), fromUserID, msg]() {
+        bool write_in_progress = !self->write_msgs_.empty();
 
-    ChatMessageRespDTO chatMessage(fromUserID, msg);
-    std::string fullPacketStr = dispatcher_.makeNetworkPacket(ChatServerPackets::chatMessage, chatMessage);
-    write_msgs_.push_back(fullPacketStr + "\n");
+        ChatMessageRespDTO chatMessage(fromUserID, msg);
+        std::string fullPacketStr = self->dispatcher_.makeNetworkPacket(ChatServerPackets::chatMessage, chatMessage);
+        self->write_msgs_.push_back(fullPacketStr + "\n");
 
-    if (!write_in_progress)
-        do_write();
+        if (!write_in_progress)
+            self->do_write();
+    });
 }
 
 void ChatSession::set_userID(const int userID) {
@@ -50,6 +52,7 @@ void ChatSession::sendToRoom(const std::string& msg) {
 void ChatSession::do_read() {
     auto self = shared_from_this();
     boost::asio::async_read_until(socket_, boost::asio::dynamic_buffer(read_msg_), '\n',
+        boost::asio::bind_executor(strand_,
         [this, self](boost::system::error_code ec, std::size_t length) {
             if (!ec) {
                 std::string msg = read_msg_.substr(0, length);
@@ -63,7 +66,7 @@ void ChatSession::do_read() {
             else {
                 disconnect();
             }
-        });
+        }));
 }
 
 void ChatSession::do_write() {
@@ -71,6 +74,7 @@ void ChatSession::do_write() {
 
     boost::asio::async_write(socket_,
         boost::asio::buffer(write_msgs_.front()),
+        boost::asio::bind_executor(strand_,
         [this, self](boost::system::error_code ec, std::size_t) {
             if (!ec) {
                 write_msgs_.pop_front();
@@ -80,7 +84,7 @@ void ChatSession::do_write() {
             else {
                 disconnect();
             }
-        });
+        }));
 }
 
 void ChatSession::disconnect()

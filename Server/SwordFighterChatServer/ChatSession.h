@@ -30,4 +30,5 @@ private:
     Dispatcher& dispatcher_;
     std::string read_msg_;
     std::deque<std::string> write_msgs_;
+    boost::asio::strand<boost::asio::any_io_executor> strand_;
 };
