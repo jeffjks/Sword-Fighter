@@ -15,4 +15,5 @@ public:
 
 private:
     std::set<std::shared_ptr<ChatParticipant>> participants;
+    std::mutex mtx_;
 };
