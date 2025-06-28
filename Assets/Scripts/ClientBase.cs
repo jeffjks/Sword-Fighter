@@ -18,9 +18,7 @@ public abstract class ClientBase : MonoBehaviour
 
     protected bool isConnected = false;
     protected delegate void PacketHandler(Packet packet);
-    protected abstract Dictionary<int, PacketHandler> packetHandlers { get; set; }
-
-    protected abstract void InitializeClientData();
+    protected Dictionary<int, PacketHandler> PacketHandlers { get; set; }
 
     protected virtual void Awake() // Singleton
     {
@@ -41,6 +39,21 @@ public abstract class ClientBase : MonoBehaviour
 
         isConnected = true;
         await tcp.ConnectAsync(ip);
+    }
+
+    private void InitializeClientData() {
+        PacketHandlers = new Dictionary<int, PacketHandler>()
+        {
+            { (int) ServerPackets.welcome, ClientHandle.Welcome },
+            { (int) ServerPackets.requestServerTime, ClientHandle.RequestServerTime },
+            { (int) ServerPackets.spawnPlayer, ClientHandle.SpawnPlayer },
+            { (int) ServerPackets.updatePlayerPosition, ClientHandle.UpdatePlayerPosition },
+            { (int) ServerPackets.playerSkill, ClientHandle.PlayerSkill },
+            { (int) ServerPackets.playerState, ClientHandle.PlayerState },
+            { (int) ServerPackets.playerHp, ClientHandle.PlayerHp },
+            { (int) ServerPackets.playerDisconnected, ClientHandle.PlayerDisconnected },
+        };
+        Debug.Log("Initialize packets.");
     }
 
     public class TCP
@@ -157,7 +170,7 @@ public abstract class ClientBase : MonoBehaviour
                         using (Packet packet = new (packetBytes)) {
                             int packetId = packet.ReadInt(); // 패킷 종류 (SpawnPlayer, PlayerMovement, ChatMessage 등)
                             if (instance.IsConnected()) { // 접속 종료 시 패킷 처리 중지
-                                instance.packetHandlers[packetId](packet);
+                                instance.PacketHandlers[packetId](packet);
                             }
                         }
                     });
@@ -191,7 +204,7 @@ public abstract class ClientBase : MonoBehaviour
             using (Packet packet = new (packetBytes)) {
                 int packetId = packet.ReadInt();
                 if (instance.IsConnected()) {
-                    instance.packetHandlers[packetId](packet);
+                    instance.PacketHandlers[packetId](packet);
                 }
             }
         }

@@ -11,8 +11,6 @@ public class Client : ClientBase
     public string myUsername;
     public override int port { get { return 26950; } }
 
-    protected override Dictionary<int, PacketHandler> packetHandlers { get; set; }
-
     protected override void Awake() // Singleton
     {
         base.Awake();
@@ -24,21 +22,6 @@ public class Client : ClientBase
             Debug.Log("Instance already exists. Destroying object!");
             Destroy(this);
         }
-    }
-
-    protected override void InitializeClientData() {
-        packetHandlers = new Dictionary<int, PacketHandler>()
-        {
-            { (int) ServerPackets.welcome, ClientHandle.Welcome },
-            { (int) ServerPackets.requestServerTime, ClientHandle.RequestServerTime },
-            { (int) ServerPackets.spawnPlayer, ClientHandle.SpawnPlayer },
-            { (int) ServerPackets.updatePlayerPosition, ClientHandle.UpdatePlayerPosition },
-            { (int) ServerPackets.playerSkill, ClientHandle.PlayerSkill },
-            { (int) ServerPackets.playerState, ClientHandle.PlayerState },
-            { (int) ServerPackets.playerHp, ClientHandle.PlayerHp },
-            { (int) ServerPackets.playerDisconnected, ClientHandle.PlayerDisconnected },
-        };
-        Debug.Log("Initialize packets.");
     }
 
     public override void Disconnect() {

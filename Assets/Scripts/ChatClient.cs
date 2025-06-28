@@ -2,15 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System;
-using System.Net.Sockets;
 
 public class ChatClient : ChatClientBase
 {
     public static ChatClient instance;
     public UI_ChatWindow m_UI_ChatWindow;
     public override int port { get { return 26960; } }
-
-    protected override Dictionary<ChatServerPackets, ChatPacketHandler> chatPacketHandlers { get; set; }
 
     protected override void Awake() // Singleton
     {
@@ -23,17 +20,6 @@ public class ChatClient : ChatClientBase
             Debug.Log("Instance already exists. Destroying object!");
             Destroy(this);
         }
-    }
-
-    protected override void InitializeClientData() {
-        chatPacketHandlers = new Dictionary<ChatServerPackets, ChatPacketHandler>()
-        {
-            { ChatServerPackets.welcome, ChatClientHandle.Welcome },
-            { ChatServerPackets.chatMessage, ChatClientHandle.GetChatMessage },
-            { ChatServerPackets.joinChatRoom, ChatClientHandle.JoinChatRoom },
-            { ChatServerPackets.leaveChatRoom, ChatClientHandle.LeaveChatRoom },
-        };
-        Debug.Log("Initialize packets.");
     }
 
     public override void Disconnect() {

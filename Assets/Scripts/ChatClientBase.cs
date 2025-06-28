@@ -22,9 +22,7 @@ public abstract class ChatClientBase : MonoBehaviour
     protected bool isConnected = false;
     protected bool isReceivedWelcomeMessage = false;
     protected delegate void ChatPacketHandler(JToken payload);
-    protected abstract Dictionary<ChatServerPackets, ChatPacketHandler> chatPacketHandlers { get; set; }
-
-    protected abstract void InitializeClientData();
+    protected Dictionary<ChatServerPackets, ChatPacketHandler> ChatPacketHandlers { get; set; }
 
     protected virtual void Awake() // Singleton
     {
@@ -45,6 +43,17 @@ public abstract class ChatClientBase : MonoBehaviour
 
         isConnected = true;
         await tcp.ConnectAsync(ip);
+    }
+
+    private void InitializeClientData() {
+        ChatPacketHandlers = new Dictionary<ChatServerPackets, ChatPacketHandler>()
+        {
+            { ChatServerPackets.welcome, ChatClientHandle.Welcome },
+            { ChatServerPackets.chatMessage, ChatClientHandle.GetChatMessage },
+            { ChatServerPackets.joinChatRoom, ChatClientHandle.JoinChatRoom },
+            { ChatServerPackets.leaveChatRoom, ChatClientHandle.LeaveChatRoom },
+        };
+        Debug.Log("Initialize packets.");
     }
 
     public class TCP
@@ -154,7 +163,7 @@ public abstract class ChatClientBase : MonoBehaviour
                             var chatServerPacketType = (ChatServerPackets) type;
                             var jToken = root["Payload"];
                             if (instance.IsConnected()) { // 접속 종료 시 패킷 처리 중지
-                                instance.chatPacketHandlers[chatServerPacketType](jToken);
+                                instance.ChatPacketHandlers[chatServerPacketType](jToken);
                             }
                         });
                     }
