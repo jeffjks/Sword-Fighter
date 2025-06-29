@@ -2,12 +2,14 @@
 #include "PacketDTO.h"
 #include <iostream>
 
+std::mutex ChatSession::cout_mutex_;
+
 ChatSession::ChatSession(tcp::socket socket, ChatRoom& room, Dispatcher& dispatcher)
     : socket_(std::move(socket)), room_(room), dispatcher_(dispatcher), strand_(socket_.get_executor()) {}
 
 void ChatSession::start() {
     try {
-        std::cout << "[Info] "
+        std::cout << "[Info] " << "(" << std::this_thread::get_id() << ") "
             << socket_.remote_endpoint().address().to_string()
             << ":" << socket_.remote_endpoint().port() << " connected successfully." << std::endl;
     }
@@ -46,7 +48,10 @@ void ChatSession::set_userID(const int userID) {
 
 void ChatSession::sendToRoom(const std::string& msg) {
     room_.broadcast(userID_, msg, shared_from_this());
-    std::cout << "[Chat] " << userID_ << ": " << msg << std::endl;
+    std::ostringstream oss;
+    oss << "[Chat] " << "(" << std::this_thread::get_id() << ") "
+        << userID_ << ": " << msg;
+    safe_print(oss.str());
 }
 
 void ChatSession::do_read() {
@@ -90,7 +95,15 @@ void ChatSession::do_write() {
 void ChatSession::disconnect()
 {
     room_.leave(shared_from_this());
-    std::cout << "[Info] "
+    std::ostringstream oss;
+    oss << "[Info] " << "(" << std::this_thread::get_id() << ") "
         << socket_.remote_endpoint().address().to_string()
-        << ":" << socket_.remote_endpoint().port() << " has disconnected." << std::endl;
+        << ":" << socket_.remote_endpoint().port() << " has disconnected.";
+    safe_print(oss.str());
+}
+
+void ChatSession::safe_print(const std::string& msg)
+{
+    std::lock_guard<std::mutex> lock(cout_mutex_);
+    std::cout << msg << std::endl;
 }

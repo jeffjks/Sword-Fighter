@@ -23,6 +23,7 @@ private:
     void do_read();
     void do_write();
     void disconnect();
+    void safe_print(const std::string& msg);
 
     int userID_ = -1;
     tcp::socket socket_;
@@ -31,4 +32,5 @@ private:
     std::string read_msg_;
     std::deque<std::string> write_msgs_;
     boost::asio::strand<boost::asio::any_io_executor> strand_;
+    static std::mutex cout_mutex_;
 };

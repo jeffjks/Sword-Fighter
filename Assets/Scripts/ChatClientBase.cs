@@ -27,10 +27,6 @@ public abstract class ChatClientBase : MonoBehaviour
     protected virtual void Awake() // Singleton
     {
         instance = this;
-    }
-
-    protected void Start()
-    {
         tcp = new TCP(instance);
     }
 
@@ -53,7 +49,7 @@ public abstract class ChatClientBase : MonoBehaviour
             { ChatServerPackets.joinChatRoom, ChatClientHandle.JoinChatRoom },
             { ChatServerPackets.leaveChatRoom, ChatClientHandle.LeaveChatRoom },
         };
-        Debug.Log("Initialize packets.");
+        Debug.Log("Initialize chat packets.");
     }
 
     public class TCP
