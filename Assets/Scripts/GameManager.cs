@@ -14,6 +14,8 @@ public class GameManager : MonoBehaviour
     //public GameObject playerPrefab;
     public UIManager m_UIManager;
     public ObjectPooling m_ObjectPooling;
+    [Space(10)]
+    public bool m_DebugTestClients;
 
     [SerializeField] private int _pingMin, _pingMax;
 

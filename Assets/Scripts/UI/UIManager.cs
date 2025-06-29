@@ -64,6 +64,8 @@ public class UIManager : MonoBehaviour
         try {
             if (ChatClient.instance.enabled) {
                 await ChatClient.instance.ConnectToServer(m_IpAdressField.text);
+                if (GameManager.instance.m_DebugTestClients)
+                    await ChatClient.instance.AddTestChatClient(m_IpAdressField.text, 16);
             }
         }
         catch (FormatException e) {

@@ -26,6 +26,14 @@ public class ChatClientSend : MonoBehaviour
     private static async UniTaskVoid SendTCPDataAsync(byte[] data)
     {
         await ChatClient.instance.tcp.SendDataAsync(data);
+
+        if (GameManager.instance.m_DebugTestClients)
+        {
+            foreach (var client in ChatClient.ChatLoadTestClients)
+            {
+                await client.tcp.SendDataAsync(data);
+            }
+        }
     }
 
     #region Packets
@@ -38,6 +46,7 @@ public class ChatClientSend : MonoBehaviour
 
         SendTCPData(data);
     }
+
     /*
     public static void WelcomeMessageReceived() {
         int myId = Client.instance.myId;
