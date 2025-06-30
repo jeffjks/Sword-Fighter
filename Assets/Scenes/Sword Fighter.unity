@@ -943,6 +943,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_UIManager: {fileID: 1045295599}
   m_ObjectPooling: {fileID: 1185269212}
+  m_DebugTestClients: 1
   _pingMin: 100
   _pingMax: 100
   m_PlayerController: {fileID: 0}

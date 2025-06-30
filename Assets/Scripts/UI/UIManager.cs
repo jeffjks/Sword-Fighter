@@ -64,8 +64,10 @@ public class UIManager : MonoBehaviour
         try {
             if (ChatClient.instance.enabled) {
                 await ChatClient.instance.ConnectToServer(m_IpAdressField.text);
+#if UNITY_EDITOR
                 if (GameManager.instance.m_DebugTestClients)
                     await ChatClient.instance.AddTestChatClient(m_IpAdressField.text, 16);
+#endif
             }
         }
         catch (FormatException e) {

@@ -27,6 +27,7 @@ public class ChatClientSend : MonoBehaviour
     {
         await ChatClient.instance.tcp.SendDataAsync(data);
 
+#if UNITY_EDITOR
         if (GameManager.instance.m_DebugTestClients)
         {
             foreach (var client in ChatClient.ChatLoadTestClients)
@@ -34,6 +35,7 @@ public class ChatClientSend : MonoBehaviour
                 await client.tcp.SendDataAsync(data);
             }
         }
+#endif
     }
 
     #region Packets
