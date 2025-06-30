@@ -57,9 +57,9 @@ public abstract class ChatClientBase : MonoBehaviour
         public TcpClient socket;
 
         private readonly ChatClientBase instance;
-        private NetworkStream stream;
-        private StringBuilder jsonBuffer = new StringBuilder();
-        private byte[] receiveBuffer;
+        private NetworkStream _stream;
+        private StringBuilder _jsonBuffer = new StringBuilder();
+        private byte[] _receiveBuffer;
 
         public TCP(ChatClientBase instance) {
             this.instance = instance;
@@ -73,7 +73,7 @@ public abstract class ChatClientBase : MonoBehaviour
                 SendBufferSize = dataBufferSize
             };
 
-            receiveBuffer = new byte[dataBufferSize];
+            _receiveBuffer = new byte[dataBufferSize];
             
             var connectTask = socket.ConnectAsync(System.Net.IPAddress.Parse(ip), instance.port);
 
@@ -92,7 +92,7 @@ public abstract class ChatClientBase : MonoBehaviour
                 throw new Exception("Failed to connect to chat server");
             }
 
-            stream = socket.GetStream();
+            _stream = socket.GetStream();
 
             _ = ReceiveLoopAsync(); // 비동기 수신 시작
         }
@@ -103,7 +103,7 @@ public abstract class ChatClientBase : MonoBehaviour
             {
                 while (true)
                 {
-                    int byteLength = await stream.ReadAsync(receiveBuffer, 0, dataBufferSize);
+                    int byteLength = await _stream.ReadAsync(_receiveBuffer, 0, dataBufferSize);
 
                     if (byteLength <= 0)
                     {
@@ -111,7 +111,7 @@ public abstract class ChatClientBase : MonoBehaviour
                         break;
                     }
 
-                    string receivedText = Encoding.UTF8.GetString(receiveBuffer, 0, byteLength);
+                    string receivedText = Encoding.UTF8.GetString(_receiveBuffer, 0, byteLength);
                     HandleJsonData(receivedText);
                 }
             }
@@ -125,9 +125,9 @@ public abstract class ChatClientBase : MonoBehaviour
         {
             try
             {
-                if (socket != null && stream != null)
+                if (socket != null && _stream != null)
                 {
-                    await stream.WriteAsync(data, 0, data.Length);
+                    await _stream.WriteAsync(data, 0, data.Length);
                 }
             }
             catch (Exception e)
@@ -137,9 +137,9 @@ public abstract class ChatClientBase : MonoBehaviour
         }
         
         private void HandleJsonData(string data) {
-            jsonBuffer.Append(data);
+            _jsonBuffer.Append(data);
 
-            string bufferContent = jsonBuffer.ToString();
+            string bufferContent = _jsonBuffer.ToString();
             int newlineIndex;
 
             while ((newlineIndex = bufferContent.IndexOf('\n')) >= 0)
@@ -170,16 +170,16 @@ public abstract class ChatClientBase : MonoBehaviour
                 }
             }
 
-            jsonBuffer.Clear();
-            jsonBuffer.Append(bufferContent); // 남은 조각 다시 버퍼에 저장
+            _jsonBuffer.Clear();
+            _jsonBuffer.Append(bufferContent); // 남은 조각 다시 버퍼에 저장
         }
 
         private void Disconnect() {
             instance.Disconnect();
 
-            stream = null;
-            jsonBuffer = null;
-            receiveBuffer = null;
+            _stream = null;
+            _jsonBuffer = null;
+            _receiveBuffer = null;
             socket = null;
         }
     }

@@ -61,9 +61,9 @@ public abstract class ClientBase : MonoBehaviour
         public TcpClient socket;
 
         private readonly ClientBase instance;
-        private NetworkStream stream;
-        private Packet receivedData;
-        private byte[] receiveBuffer;
+        private NetworkStream _stream;
+        private Packet _receivedData;
+        private byte[] _receiveBuffer;
 
         public TCP(ClientBase instance) {
             this.instance = instance;
@@ -77,7 +77,7 @@ public abstract class ClientBase : MonoBehaviour
                 SendBufferSize = dataBufferSize
             };
 
-            receiveBuffer = new byte[dataBufferSize];
+            _receiveBuffer = new byte[dataBufferSize];
             
             var connectTask = socket.ConnectAsync(System.Net.IPAddress.Parse(ip), instance.port);
 
@@ -96,8 +96,8 @@ public abstract class ClientBase : MonoBehaviour
                 throw new Exception("Failed to connect to server");
             }
 
-            stream = socket.GetStream();
-            receivedData = new Packet();
+            _stream = socket.GetStream();
+            _receivedData = new Packet();
 
             _ = ReceiveLoopAsync(); // 비동기 수신 시작
         }
@@ -108,7 +108,7 @@ public abstract class ClientBase : MonoBehaviour
             {
                 while (true)
                 {
-                    int byteLength = await stream.ReadAsync(receiveBuffer, 0, dataBufferSize);
+                    int byteLength = await _stream.ReadAsync(_receiveBuffer, 0, dataBufferSize);
 
                     if (byteLength <= 0)
                     {
@@ -117,9 +117,9 @@ public abstract class ClientBase : MonoBehaviour
                     }
 
                     byte[] data = new byte[byteLength];
-                    Array.Copy(receiveBuffer, data, byteLength);
+                    Array.Copy(_receiveBuffer, data, byteLength);
 
-                    receivedData.Reset(HandleData(data)); // 기존 동작 유지
+                    _receivedData.Reset(HandleData(data)); // 기존 동작 유지
                 }
             }
             catch
@@ -132,9 +132,9 @@ public abstract class ClientBase : MonoBehaviour
         {
             try
             {
-                if (socket != null && stream != null)
+                if (socket != null && _stream != null)
                 {
-                    await stream.WriteAsync(packet.ToArray(), 0, packet.Length());
+                    await _stream.WriteAsync(packet.ToArray(), 0, packet.Length());
                 }
             }
             catch (Exception e)
@@ -147,17 +147,17 @@ public abstract class ClientBase : MonoBehaviour
         private bool HandleData(byte[] data) {
             int packetLength = 0;
 
-            receivedData.SetBytes(data);
+            _receivedData.SetBytes(data);
 
-            if (receivedData.UnreadLength() >= 4) {
-                packetLength = receivedData.ReadInt(); // 패킷 길이 (패킷 가장 첫 부분)
+            if (_receivedData.UnreadLength() >= 4) {
+                packetLength = _receivedData.ReadInt(); // 패킷 길이 (패킷 가장 첫 부분)
                 if (packetLength <= 0) {
                     return true;
                 }
             }
 
-            while (0 < packetLength && packetLength <= receivedData.UnreadLength()) {
-                byte[] packetBytes = receivedData.ReadBytes(packetLength);
+            while (0 < packetLength && packetLength <= _receivedData.UnreadLength()) {
+                byte[] packetBytes = _receivedData.ReadBytes(packetLength);
 
                 if (GameManager.IsDebugPing)
                 {
@@ -178,8 +178,8 @@ public abstract class ClientBase : MonoBehaviour
 
                 packetLength = 0;
 
-                if (receivedData.UnreadLength() >= 4) { // 아직 패킷 길이가 남아있음 = 동시에 여러 종류의 패킷이 들어왔을 경우
-                    packetLength = receivedData.ReadInt(); // 읽은 Integer를 패킷 길이로 취급하여 패킷 읽기 계속 진행
+                if (_receivedData.UnreadLength() >= 4) { // 아직 패킷 길이가 남아있음 = 동시에 여러 종류의 패킷이 들어왔을 경우
+                    packetLength = _receivedData.ReadInt(); // 읽은 Integer를 패킷 길이로 취급하여 패킷 읽기 계속 진행
                     if (packetLength <= 0) {
                         return true;
                     }
@@ -212,9 +212,9 @@ public abstract class ClientBase : MonoBehaviour
         private void Disconnect() {
             instance.Disconnect();
 
-            stream = null;
-            receivedData = null;
-            receiveBuffer = null;
+            _stream = null;
+            _receivedData = null;
+            _receiveBuffer = null;
             socket = null;
         }
     }

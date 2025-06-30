@@ -3,7 +3,7 @@ using TMPro;
 
 public class UI_Ping : MonoBehaviour
 {
-    public TextMeshProUGUI pingText;
+    public TextMeshProUGUI m_PingText;
 
     private void OnEnable()
     {
@@ -17,6 +17,6 @@ public class UI_Ping : MonoBehaviour
 
     private void UpdatePingText(int ping)
     {
-        pingText.SetText($"{ping}ms");
+        m_PingText.SetText($"{ping}ms");
     }
 }
