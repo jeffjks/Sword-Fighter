@@ -18,7 +18,8 @@ public abstract class PlayerManager : MonoBehaviour
     public Animator m_Animator;
     public bool m_IsMovable = true;
     public bool m_EnableInterpolate = true;
-    public PlayerStateMachine CurrentStateMachine;
+    public PlayerStateMachine CurrentStateMachine { get; private set; }
+    public PlayerSkill CurrentSkill { get; set; }
     public readonly Dictionary<PlayerSkill, int> m_SkillDurations = new()
     {
         { PlayerSkill.Basic, 800 },

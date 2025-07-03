@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Shared.Enums;
-
+/*
 public class PlayerSkillInitializer : MonoBehaviour
 {
     public static Dictionary<PlayerSkill, PlayerSkillBase> GetPlayerSkillDictionary(PlayerManager manager)
@@ -19,3 +19,4 @@ public class PlayerSkillInitializer : MonoBehaviour
     }
 }
 
+*/

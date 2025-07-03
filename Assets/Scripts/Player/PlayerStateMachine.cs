@@ -14,6 +14,7 @@ public abstract class PlayerStateBase
     public virtual void Update() { }
 }
 
+/*
 public abstract class PlayerSkillBase
 {
     public abstract PlayerSkill Type { get; }
@@ -24,6 +25,7 @@ public abstract class PlayerSkillBase
     public virtual void Update() { }
     public virtual void Exit() { }
 }
+*/
 
 public class PlayerStateMachine
 {
@@ -50,7 +52,7 @@ public class PlayerStateMachine
             _currentStateBase.Enter();
         }
     }
-
+/*
     public void SetSkill(PlayerSkill skillState)
     {
         if (_currentStateBase is not UsingSkillState)
@@ -62,5 +64,5 @@ public class PlayerStateMachine
         {
             usingSkillState.SetSubState(skillState);
         }
-    }
+    }*/
 }
