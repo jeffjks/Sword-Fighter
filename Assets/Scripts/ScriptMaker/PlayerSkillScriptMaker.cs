@@ -10,7 +10,7 @@ namespace Editors
 {
     public class PlayerSkillScriptMaker : EditorWindow
     {
-        private const string scriptPath = "Assets/Scripts/Player/PlayerSkill/";
+        private const string scriptPath = "Assets/Scripts/Player/PlayerSkill/States/";
 
         private Vector2 _scrollPos;
 
