@@ -60,9 +60,9 @@ public class PlayerOthers : PlayerManager
         //_playerMovementQueue.Enqueue(playerMovement);
     }
 
-    public override void OnStateReceived(long timestamp, PlayerSkill playerSkill, Vector3 facingDirection, Vector3 targetPosition)
+    public override void OnStateReceived(PlayerSkill playerSkill, Vector3 facingDirection, Vector3 targetPosition)
     {
-        ExecutePlayerSkill(timestamp, playerSkill, facingDirection, targetPosition);
+        ExecuteSkill(playerSkill, facingDirection, targetPosition);
     }
 
     private void DeadReckoning()

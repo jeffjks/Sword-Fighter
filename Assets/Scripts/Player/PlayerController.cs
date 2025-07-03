@@ -65,10 +65,14 @@ public class PlayerController : MonoBehaviour
 
         if (_skillDistances.TryGetValue(playerSkill, out var distance)) // 임시로 모든 스킬 일괄처리
         {
-            var result = m_PlayerMe.ExecutePlayerSkill(timestamp, playerSkill, facingDirection);
+            if (m_PlayerMe.CurrentState == PlayerState.UsingSkill)
+                return;
+            var result = m_PlayerMe.ExecuteSkill(playerSkill, facingDirection, Vector3.zero);
             if (result == false)
                 return;
-            
+
+            ClientSend.PlayerSkill(timestamp, facingDirection, playerSkill);
+
             var debugStr = string.Empty;
             for (var i = 1; i <= 4; ++i)
             {

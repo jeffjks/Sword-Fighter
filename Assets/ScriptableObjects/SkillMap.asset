@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0314e33813b5daa40a0d7c89b00da250, type: 3}
+  m_Name: SkillMap
+  m_EditorClassIdentifier: 
+  entries:
+  - rid: 2620804787656982535
+  references:
+    version: 2
+    RefIds:
+    - rid: 2620804787656982535
+      type: {class: SkillEntry, ns: , asm: Assembly-CSharp}
+      data:
+        playerSkill: 1
+        skillBase: {fileID: 11400000, guid: 79d5fc5f35311154a9f0d7f5cdb79bbb, type: 2}

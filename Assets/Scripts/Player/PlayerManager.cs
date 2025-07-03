@@ -10,15 +10,19 @@ public abstract class PlayerManager : MonoBehaviour
 {
     public int id;
     public Transform m_CharacterModel;
-    public Collider m_PlayerCollider;
     public UI_HpBar m_UI_HpBar;
-    public int m_CurrentHp;
-    public int m_MaxHp;
+    public Collider m_PlayerCollider;
+    public CharacterStatus m_CharacterStatus;
     public Vector3 m_DeltaPos;
     public Animator m_Animator;
     public bool m_IsMovable = true;
     public bool m_EnableInterpolate = true;
     public PlayerStateMachine CurrentStateMachine { get; private set; }
+    public PlayerState CurrentState {
+        get {
+            return CurrentStateMachine.CurrentState.Type;
+        }
+    }
     public PlayerSkill CurrentSkill { get; set; }
     public readonly Dictionary<PlayerSkill, int> m_SkillDurations = new()
     {
@@ -54,7 +58,7 @@ public abstract class PlayerManager : MonoBehaviour
 
     public void Init() {
         SetUserNameUI(_username);
-        SetCurrentHitPoint(m_CurrentHp);
+        SetCurrentHitPoint(m_CharacterStatus.CurrentHp);
     }
 
     protected virtual void Update()
@@ -73,22 +77,58 @@ public abstract class PlayerManager : MonoBehaviour
         m_Animator.SetFloat(_animatorMovementVertical, _animationMovement.y, 0.25f, Time.deltaTime);
     }
 
+    public void RegisterSkill(PlayerSkill skillType, SkillBase skillAsset)
+    {
+        SkillRegistry.SkillMap[skillType] = skillAsset;
+    }
+
+    public bool ExecuteSkill(PlayerSkill skillType, Vector3 direction, Vector3 targetPos)
+    {
+        if (!SkillRegistry.SkillMap.TryGetValue(skillType, out SkillBase skill))
+        {
+            Debug.LogWarning($"스킬 {skillType} 이 등록되어 있지 않음");
+            return false;
+        }
+
+        // 이전 스킬 취소
+        _cts?.Cancel();
+        _cts = new CancellationTokenSource();
+
+        // CurrentStateMachine.SetSkill(playerSkill);
+
+        try
+        {
+            skill.Execute(new(this, direction, targetPos), _cts.Token);
+        }
+        catch (OperationCanceledException)
+        {
+            Debug.Log($"스킬 취소됨: {skillType}");
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError(ex);
+        }
+
+        return true;
+    }
+
+    // Old
     public bool ExecutePlayerSkill(long timestamp, PlayerSkill playerSkill, Vector3 facingDirection, Vector3? targetPosition = null)
     {
-        if (m_SkillDurations.TryGetValue(playerSkill, out int duration) == false)
-            return false;
+        //if (m_SkillDurations.TryGetValue(playerSkill, out int duration) == false)
+        //    return false;
         if (playerSkill == PlayerSkill.None)
             return false;
         
         _cts?.Cancel(); // 이전 예약 취소
         _cts = new CancellationTokenSource();
         
-        IdleAfterDelay(duration, _cts.Token).Forget();
+        //IdleAfterDelay(duration, _cts.Token).Forget();
 
-        if (this is PlayerMe)
-            ClientSend.PlayerSkill(timestamp, facingDirection, playerSkill);
+        //if (this is PlayerMe)
+        //    ClientSend.PlayerSkill(timestamp, facingDirection, playerSkill);
 
-        CurrentStateMachine.SetSkill(playerSkill);
+        // CurrentStateMachine.SetSkill(playerSkill);
 
         switch(playerSkill)
         {
@@ -106,8 +146,9 @@ public abstract class PlayerManager : MonoBehaviour
             await UniTask.Delay(delayMilliseconds, cancellationToken: token);
             CurrentStateMachine.SetState(PlayerState.Idle);
         }
-        catch (OperationCanceledException)
+        catch (Exception ex)
         {
+            Debug.LogError($"Skill execution failed: {ex}");
         }
     }
 
@@ -149,7 +190,7 @@ public abstract class PlayerManager : MonoBehaviour
     public abstract void Finish_DealDamage_Basic();
 
     public abstract void OnStateReceived(int seqNum, long timestamp, Vector3 facingDirection, Vector3 deltaPos, Vector2 inputVector, Vector3 position);
-    public abstract void OnStateReceived(long timestamp, PlayerSkill playerSkill, Vector3 facingDirection, Vector3 targetPosition);
+    public abstract void OnStateReceived(PlayerSkill playerSkill, Vector3 facingDirection, Vector3 targetPosition);
 
     public Vector3 ClampPosition(Vector3 position)
     {
@@ -185,7 +226,7 @@ public abstract class PlayerManager : MonoBehaviour
     }
 
     public void SetCurrentHitPoint(int hitPoints) {
-        m_CurrentHp = hitPoints;
+        m_CharacterStatus.CurrentHp = hitPoints;
         m_UI_HpBar.UpdateHpBarFill();
     }
 

@@ -10,7 +10,6 @@ public class PlayerMe : PlayerManager
     public readonly Queue<ClientInput> m_ClientInputQueue = new ();
     
     private Vector3 _lastPositionFromServer;
-    private long _lastTimestamp;
 
     private const float PositionCorrectionThreshold = 0.25f;
 
@@ -51,7 +50,6 @@ public class PlayerMe : PlayerManager
             return;
         
         _lastPositionFromServer = position;
-        _lastTimestamp = timestamp;
         _lastSeqNum = seqNum;
         
         CorrectPosition(seqNum, timestamp);
@@ -66,7 +64,7 @@ public class PlayerMe : PlayerManager
 #endif
     }
 
-    public override void OnStateReceived(long timestamp, PlayerSkill playerSkill, Vector3 facingDirection, Vector3 targetPosition)
+    public override void OnStateReceived(PlayerSkill playerSkill, Vector3 facingDirection, Vector3 targetPosition)
     {
         throw new System.NotImplementedException();
     }

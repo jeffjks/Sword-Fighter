@@ -9,8 +9,8 @@ public abstract class UI_HpBar : MonoBehaviour
     public Image m_HpBarFillImage;
 
     public void UpdateHpBarFill() {
-        int current_hp = m_PlayerManager.m_CurrentHp;
-        int max_hp = m_PlayerManager.m_MaxHp;
+        int current_hp = m_PlayerManager.m_CharacterStatus.CurrentHp;
+        int max_hp = m_PlayerManager.m_CharacterStatus.MaxHp;
 
         m_HpBarFillImage.fillAmount = (float) current_hp/max_hp;
     }

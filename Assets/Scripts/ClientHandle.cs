@@ -64,7 +64,7 @@ public class ClientHandle : MonoBehaviour
             Debug.LogError("Received UpdatePlayer Packet with Other's PlayerID");
         }
         else { // 다른 플레이어
-            GameManager.players[id].OnStateReceived(timestamp, playerSkill, facingDirection, targetPosition);
+            GameManager.players[id].OnStateReceived(playerSkill, facingDirection, targetPosition);
         }
     }
 
