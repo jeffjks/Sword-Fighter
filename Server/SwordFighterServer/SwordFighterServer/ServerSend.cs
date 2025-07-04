@@ -1,6 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Numerics;
+﻿using System.Numerics;
+using Shared.Enums;
 
 namespace SwordFighterServer
 {
@@ -67,7 +66,7 @@ namespace SwordFighterServer
             packet.Write(player.username);
             packet.Write(player.position);
             packet.Write(player.direction);
-            packet.Write(player.hitPoints);
+            packet.Write(player.characterStatus.CurrentHitPoint);
             packet.Write((int) player.currentState);
 
             SendTCPData(toClient, packet);
@@ -121,7 +120,7 @@ namespace SwordFighterServer
             Packet packet = new Packet((int)ServerPackets.playerHp);
 
             packet.Write(player.id);
-            packet.Write(player.hitPoints);
+            packet.Write(player.characterStatus.CurrentHitPoint);
 
             SendTCPDataToAll(player.id, packet);
         }

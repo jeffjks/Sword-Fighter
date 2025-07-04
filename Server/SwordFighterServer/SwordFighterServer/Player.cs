@@ -1,24 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Numerics;
-
-public enum PlayerState
-{
-    Dead = -1,
-    Idle,
-    Move,
-    UsingSkill
-}
-
-public enum PlayerSkill
-{
-    None,
-    Block,
-    Basic,
-    Roll
-}
-
-// 서버 내 캐릭터 시뮬레이션
+using Shared.Enums;
 
 namespace SwordFighterServer
 {
@@ -85,8 +68,7 @@ namespace SwordFighterServer
         public Vector3 deltaPos;
         public Vector2 inputVector;
 
-        public int hitPoints_max;
-        public int hitPoints;
+        public CharacterStatus characterStatus;
         public PlayerState currentState;
         public PlayerSkill currentSkill;
         public PositionHistory positionHistory = new PositionHistory();
@@ -99,6 +81,8 @@ namespace SwordFighterServer
         private const float AttackRadius = 2.5f;
         private const int AttackDamage = 20;
         private int _lastSeqNum;
+
+        private const int DefaultMaxHitPoint = 100;
 
         public class ScheduledTask
         {
@@ -113,8 +97,8 @@ namespace SwordFighterServer
             position = spawnPosition;
             //rotation = Quaternion.Identity;
             direction = new Vector3(0, 0, 1);
-            hitPoints_max = 100;
-            hitPoints = hitPoints_max;
+            characterStatus.MaxHitPoint = DefaultMaxHitPoint;
+            characterStatus.CurrentHitPoint = characterStatus.MaxHitPoint;
             currentState = PlayerState.Idle;
 
             _skillDuration.Add(PlayerSkill.Basic, 800);
@@ -297,12 +281,12 @@ namespace SwordFighterServer
             {
                 if (currentSkill != PlayerSkill.Roll && !IsBlocking(fromClient))
                 {
-                    this.hitPoints += hitPoints;
+                    characterStatus.CurrentHitPoint += hitPoints;
                     ServerSend.PlayerHp(this);
                 }
             }
 
-            if (this.hitPoints <= 0)
+            if (characterStatus.CurrentHitPoint <= 0)
             {
                 currentState = PlayerState.Dead;
                 ServerSend.PlayerState(this); // 캐릭터 사망 판정

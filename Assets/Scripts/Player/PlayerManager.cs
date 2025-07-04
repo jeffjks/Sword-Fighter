@@ -58,7 +58,7 @@ public abstract class PlayerManager : MonoBehaviour
 
     public void Init() {
         SetUserNameUI(_username);
-        SetCurrentHitPoint(m_CharacterStatus.CurrentHp);
+        SetCurrentHitPoint(m_CharacterStatus.CurrentHitPoint);
     }
 
     protected virtual void Update()
@@ -226,7 +226,7 @@ public abstract class PlayerManager : MonoBehaviour
     }
 
     public void SetCurrentHitPoint(int hitPoints) {
-        m_CharacterStatus.CurrentHp = hitPoints;
+        m_CharacterStatus.CurrentHitPoint = hitPoints;
         m_UI_HpBar.UpdateHpBarFill();
     }
 

@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Numerics;
+using Shared.Enums;
 
 // 클라이언트로부터 받은 패킷 Handle
 
