@@ -73,10 +73,10 @@ namespace SwordFighterServer
         public PlayerSkill currentSkill;
         public PositionHistory positionHistory = new PositionHistory();
 
-        private readonly Dictionary<int, IClientInput> _clientInputs = new Dictionary<int, IClientInput>();
+        private readonly Dictionary<int, IClientInput> _clientInputs = new();
 
-        private readonly Dictionary<PlayerSkill, int> _skillDuration = new Dictionary<PlayerSkill, int>();
-        private readonly List<ScheduledTask> _scheduledTasks = new List<ScheduledTask>();
+        private readonly Dictionary<PlayerSkill, int> _skillDuration = new();
+        private readonly PriorityQueue<ScheduledTask, long> _scheduledTasks = new();
 
         private const float AttackRadius = 2.5f;
         private const int AttackDamage = 20;
@@ -86,7 +86,6 @@ namespace SwordFighterServer
 
         public class ScheduledTask
         {
-            public long ExecuteAt;
             public Action Task;
         }
 
@@ -113,27 +112,27 @@ namespace SwordFighterServer
             positionHistory.RecordPosition(position);
         }
 
-        public void AddSchedule(Action action, int delayMs)
+        public void AddSchedule(Action action, long delayMs)
         {
             var task = new ScheduledTask
             {
-                ExecuteAt = Server.GetUnixTime() + delayMs,
                 Task = action
             };
-            _scheduledTasks.Add(task);
+            _scheduledTasks.Enqueue(task, Server.GetUnixTime() + delayMs);
         }
 
         private void ExecuteSchedule()
         {
             long now = Server.GetUnixTime();
 
-            for (int i = _scheduledTasks.Count - 1; i >= 0; i--)
+            while (_scheduledTasks.TryPeek(out var element, out var timestamp))
             {
-                if (_scheduledTasks[i].ExecuteAt <= now)
+                if (timestamp > now)
                 {
-                    _scheduledTasks[i].Task.Invoke();
-                    _scheduledTasks.RemoveAt(i);
+                    break;
                 }
+                var task = _scheduledTasks.Dequeue();
+                task.Task.Invoke();
             }
         }
 
