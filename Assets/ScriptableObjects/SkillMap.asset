@@ -13,12 +13,7 @@ MonoBehaviour:
   m_Name: SkillMap
   m_EditorClassIdentifier: 
   entries:
-  - rid: 2620804787656982535
-  references:
-    version: 2
-    RefIds:
-    - rid: 2620804787656982535
-      type: {class: SkillEntry, ns: , asm: Assembly-CSharp}
-      data:
-        playerSkill: 1
-        skillBase: {fileID: 11400000, guid: 79d5fc5f35311154a9f0d7f5cdb79bbb, type: 2}
+  - playerSkill: 2
+    skillBase: {fileID: 11400000, guid: c214ceca37651154893df0e4134a7a93, type: 2}
+  - playerSkill: 1
+    skillBase: {fileID: 11400000, guid: 79d5fc5f35311154a9f0d7f5cdb79bbb, type: 2}

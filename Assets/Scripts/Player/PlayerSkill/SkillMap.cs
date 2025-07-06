@@ -13,6 +13,5 @@ public class SkillEntry
 [CreateAssetMenu(menuName = "Skill/Skill Map")]
 public class SkillMap : ScriptableObject
 {
-    [SerializeReference, SubclassSelector]
     public List<SkillEntry> entries = new();
 }

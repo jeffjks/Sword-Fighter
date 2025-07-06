@@ -981,6 +981,7 @@ GameObject:
   m_Component:
   - component: {fileID: 735563257}
   - component: {fileID: 735563258}
+  - component: {fileID: 735563259}
   m_Layer: 0
   m_Name: Register
   m_TagString: Untagged
@@ -1013,6 +1014,19 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2c0c06fead3e83a4b9d75a690d7feaf7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SkillMap: {fileID: 11400000, guid: ce53b225bd6f7bd439a585e843d1e6c8, type: 2}
+--- !u!114 &735563259
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 735563256}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 77a37040ef8643145a9e4613ba3403d8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_SkillMap: {fileID: 11400000, guid: ce53b225bd6f7bd439a585e843d1e6c8, type: 2}

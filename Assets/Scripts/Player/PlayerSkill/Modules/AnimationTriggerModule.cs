@@ -8,13 +8,12 @@ using Shared.Enums;
 public class AnimationTriggerModule : SkillModuleBase
 {
     public PlayerSkill playerSkill;
-
-    private readonly int _animatorPlayerSkill = Animator.StringToHash("Skill");
+    
+    public override SkillEffect SkillEffectType => SkillEffect.None;
 
     public async override UniTask Execute(SkillContext skillContext)
     {
-        skillContext.caster.m_Animator.SetInteger(_animatorPlayerSkill, (int) playerSkill);
-
+        skillContext.caster.SetSkillAnimation(playerSkill);
         await UniTask.CompletedTask;
     }
 }

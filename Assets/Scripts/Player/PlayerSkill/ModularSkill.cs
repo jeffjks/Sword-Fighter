@@ -25,6 +25,8 @@ public class SkillContext
 [System.Serializable]
 public abstract class SkillModuleBase
 {
+    [HideInInspector]
+    public abstract SkillEffect SkillEffectType { get; }
     public abstract UniTask Execute(SkillContext skillContext);
 }
 
@@ -32,7 +34,11 @@ public abstract class SkillBase : ScriptableObject
 {
     public string skillName;
     public float duration;
+    public float cooldown;
     public PlayerSkill skillType;
+    
+    [SerializeReference, SubclassSelector]
+    public List<SkillModuleBase> modules = new();
 
     public abstract UniTask Execute(SkillContext skillContext, CancellationToken token);
 }
@@ -40,9 +46,6 @@ public abstract class SkillBase : ScriptableObject
 [CreateAssetMenu(menuName = "Skill/Modular Skill")]
 public class ModularSkill : SkillBase
 {
-    [SerializeReference, SubclassSelector]
-    public List<SkillModuleBase> modules = new();
-
     public override async UniTask Execute(SkillContext skillContext, CancellationToken token)
     {
         skillContext.caster.CurrentStateMachine.SetState(PlayerState.UsingSkill);
@@ -53,8 +56,10 @@ public class ModularSkill : SkillBase
             module.Execute(skillContext).Forget();
         }
 
-        await UniTask.Delay((int)duration, cancellationToken: token);
+        if (duration > 0f)
+            await UniTask.Delay((int) (duration*1000f), cancellationToken: token);
         skillContext.caster.CurrentStateMachine.SetState(PlayerState.Idle);
+        skillContext.caster.SetSkillAnimation(PlayerSkill.None);
         skillContext.caster.CurrentSkill = PlayerSkill.None;
     }
 }

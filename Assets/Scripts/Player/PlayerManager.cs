@@ -65,6 +65,9 @@ public abstract class PlayerManager : MonoBehaviour
     {
         PlayMovementAnimation();
         InterpolatePosition();
+
+        var delta = Time.deltaTime;
+        m_CharacterStatus.Tick(delta);
     }
 
     private void PlayMovementAnimation()

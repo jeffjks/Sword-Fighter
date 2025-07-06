@@ -10,23 +10,26 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 675234ea1fbfee6409d58bad368d6acd, type: 3}
-  m_Name: Skill_Block
+  m_Name: Skill_Basic
   m_EditorClassIdentifier: 
-  skillName: Block
-  duration: 1.5
-  cooldown: 2
-  skillType: 1
+  skillName: Basic
+  duration: 0.8
+  cooldown: 0
+  skillType: 2
   modules:
-  - rid: 2620804787656982536
-  - rid: 2620804851567689730
+  - rid: 2620804851567689731
+  - rid: 2620804851567689732
   references:
     version: 2
     RefIds:
-    - rid: 2620804787656982536
-      type: {class: BlockModule, ns: , asm: Assembly-CSharp}
+    - rid: 2620804851567689731
+      type: {class: DamageModule, ns: , asm: Assembly-CSharp}
       data:
-        maxDuration: 1
-    - rid: 2620804851567689730
+        damageCenterType: 0
+        damage: 20
+        radius: 2.5
+        angle: 180
+    - rid: 2620804851567689732
       type: {class: AnimationTriggerModule, ns: , asm: Assembly-CSharp}
       data:
-        playerSkill: 1
+        playerSkill: 2
