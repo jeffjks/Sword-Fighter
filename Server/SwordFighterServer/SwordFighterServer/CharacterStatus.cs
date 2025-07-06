@@ -1,6 +1,5 @@
-namespace Shared.Enums
+namespace SwordFighterServer
 {
-    [System.Serializable]
     public class CharacterStatus
     {
         public bool IsBlocking;
