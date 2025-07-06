@@ -68,7 +68,7 @@ namespace SwordFighterServer
         public Vector3 deltaPos;
         public Vector2 inputVector;
 
-        public CharacterStatus characterStatus;
+        public CharacterStatus characterStatus = new CharacterStatus();
         public PlayerState currentState;
         public PlayerSkill currentSkill;
         public PositionHistory positionHistory = new PositionHistory();
@@ -291,6 +291,14 @@ namespace SwordFighterServer
                 currentState = PlayerState.Dead;
                 ServerSend.PlayerState(this); // 캐릭터 사망 판정
             }
+        }
+
+        public void SetBlockState(bool state)
+        {
+            if (currentState == PlayerState.Dead)
+                return;
+            Console.WriteLine($"{id}: state = {state}");
+            characterStatus.IsBlocking = state;
         }
     }
 }

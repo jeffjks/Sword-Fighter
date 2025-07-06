@@ -81,5 +81,13 @@ namespace SwordFighterServer
                 Server.clients[targetPlayer].player.ChangePlayerHp(fromClient, hitPoints);
             }
         }
+
+        public static void SetBlockState(int fromClient, Packet packet) // 피격 판정
+        {
+            var timestamp = packet.ReadLong();
+            var state = packet.ReadBool();
+
+            Server.clients[fromClient].player.SetBlockState(state);
+        }
     }
 }

@@ -29,7 +29,8 @@ public enum ClientPackets
     spawnPlayerReceived,
     playerSkill,
     playerMovement,
-    changeHp
+    changeHp,
+    setBlockState
 }
 
 /// <summary>Chat from server to client.</summary>

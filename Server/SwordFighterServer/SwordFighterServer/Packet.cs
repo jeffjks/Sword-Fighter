@@ -26,7 +26,8 @@ namespace SwordFighterServer
         spawnPlayerReceived,
         playerSkill,
         playerMovement,
-        changeHp
+        changeHp,
+        setBlockState
     }
 
     public class Packet

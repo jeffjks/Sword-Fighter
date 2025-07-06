@@ -97,5 +97,13 @@ public class ClientSend : MonoBehaviour
 
         SendTCPData(packet);
     }
+
+    public static void SetBlockState(long timestamp, bool state) {
+        Packet packet = new ((int) ClientPackets.setBlockState);
+        packet.Write(timestamp);
+        packet.Write(state);
+
+        SendTCPData(packet);
+    }
     #endregion
 }

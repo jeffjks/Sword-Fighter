@@ -75,6 +75,7 @@ namespace SwordFighterServer
                 { (int) ClientPackets.playerSkill, ServerHandle.PlayerSkill },
                 { (int) ClientPackets.playerMovement, ServerHandle.PlayerMovement },
                 { (int) ClientPackets.changeHp, ServerHandle.ChangeHp },
+                { (int) ClientPackets.setBlockState, ServerHandle.SetBlockState },
             };
             Console.WriteLine("Initialized packets.");
         }
