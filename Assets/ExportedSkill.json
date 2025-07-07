@@ -1,0 +1,37 @@
+{
+  "Basic": {
+    "skillName": "Basic",
+    "duration": 0.8,
+    "cooldown": 0.0,
+    "skillType": 2,
+    "modules": [
+      {
+        "damageCenterType": 0,
+        "damage": 20,
+        "radius": 2.5,
+        "angle": 180.0,
+        "SkillEffectType": 1
+      },
+      {
+        "playerSkill": 2,
+        "SkillEffectType": 0
+      }
+    ]
+  },
+  "Block": {
+    "skillName": "Block",
+    "duration": 1.5,
+    "cooldown": 2.0,
+    "skillType": 1,
+    "modules": [
+      {
+        "maxDuration": 1,
+        "SkillEffectType": 2
+      },
+      {
+        "playerSkill": 1,
+        "SkillEffectType": 0
+      }
+    ]
+  }
+}

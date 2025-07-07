@@ -78,8 +78,6 @@ namespace SwordFighterServer
         private readonly Dictionary<PlayerSkill, int> _skillDuration = new();
         private readonly PriorityQueue<ScheduledTask, long> _scheduledTasks = new();
 
-        private const float AttackRadius = 2.5f;
-        private const int AttackDamage = 20;
         private int _lastSeqNum;
 
         private const int DefaultMaxHitPoint = 100;
@@ -178,6 +176,7 @@ namespace SwordFighterServer
                 deltaPos = Vector3.Zero;
                 inputVector = Vector2.Zero;
                 Vector3 targetPosition = position;
+                SkillDatabase.ApplySkillEffect(this, skillInput);
 
                 switch (skillInput.playerSkill)
                 {
@@ -188,7 +187,7 @@ namespace SwordFighterServer
                         break;
 
                     case PlayerSkill.Basic:
-                        AddSchedule(() => PlayerAttack(skillInput.Timestamp), 500);
+                        //AddSchedule(() => PlayerAttack(skillInput.Timestamp + 500), 500);
                         break;
                 }
 
@@ -213,8 +212,11 @@ namespace SwordFighterServer
             return (dot < 0); // 캐릭터의 방향을 계산하여 막기 판정
         }
 
-        public void PlayerAttack(long timestamp)
+        public void PlayerAttack(long timestamp, DamageCenterType damageCenterType, int damage, float radius, float angle)
         {
+            if (currentState == PlayerState.Dead)
+                return;
+
             foreach (int targetPlayerID in Server.spawnedPlayers)
             {
                 if (targetPlayerID == id) // 자기자신 제외
@@ -226,17 +228,16 @@ namespace SwordFighterServer
                     continue;
                 if (positionHistory.TryGetPositionAt(timestamp, out var myPosition) == false)
                     continue;
-                if (otherPosition == null || myPosition == null)
-                    continue;
                 Console.WriteLine($"\tPlayer {targetPlayerID} Position in timestamp: {otherPosition} (currentPosition: {myPosition})");
 
                 float distance_squared = Vector3.DistanceSquared(myPosition, otherPosition);
 
-                if (distance_squared < AttackRadius * AttackRadius) // 거리 계산
+                if (distance_squared < radius * radius) // 거리 계산
                 {
-                    if (Vector3.Dot(direction, myPosition - otherPosition) < 0) // 방향 계산
+                    var targetAngle = Utility.FlatAngleBetweenVectors(direction, otherPosition - myPosition);
+                    if (targetAngle * 2f <= angle) // 방향 계산
                     {
-                        otherPlayer.ChangePlayerHp(id, -AttackDamage);
+                        otherPlayer.ChangePlayerHp(id, -damage);
                     }
                 }
             }

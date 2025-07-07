@@ -22,6 +22,7 @@ namespace SwordFighterServer
         public static HashSet<int> spawnedPlayers = new HashSet<int>();
 
 
+        private static SkillDatabase skillDatabase = new SkillDatabase();
         private static TcpListener tcpListener;
 
         public static void Start(int maxPlayers, int port)

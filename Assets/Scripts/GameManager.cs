@@ -67,6 +67,7 @@ public class GameManager : MonoBehaviour
         }
 
         playerManager.id = id;
+        playerManager.m_CharacterStatus.MaxHitPoint = hp;
         playerManager.m_CharacterStatus.CurrentHitPoint = hp;
         playerManager.CurrentStateMachine.SetState((PlayerState) state);
         playerManager.m_RealPosition = position;
