@@ -6,7 +6,7 @@ public class CameraController : MonoBehaviour
 {
     public float m_CameraRotationSpeed;
 
-    void Update()
+    private void Update()
     {
         float xRot = Input.GetAxis("Mouse X");
         float yRot = Input.GetAxis("Mouse Y");

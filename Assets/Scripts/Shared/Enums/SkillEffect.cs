@@ -4,6 +4,7 @@ namespace Shared.Enums
     {
         None,
         Damage,
-        Block
+        Block,
+        Roll
     }
 }
