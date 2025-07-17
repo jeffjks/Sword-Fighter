@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Numerics;
-using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json.Linq;
 using Shared.Enums;
-using static System.Net.Mime.MediaTypeNames;
+using System;
+using System.Collections.Generic;
 
 namespace SwordFighterServer
 {
@@ -44,6 +42,7 @@ namespace SwordFighterServer
             else
             {
                 Console.WriteLine($"[Error] Unhandled Skill Effect: {effectType}");
+                return;
             }
         }
 

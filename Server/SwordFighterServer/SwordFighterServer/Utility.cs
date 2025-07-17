@@ -24,5 +24,26 @@ namespace SwordFighterServer
 
             return (float) (Math.Acos(cosTheta) * (180f / Math.PI));
         }
+
+        public static Vector3 ClampPosition(Vector3 position)
+        {
+            if (position.X < -50f)
+            {
+                position.X = -50f;
+            }
+            else if (position.X > 50f)
+            {
+                position.X = 50f;
+            }
+            if (position.Z < -50f)
+            {
+                position.Z = -50f;
+            }
+            else if (position.Z > 50f)
+            {
+                position.Z = 50f;
+            }
+            return position;
+        }
     }
 }
