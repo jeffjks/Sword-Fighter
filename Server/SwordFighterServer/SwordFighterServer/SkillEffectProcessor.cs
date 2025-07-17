@@ -17,6 +17,7 @@ namespace SwordFighterServer
         {
             _handlers[SkillEffect.Block] = ApplyBlock;
             _handlers[SkillEffect.Damage] = ApplyDamage;
+            _handlers[SkillEffect.Roll] = ApplyRoll;
         }
 
         public static void Apply(Player caster, SkillInput skillInput, JToken effectToken)
@@ -63,6 +64,14 @@ namespace SwordFighterServer
             var angle = (float)effectToken["angle"];
 
             caster.AddSchedule(() => caster.PlayerAttack(targetTimestamp, damageCenterType, damage, radius, angle), Delay);
+        }
+
+        private static void ApplyRoll(Player caster, SkillInput skillInput, JToken effectToken)
+        {
+            var targetPosition = Utility.ClampPosition(caster.position + caster.direction * Constants.ROLL_DISTANCE);
+
+            Console.WriteLine($"[{skillInput.SeqNum}, {skillInput.Timestamp}] {skillInput.playerSkill}: {caster.position}, {targetPosition}");
+            caster.position = targetPosition;
         }
     }
 }

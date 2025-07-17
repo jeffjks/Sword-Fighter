@@ -17,3 +17,5 @@ MonoBehaviour:
     skillBase: {fileID: 11400000, guid: c214ceca37651154893df0e4134a7a93, type: 2}
   - playerSkill: 1
     skillBase: {fileID: 11400000, guid: 79d5fc5f35311154a9f0d7f5cdb79bbb, type: 2}
+  - playerSkill: 3
+    skillBase: {fileID: 11400000, guid: f48e62fad455d764da0f21fdc9dfa4ee, type: 2}

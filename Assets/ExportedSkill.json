@@ -33,5 +33,22 @@
         "SkillEffectType": 0
       }
     ]
+  },
+  "Roll": {
+    "skillName": "Roll",
+    "duration": 1.0,
+    "cooldown": 0.0,
+    "skillType": 3,
+    "modules": [
+      {
+        "duration": 1.0,
+        "rollDistance": 5.0,
+        "SkillEffectType": 3
+      },
+      {
+        "playerSkill": 3,
+        "SkillEffectType": 0
+      }
+    ]
   }
 }
