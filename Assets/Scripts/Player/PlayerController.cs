@@ -129,7 +129,7 @@ public class PlayerController : MonoBehaviour
         return Vector3.Normalize(new Vector3(m_CameraObject.forward.x, 0, m_CameraObject.forward.z));
     }
 
-    private void FixedUpdate() // Camera
+    private void Update() // Camera
     {
         if (m_PlayerMe.IsCurrentState(PlayerState.Idle) || m_PlayerMe.IsCurrentState(PlayerState.Move))
         {

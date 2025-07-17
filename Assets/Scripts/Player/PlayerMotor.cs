@@ -11,7 +11,7 @@ public class PlayerMotor : MonoBehaviour
     private Vector2 _prevInputVector;
     private const float SPEED = 4.8f;
 
-    private void FixedUpdate() // Camera
+    private void Update()
     {
         SimulateMove();
     }
