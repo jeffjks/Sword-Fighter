@@ -67,6 +67,7 @@ namespace SwordFighterServer
             packet.Write(player.position);
             packet.Write(player.direction);
             packet.Write(player.characterStatus.CurrentHitPoint);
+            packet.Write(player.characterStatus.MaxHitPoint);
             packet.Write((int) player.currentState);
 
             SendTCPData(toClient, packet);

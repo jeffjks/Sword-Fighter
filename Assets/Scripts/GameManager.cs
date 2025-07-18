@@ -54,7 +54,7 @@ public class GameManager : MonoBehaviour
         return Random.Range(_pingMin, _pingMax);
     }
 
-    public void SpawnPlayer(int id, string username, Vector3 position, Vector3 direction, int hp, int state) {
+    public void SpawnPlayer(int id, string username, Vector3 position, Vector3 direction, int currentHp, int maxHp, int state) {
         PlayerManager playerManager;
         Quaternion rot = Quaternion.LookRotation(direction);
 
@@ -67,8 +67,8 @@ public class GameManager : MonoBehaviour
         }
 
         playerManager.id = id;
-        playerManager.m_CharacterStatus.MaxHitPoint = hp;
-        playerManager.m_CharacterStatus.CurrentHitPoint = hp;
+        playerManager.m_CharacterStatus.CurrentHitPoint = currentHp;
+        playerManager.m_CharacterStatus.MaxHitPoint = maxHp;
         playerManager.CurrentStateMachine.SetState((PlayerState) state);
         playerManager.m_RealPosition = position;
         playerManager.transform.position = position;

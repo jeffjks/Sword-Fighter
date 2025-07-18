@@ -30,11 +30,12 @@ public class ClientHandle : MonoBehaviour
         string username = packet.ReadString();
         Vector3 position = packet.ReadVector3();
         Vector3 direction = packet.ReadVector3();
-        int hp = packet.ReadInt();
+        int currentHp = packet.ReadInt();
+        int maxHp = packet.ReadInt();
         int state = packet.ReadInt();
         //Quaternion rotation = packet.ReadQuaternion();
         
-        GameManager.instance.SpawnPlayer(id, username, position, direction, hp, state);
+        GameManager.instance.SpawnPlayer(id, username, position, direction, currentHp, maxHp, state);
 
         ClientSend.SpawnPlayerReceived(id);
     }

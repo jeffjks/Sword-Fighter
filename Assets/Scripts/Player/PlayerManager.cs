@@ -57,7 +57,7 @@ public abstract class PlayerManager : MonoBehaviour
     }
 
     public void Init() {
-        SetUserNameUI(_username);
+        SetPlayerUI(_username);
         SetCurrentHitPoint(m_CharacterStatus.CurrentHitPoint);
     }
 
@@ -128,6 +128,8 @@ public abstract class PlayerManager : MonoBehaviour
     public abstract void OnStateReceived(int seqNum, long timestamp, Vector3 facingDirection, Vector3 deltaPos, Vector2 inputVector, Vector3 position);
     public abstract void OnStateReceived(PlayerSkill playerSkill, Vector3 facingDirection, Vector3 targetPosition);
 
+    public abstract void SetPlayerUI(string userName);
+
     public Vector3 ClampPosition(Vector3 position)
     {
         return new Vector3
@@ -164,11 +166,6 @@ public abstract class PlayerManager : MonoBehaviour
     public void SetCurrentHitPoint(int hitPoints) {
         m_CharacterStatus.CurrentHitPoint = hitPoints;
         m_UI_HpBar.UpdateHpBarFill();
-    }
-
-    public void SetUserNameUI(string _username) {
-        m_UI_HpBar = GameManager.instance.m_UIManager.m_UI_HpBarMain;
-        m_UI_HpBar.SetUserNameUI(_username);
     }
 
     private void InterpolatePosition() {

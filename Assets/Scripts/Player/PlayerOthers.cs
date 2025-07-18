@@ -65,6 +65,11 @@ public class PlayerOthers : PlayerManager
         ExecuteSkill(playerSkill, facingDirection, targetPosition);
     }
 
+    public override void SetPlayerUI(string _username) {
+        //m_UI_HpBar = GameManager.instance.m_UIManager.m_UI_HpBarMain;
+        m_UI_HpBar.SetUserNameUI(_username);
+    }
+
     private void DeadReckoning()
     {
         if (!_hasTarget) // 목표 지점이 없으면 deltaPos 방향으로 이동

@@ -11,7 +11,7 @@ public class UI_HpBarWorld : UI_HpBar
     private const float maxScale = 0.25f;
     private const float minScale = 0.1f;
 
-    void LateUpdate()
+    private void LateUpdate()
     {
         Vector3 playerPosition = m_PlayerManager.m_CharacterModel.transform.position;
         transform.position = Camera.main.WorldToScreenPoint(playerPosition + new Vector3(0, 2.4f, 0));

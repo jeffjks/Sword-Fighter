@@ -68,4 +68,9 @@ public class PlayerMe : PlayerManager
     {
         throw new System.NotImplementedException();
     }
+
+    public override void SetPlayerUI(string _username) {
+        m_UI_HpBar = GameManager.instance.m_UIManager.m_UI_HpBarMain;
+        m_UI_HpBar.SetUserNameUI(_username);
+    }
 }
