@@ -24,13 +24,6 @@ public abstract class PlayerManager : MonoBehaviour
         }
     }
     public PlayerSkill CurrentSkill { get; set; }
-    public readonly Dictionary<PlayerSkill, int> m_SkillDurations = new()
-    {
-        { PlayerSkill.Basic, 800 },
-        { PlayerSkill.Block, 1500 },
-        { PlayerSkill.Roll, 1000 }
-    };
-
 
     [HideInInspector] public Vector3 m_RealPosition;
 

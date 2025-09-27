@@ -12,8 +12,6 @@ public class SkillContext
     public Vector3 direction;
     public Vector3 targetPosition;
 
-    public float castTime;
-
     public SkillContext(PlayerManager caster, Vector3 direction, Vector3 targetPosition)
     {
         this.caster = caster;

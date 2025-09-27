@@ -50,8 +50,6 @@ public class PlayerController : MonoBehaviour
     {
         if (CanUseSkill() == false)
             return;
-        if (m_PlayerMe.m_SkillDurations.ContainsKey(playerSkill) == false)
-            return;
 
         var timestamp = TimeSync.GetSyncTime();
         var facingDirection = GetForwardDirection();
