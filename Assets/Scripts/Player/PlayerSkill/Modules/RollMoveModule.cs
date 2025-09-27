@@ -12,13 +12,19 @@ public class RollMoveModule : SkillModuleBase
 
     public override SkillEffect SkillEffectType => SkillEffect.Roll;
 
-    public override async UniTask Execute(SkillContext skillContext)
+    public override async UniTask Execute(long timestamp, SkillContext skillContext)
     {
         var caster = skillContext.caster;
         var direction = skillContext.direction;
         var start = caster.transform.position;
         var end = start + direction.normalized * rollDistance;
         caster.m_EnableInterpolate = false;
+        
+        var deltaPos = direction.normalized * rollDistance;
+        var clientInput = new ClientInput(timestamp, deltaPos);
+        caster.m_RealPosition += deltaPos;
+        PlayerMe.ClientInputQueue.Enqueue(clientInput);
+        Debug.Log($"Enqueue ClientInput (Roll): ({timestamp})");
 
         float ctime = 0f;
         while (ctime < duration)

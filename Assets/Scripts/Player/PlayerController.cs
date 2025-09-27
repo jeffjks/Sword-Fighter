@@ -26,13 +26,6 @@ public class PlayerController : MonoBehaviour
     
     private UIManager _uiManager;
 
-    private readonly Dictionary<PlayerSkill, float> _skillDistances = new()
-    {
-        { PlayerSkill.Basic, 0f },
-        { PlayerSkill.Block, 0f },
-        { PlayerSkill.Roll, 5f }
-    };
-
     private void Awake()
     {
         _uiManager = GameManager.instance.m_UIManager;
@@ -63,29 +56,33 @@ public class PlayerController : MonoBehaviour
         var timestamp = TimeSync.GetSyncTime();
         var facingDirection = GetForwardDirection();
 
-        if (_skillDistances.TryGetValue(playerSkill, out var distance)) // 임시로 모든 스킬 일괄처리
+        if (m_PlayerMe.CurrentState == PlayerState.UsingSkill)
+            return;
+
+
+#if UNITY_EDITOR
+        var debugStr = string.Empty;
+        for (var i = 1; i <= 4; ++i)
         {
-            if (m_PlayerMe.CurrentState == PlayerState.UsingSkill)
-                return;
-            var result = m_PlayerMe.ExecuteSkill(playerSkill, facingDirection, Vector3.zero);
-            if (result == false)
-                return;
-
-            ClientSend.PlayerSkill(timestamp, facingDirection, playerSkill);
-
-            var debugStr = string.Empty;
-            for (var i = 1; i <= 4; ++i)
-            {
-                if (GameManager.players.ContainsKey(i) == false)
-                    continue;
-                var pos = GameManager.players[i].m_RealPosition;
-                debugStr += $"\n\tPlayer {i} position: {pos}";
-            }
-            Debug.Log($"UseSkill: {playerSkill}{debugStr}");
-
-            var clientInput = new ClientInput(timestamp, facingDirection * distance);
-            m_PlayerMe.m_ClientInputQueue.Enqueue(clientInput);
+            if (GameManager.players.ContainsKey(i) == false)
+                continue;
+            var pos = GameManager.players[i].m_RealPosition;
+            debugStr += $"\n\tPlayer {i} position: {pos}";
         }
+#endif
+
+        var result = m_PlayerMe.ExecuteSkill(timestamp, playerSkill, facingDirection, Vector3.zero);
+        if (result == false)
+        {
+            Debug.LogWarning($"Failed to use skill: {playerSkill}");
+            return;
+        }
+
+        ClientSend.PlayerSkill(timestamp, facingDirection, playerSkill);
+
+#if UNITY_EDITOR
+        Debug.Log($"UseSkill: ({timestamp}) {playerSkill}{debugStr}");
+#endif
     }
 
     public void OnJump(InputAction.CallbackContext context)

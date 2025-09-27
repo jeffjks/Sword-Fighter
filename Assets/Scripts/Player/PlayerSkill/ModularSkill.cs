@@ -27,7 +27,7 @@ public abstract class SkillModuleBase
 {
     [HideInInspector]
     public abstract SkillEffect SkillEffectType { get; }
-    public abstract UniTask Execute(SkillContext skillContext);
+    public abstract UniTask Execute(long timestamp, SkillContext skillContext);
 }
 
 public abstract class SkillBase : ScriptableObject
@@ -40,20 +40,20 @@ public abstract class SkillBase : ScriptableObject
     [SerializeReference, SubclassSelector]
     public List<SkillModuleBase> modules = new();
 
-    public abstract UniTask Execute(SkillContext skillContext, CancellationToken token);
+    public abstract UniTask Execute(long timestamp, SkillContext skillContext, CancellationToken token);
 }
 
 [CreateAssetMenu(menuName = "Skill/Modular Skill")]
 public class ModularSkill : SkillBase
 {
-    public override async UniTask Execute(SkillContext skillContext, CancellationToken token)
+    public override async UniTask Execute(long timestamp, SkillContext skillContext, CancellationToken token)
     {
         skillContext.caster.CurrentStateMachine.SetState(PlayerState.UsingSkill);
         skillContext.caster.CurrentSkill = skillType;
 
         foreach (var module in modules)
         {
-            module.Execute(skillContext).Forget();
+            module.Execute(timestamp, skillContext).Forget();
         }
 
         if (duration > 0f)

@@ -7,7 +7,7 @@ using Shared.Enums;
 
 public class PlayerMe : PlayerManager
 {
-    public readonly Queue<ClientInput> m_ClientInputQueue = new ();
+    public static readonly Queue<ClientInput> ClientInputQueue = new ();
     
     private Vector3 _lastPositionFromServer;
 
@@ -24,14 +24,14 @@ public class PlayerMe : PlayerManager
     
     private void CorrectPosition(int seqNum, long timestamp)
     {
-        while (m_ClientInputQueue.Count > 0 && m_ClientInputQueue.Peek().timestamp <= timestamp) { // 처리된 요청은 삭제
-            m_ClientInputQueue.Dequeue();
+        while (ClientInputQueue.Count > 0 && ClientInputQueue.Peek().timestamp <= timestamp) { // 처리된 요청은 삭제
+            ClientInputQueue.Dequeue();
         }
 
         Vector3 correctedPos = _lastPositionFromServer; // 서버로부터 받은 가장 최신 좌표
         
         var tempStr = string.Empty;
-        foreach (var input in m_ClientInputQueue) { // 지금까지 input기록에 따라 시뮬레이션하여 현재 좌표 계산
+        foreach (var input in ClientInputQueue) { // 지금까지 input기록에 따라 시뮬레이션하여 현재 좌표 계산
             correctedPos += input.deltaPos;
             tempStr += $"{input.timestamp}, {input.deltaPos}\n";
         }
@@ -57,14 +57,14 @@ public class PlayerMe : PlayerManager
 #if UNITY_EDITOR
         using (StreamWriter writer = new ($"{GameManager.dirReceived}/received.txt", append: true))
         {
-            var queueString = string.Join(", ", m_ClientInputQueue.Select(i => $"[{i.timestamp}]"));
+            var queueString = string.Join(", ", ClientInputQueue.Select(i => $"[{i.timestamp}]"));
             writer.WriteLine($"[{seqNum}, {timestamp}] ClientReceived: {position}), [{TimeSync.GetSyncTime()}] {m_RealPosition}");
             //writer.WriteLine($"\t{queueString}");
         }
 #endif
     }
 
-    public override void OnStateReceived(PlayerSkill playerSkill, Vector3 facingDirection, Vector3 targetPosition)
+    public override void OnStateReceived(long timestamp, PlayerSkill playerSkill, Vector3 facingDirection, Vector3 targetPosition)
     {
         throw new System.NotImplementedException();
     }

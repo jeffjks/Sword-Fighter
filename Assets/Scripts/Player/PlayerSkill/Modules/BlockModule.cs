@@ -13,7 +13,7 @@ public class BlockModule : SkillModuleBase
 
     public override SkillEffect SkillEffectType => SkillEffect.Block;
 
-    public async override UniTask Execute(SkillContext skillContext)
+    public async override UniTask Execute(long timestamp, SkillContext skillContext)
     {
         skillContext.caster.m_CharacterStatus.BlockState.StartTimer(maxDuration);
 

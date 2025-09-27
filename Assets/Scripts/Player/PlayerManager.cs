@@ -85,7 +85,7 @@ public abstract class PlayerManager : MonoBehaviour
         SkillRegistry.SkillMap[skillType] = skillAsset;
     }
 
-    public bool ExecuteSkill(PlayerSkill skillType, Vector3 direction, Vector3 targetPos)
+    public bool ExecuteSkill(long timestamp, PlayerSkill skillType, Vector3 direction, Vector3 targetPos)
     {
         if (!SkillRegistry.SkillMap.TryGetValue(skillType, out SkillBase skill))
         {
@@ -101,7 +101,7 @@ public abstract class PlayerManager : MonoBehaviour
 
         try
         {
-            skill.Execute(new(this, direction, targetPos), _cts.Token);
+            skill.Execute(timestamp, new(this, direction, targetPos), _cts.Token);
         }
         catch (OperationCanceledException)
         {
@@ -126,7 +126,7 @@ public abstract class PlayerManager : MonoBehaviour
     public abstract void Finish_DealDamage_Basic();
 
     public abstract void OnStateReceived(int seqNum, long timestamp, Vector3 facingDirection, Vector3 deltaPos, Vector2 inputVector, Vector3 position);
-    public abstract void OnStateReceived(PlayerSkill playerSkill, Vector3 facingDirection, Vector3 targetPosition);
+    public abstract void OnStateReceived(long timestamp, PlayerSkill playerSkill, Vector3 facingDirection, Vector3 targetPosition);
 
     public abstract void SetPlayerUI(string userName);
 

@@ -11,7 +11,7 @@ public class AnimationTriggerModule : SkillModuleBase
     
     public override SkillEffect SkillEffectType => SkillEffect.None;
 
-    public async override UniTask Execute(SkillContext skillContext)
+    public async override UniTask Execute(long timestamp, SkillContext skillContext)
     {
         skillContext.caster.SetSkillAnimation(playerSkill);
         await UniTask.CompletedTask;

@@ -48,7 +48,7 @@ public class PlayerMotor : MonoBehaviour
         
         var clientInput = new ClientInput(timestamp, deltaPos);
         ClientSend.PlayerMovement(timestamp, forwardDirection, deltaPos, inputVector);
-        m_PlayerMe.m_ClientInputQueue.Enqueue(clientInput);
+        PlayerMe.ClientInputQueue.Enqueue(clientInput);
     }
 
     private Vector3 GetDeltaPosition()

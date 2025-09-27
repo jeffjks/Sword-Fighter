@@ -14,7 +14,7 @@ public class DamageModule : SkillModuleBase
 
     public override SkillEffect SkillEffectType => SkillEffect.Damage;
 
-    public async override UniTask Execute(SkillContext skillContext)
+    public async override UniTask Execute(long timestamp, SkillContext skillContext)
     {
         await UniTask.CompletedTask;
     }
