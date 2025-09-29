@@ -59,15 +59,6 @@ public abstract class PlayerManager : MonoBehaviour
         _cts.Cancel();
     }
 
-    private void CancelCurrentSkill()
-    {
-        // 이전 실행 취소
-        _cts?.Cancel();
-        _cts?.Dispose();
-
-        _cts = new CancellationTokenSource();
-    }
-
     public void Init() {
         SetPlayerUI(_username);
         SetCurrentHitPoint(m_CharacterStatus.CurrentHitPoint);
@@ -82,6 +73,9 @@ public abstract class PlayerManager : MonoBehaviour
         m_CharacterStatus.Tick(delta);
     }
 
+    public abstract void OnStateReceived(int seqNum, long timestamp, Vector3 facingDirection, Vector3 deltaPos, Vector2 inputVector, Vector3 position);
+    public abstract void OnStateReceived(long timestamp, PlayerSkill playerSkill, Vector3 facingDirection, Vector3 targetPosition);
+
     private void PlayMovementAnimation()
     {
         if (IsCurrentState(PlayerState.Dead)) {
@@ -90,6 +84,15 @@ public abstract class PlayerManager : MonoBehaviour
 
         m_Animator.SetFloat(_animatorMovementHorizontal, _animationMovement.x, 0.25f, Time.deltaTime);
         m_Animator.SetFloat(_animatorMovementVertical, _animationMovement.y, 0.25f, Time.deltaTime);
+    }
+
+    private void CancelCurrentSkill()
+    {
+        // 이전 실행 취소
+        _cts?.Cancel();
+        _cts?.Dispose();
+
+        _cts = new CancellationTokenSource();
     }
 
     public async UniTask ExecuteSkillAsync(long timestamp, PlayerSkill skillType, Vector3 direction, Vector3 targetPos)
@@ -133,13 +136,6 @@ public abstract class PlayerManager : MonoBehaviour
         var rotationDirection = new Vector3(direction.x, 0f, direction.z);
         m_CharacterModel.rotation = Quaternion.LookRotation(rotationDirection);
     }
-
-    public abstract void Start_DealDamage_Basic();
-
-    public abstract void Finish_DealDamage_Basic();
-
-    public abstract void OnStateReceived(int seqNum, long timestamp, Vector3 facingDirection, Vector3 deltaPos, Vector2 inputVector, Vector3 position);
-    public abstract void OnStateReceived(long timestamp, PlayerSkill playerSkill, Vector3 facingDirection, Vector3 targetPosition);
 
     public abstract void SetPlayerUI(string userName);
 

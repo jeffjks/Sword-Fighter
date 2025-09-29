@@ -20,14 +20,6 @@ public class PlayerOthers : PlayerManager
         DeadReckoning();
     }
 
-    public override void Start_DealDamage_Basic() {
-        return;
-    }
-
-    public override void Finish_DealDamage_Basic() {
-        return;
-    }
-
     public override void OnStateReceived(int seqNum, long timestamp, Vector3 facingDirection, Vector3 deltaPos, Vector2 inputVector, Vector3 position)
     {
         if (seqNum >= 0)

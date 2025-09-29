@@ -12,15 +12,6 @@ public class PlayerMe : PlayerManager
     private Vector3 _lastPositionFromServer;
 
     private const float PositionCorrectionThreshold = 0.25f;
-
-    public override void Start_DealDamage_Basic() {
-        //m_Sword.StartDeal();
-        //ClientSend.PlayerAttack();
-    }
-
-    public override void Finish_DealDamage_Basic() {
-        //m_Sword.FinishDeal();
-    }
     
     private void CorrectPosition(int seqNum, long timestamp)
     {
