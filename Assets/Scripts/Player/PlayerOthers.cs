@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Shared.Enums;
+using Cysharp.Threading.Tasks;
 
 public class PlayerOthers : PlayerManager
 {
@@ -62,7 +63,7 @@ public class PlayerOthers : PlayerManager
 
     public override void OnStateReceived(long timestamp, PlayerSkill playerSkill, Vector3 facingDirection, Vector3 targetPosition)
     {
-        ExecuteSkill(timestamp, playerSkill, facingDirection, targetPosition);
+        ExecuteSkillAsync(timestamp, playerSkill, facingDirection, targetPosition).Forget();
     }
 
     public override void SetPlayerUI(string _username) {

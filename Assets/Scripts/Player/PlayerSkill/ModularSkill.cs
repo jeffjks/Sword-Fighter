@@ -25,7 +25,7 @@ public abstract class SkillModuleBase
 {
     [HideInInspector]
     public abstract SkillEffect SkillEffectType { get; }
-    public abstract UniTask Execute(long timestamp, SkillContext skillContext);
+    public abstract UniTask ExecuteModule(long timestamp, SkillContext skillContext, CancellationToken token);
 }
 
 public abstract class SkillBase : ScriptableObject
@@ -46,18 +46,16 @@ public class ModularSkill : SkillBase
 {
     public override async UniTask Execute(long timestamp, SkillContext skillContext, CancellationToken token)
     {
-        skillContext.caster.CurrentStateMachine.SetState(PlayerState.UsingSkill);
-        skillContext.caster.CurrentSkill = skillType;
+        var tasks = new List<UniTask>(modules.Count + 1);
 
         foreach (var module in modules)
         {
-            module.Execute(timestamp, skillContext).Forget();
+            tasks.Add(module.ExecuteModule(timestamp, skillContext, token));
         }
 
         if (duration > 0f)
-            await UniTask.Delay((int) (duration*1000f), cancellationToken: token);
-        skillContext.caster.CurrentStateMachine.SetState(PlayerState.Idle);
-        skillContext.caster.SetSkillAnimation(PlayerSkill.None);
-        skillContext.caster.CurrentSkill = PlayerSkill.None;
+            tasks.Add(UniTask.Delay((int)(duration * 1000f), cancellationToken: token));
+
+        await UniTask.WhenAll(tasks);
     }
 }

@@ -78,34 +78,49 @@ public abstract class PlayerManager : MonoBehaviour
         SkillRegistry.SkillMap[skillType] = skillAsset;
     }
 
-    public bool ExecuteSkill(long timestamp, PlayerSkill skillType, Vector3 direction, Vector3 targetPos)
+    public async UniTask ExecuteSkillAsync(long timestamp, PlayerSkill skillType, Vector3 direction, Vector3 targetPos)
     {
         if (!SkillRegistry.SkillMap.TryGetValue(skillType, out SkillBase skill))
         {
             Debug.LogWarning($"스킬 {skillType} 이 등록되어 있지 않음");
-            return false;
+            return;
         }
 
         // 이전 스킬 취소
-        _cts?.Cancel();
+        var old = _cts;
+        if (_cts != null)
+        {
+            try { old.Cancel(); }
+            finally { old.Dispose(); }
+        }
         _cts = new CancellationTokenSource();
 
         // CurrentStateMachine.SetSkill(playerSkill);
 
+        CurrentStateMachine.SetState(PlayerState.UsingSkill);
+        CurrentSkill = skillType;
+
         try
         {
-            skill.Execute(timestamp, new(this, direction, targetPos), _cts.Token);
+            await skill.Execute(timestamp, new SkillContext(this, direction, targetPos), _cts.Token);
         }
         catch (OperationCanceledException)
         {
             Debug.Log($"스킬 취소됨: {skillType}");
         }
-        catch (Exception ex)
+        catch (System.Exception ex)
         {
             Debug.LogError(ex);
         }
+        finally
+        {
+            CurrentStateMachine.SetState(PlayerState.Idle);
+            SetSkillAnimation(PlayerSkill.None);
+            CurrentSkill = PlayerSkill.None;
 
-        return true;
+            _cts?.Dispose();
+            _cts = null;
+        }
     }
 
     public void SetRotation(Vector3 direction)

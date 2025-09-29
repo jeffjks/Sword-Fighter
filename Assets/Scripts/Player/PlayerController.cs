@@ -2,6 +2,7 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 using Shared.Enums;
+using Cysharp.Threading.Tasks;
 
 public struct ClientInput
 {
@@ -50,12 +51,11 @@ public class PlayerController : MonoBehaviour
     {
         if (CanUseSkill() == false)
             return;
+        if (m_PlayerMe.CurrentState == PlayerState.UsingSkill)
+            return;
 
         var timestamp = TimeSync.GetSyncTime();
         var facingDirection = GetForwardDirection();
-
-        if (m_PlayerMe.CurrentState == PlayerState.UsingSkill)
-            return;
 
 
 #if UNITY_EDITOR
@@ -69,12 +69,7 @@ public class PlayerController : MonoBehaviour
         }
 #endif
 
-        var result = m_PlayerMe.ExecuteSkill(timestamp, playerSkill, facingDirection, Vector3.zero);
-        if (result == false)
-        {
-            Debug.LogWarning($"Failed to use skill: {playerSkill}");
-            return;
-        }
+        m_PlayerMe.ExecuteSkillAsync(timestamp, playerSkill, facingDirection, Vector3.zero).Forget();
 
         ClientSend.PlayerSkill(timestamp, facingDirection, playerSkill);
 
