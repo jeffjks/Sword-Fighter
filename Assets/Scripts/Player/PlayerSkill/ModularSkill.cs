@@ -23,20 +23,19 @@ public class SkillContext
 [System.Serializable]
 public abstract class SkillModuleBase
 {
-    [HideInInspector]
     public abstract SkillEffect SkillEffectType { get; }
     public abstract UniTask ExecuteModule(long timestamp, SkillContext skillContext, CancellationToken token);
 }
 
 public abstract class SkillBase : ScriptableObject
 {
-    public string skillName;
-    public float duration;
-    public float cooldown;
-    public PlayerSkill skillType;
+    [SerializeField] protected string skillName;
+    [SerializeField] protected float duration;
+    [SerializeField] protected float cooldown;
+    [SerializeField] protected PlayerSkill skillType;
     
     [SerializeReference, SubclassSelector]
-    public List<SkillModuleBase> modules = new();
+    [SerializeField] protected List<SkillModuleBase> modules = new();
 
     public abstract UniTask Execute(long timestamp, SkillContext skillContext, CancellationToken token);
 }

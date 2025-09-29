@@ -17,10 +17,10 @@ public class RollMoveModule : SkillModuleBase
     {
         var caster = skillContext.caster;
         var direction = skillContext.direction;
-        var start = caster.transform.position;
-        var end = start + direction.normalized * rollDistance;
-        
         var deltaPos = direction.normalized * rollDistance;
+        var start = caster.transform.position;
+        var end = start + deltaPos;
+        
         var clientInput = new ClientInput(timestamp, deltaPos);
         caster.m_RealPosition += deltaPos;
         PlayerMe.ClientInputQueue.Enqueue(clientInput);

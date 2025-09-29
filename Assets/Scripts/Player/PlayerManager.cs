@@ -31,9 +31,6 @@ public abstract class PlayerManager : MonoBehaviour
 
     private CancellationTokenSource _cts;
 
-    // [HideInInspector] public PlayerState m_PlayerState = PlayerState.Idle;
-    // [HideInInspector] public PlayerSkill m_PlayerSkill = PlayerSkill.None;
-
     private string _username;
     private Vector2 _animationMovement;
 
@@ -42,11 +39,33 @@ public abstract class PlayerManager : MonoBehaviour
     private readonly int _animatorMovementVertical = Animator.StringToHash("MovementVertical");
     private readonly int _animatorPlayerState = Animator.StringToHash("State");
     private readonly int _animatorPlayerSkill = Animator.StringToHash("Skill");
-    private const float ROLL_DISTANCE = 5f;
 
     private void Awake()
     {
         CurrentStateMachine = new(this);
+    }
+
+    private void OnEnable()
+    {
+        if (_cts != null)
+        {
+            _cts.Dispose();
+        }
+        _cts = new CancellationTokenSource();
+    }
+
+    private void OnDisable()
+    {
+        _cts.Cancel();
+    }
+
+    private void CancelCurrentSkill()
+    {
+        // 이전 실행 취소
+        _cts?.Cancel();
+        _cts?.Dispose();
+
+        _cts = new CancellationTokenSource();
     }
 
     public void Init() {
@@ -73,11 +92,6 @@ public abstract class PlayerManager : MonoBehaviour
         m_Animator.SetFloat(_animatorMovementVertical, _animationMovement.y, 0.25f, Time.deltaTime);
     }
 
-    public void RegisterSkill(PlayerSkill skillType, SkillBase skillAsset)
-    {
-        SkillRegistry.SkillMap[skillType] = skillAsset;
-    }
-
     public async UniTask ExecuteSkillAsync(long timestamp, PlayerSkill skillType, Vector3 direction, Vector3 targetPos)
     {
         if (!SkillRegistry.SkillMap.TryGetValue(skillType, out SkillBase skill))
@@ -86,14 +100,7 @@ public abstract class PlayerManager : MonoBehaviour
             return;
         }
 
-        // 이전 스킬 취소
-        var old = _cts;
-        if (_cts != null)
-        {
-            try { old.Cancel(); }
-            finally { old.Dispose(); }
-        }
-        _cts = new CancellationTokenSource();
+        CancelCurrentSkill();
 
         CurrentStateMachine.SetState(PlayerState.UsingSkill);
         CurrentSkill = skillType;
@@ -106,7 +113,7 @@ public abstract class PlayerManager : MonoBehaviour
         {
             Debug.Log($"스킬 취소됨: {skillType}");
         }
-        catch (System.Exception ex)
+        catch (Exception ex)
         {
             Debug.LogError(ex);
         }
