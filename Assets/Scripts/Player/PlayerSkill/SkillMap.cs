@@ -7,7 +7,7 @@ using Shared.Enums;
 public class SkillEntry
 {
     public PlayerSkill playerSkill;
-    public SkillBase skillBase;
+    public ModularSkill modularSkill;
 }
 
 [CreateAssetMenu(menuName = "Skill/Skill Map")]

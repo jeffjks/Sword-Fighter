@@ -10,15 +10,15 @@ public class ScriptableObjectToJson : MonoBehaviour
 {
     public SkillMap m_SkillMap;
 
-    private readonly Dictionary<PlayerSkill, SkillBase> _skillData = new();
+    private readonly Dictionary<PlayerSkill, ModularSkill> _skillData = new();
 
     [ContextMenu("Export To JSON")]
     public void Export()
     {
         foreach (var item in m_SkillMap.entries)
         {
-            // item.skillBase.modules.RemoveAll(m => m.SkillEffectType == SkillEffect.None);
-            _skillData.Add(item.playerSkill, item.skillBase);
+            // item.modularSkill.modules.RemoveAll(m => m.SkillEffectType == SkillEffect.None);
+            _skillData.Add(item.playerSkill, item.modularSkill);
         }
 
         var json = JsonConvert.SerializeObject(_skillData,

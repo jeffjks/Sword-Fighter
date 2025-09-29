@@ -7,13 +7,13 @@ public class SkillRegistry : MonoBehaviour
 {
     public SkillMap m_SkillMap;
 
-    public static Dictionary<PlayerSkill, SkillBase> SkillMap = new();
+    public static Dictionary<PlayerSkill, ModularSkill> SkillMap = new();
 
     private void Awake()
     {
         foreach (var item in m_SkillMap.entries)
         {
-            SkillMap.Add(item.playerSkill, item.skillBase);
+            SkillMap.Add(item.playerSkill, item.modularSkill);
         }
     }
 }

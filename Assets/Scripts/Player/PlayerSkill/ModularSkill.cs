@@ -27,7 +27,8 @@ public abstract class SkillModuleBase
     public abstract UniTask ExecuteModule(long timestamp, SkillContext skillContext, CancellationToken token);
 }
 
-public abstract class SkillBase : ScriptableObject
+[CreateAssetMenu(menuName = "Skill/Modular Skill")]
+public class ModularSkill : ScriptableObject
 {
     [SerializeField] protected string skillName;
     [SerializeField] protected float duration;
@@ -37,13 +38,7 @@ public abstract class SkillBase : ScriptableObject
     [SerializeReference, SubclassSelector]
     [SerializeField] protected List<SkillModuleBase> modules = new();
 
-    public abstract UniTask Execute(long timestamp, SkillContext skillContext, CancellationToken token);
-}
-
-[CreateAssetMenu(menuName = "Skill/Modular Skill")]
-public class ModularSkill : SkillBase
-{
-    public override async UniTask Execute(long timestamp, SkillContext skillContext, CancellationToken token)
+    public async UniTask Execute(long timestamp, SkillContext skillContext, CancellationToken token)
     {
         foreach (var module in modules)
         {

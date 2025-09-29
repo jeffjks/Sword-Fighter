@@ -56,7 +56,7 @@ public abstract class PlayerManager : MonoBehaviour
 
     private void OnDisable()
     {
-        _cts.Cancel();
+        _cts?.Cancel();
     }
 
     public void Init() {
@@ -97,7 +97,7 @@ public abstract class PlayerManager : MonoBehaviour
 
     public async UniTask ExecuteSkillAsync(long timestamp, PlayerSkill skillType, Vector3 direction, Vector3 targetPos)
     {
-        if (!SkillRegistry.SkillMap.TryGetValue(skillType, out SkillBase skill))
+        if (!SkillRegistry.SkillMap.TryGetValue(skillType, out ModularSkill skill))
         {
             Debug.LogWarning($"스킬 {skillType} 이 등록되어 있지 않음");
             return;
