@@ -102,10 +102,9 @@ namespace Editors
         {
             writer.WriteLine($"// This is Auto Generated Code by{this}. Do not modify the code.");
             writer.WriteLine("using System.Collections.Generic;");
-            writer.WriteLine("using UnityEngine;");
             writer.WriteLine("using Shared.Enums;");
             writer.WriteLine("");
-            writer.WriteLine("public class PlayerStateInitializer : MonoBehaviour");
+            writer.WriteLine("public static class PlayerStateInitializer");
             writer.WriteLine("{");
             writer.WriteLine("    public static Dictionary<PlayerState, PlayerStateBase> GetPlayerStateDictionary(PlayerManager manager)");
             writer.WriteLine("    {");

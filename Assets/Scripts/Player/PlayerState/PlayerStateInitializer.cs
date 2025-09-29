@@ -1,9 +1,8 @@
 // This is Auto Generated Code by (Editors.PlayerStateScriptMaker). Do not modify the code.
 using System.Collections.Generic;
-using UnityEngine;
 using Shared.Enums;
 
-public class PlayerStateInitializer : MonoBehaviour
+public static class PlayerStateInitializer
 {
     public static Dictionary<PlayerState, PlayerStateBase> GetPlayerStateDictionary(PlayerManager manager)
     {

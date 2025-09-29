@@ -49,7 +49,7 @@ public class PlayerController : MonoBehaviour
 
     private void UsePlayerSkill(PlayerSkill playerSkill)
     {
-        if (CanUseSkill() == false)
+        if (IsSkillAvailable() == false)
             return;
         if (m_PlayerMe.CurrentState == PlayerState.UsingSkill)
             return;
@@ -80,7 +80,7 @@ public class PlayerController : MonoBehaviour
 
     public void OnJump(InputAction.CallbackContext context)
     {
-        if (CanUseSkill() == false)
+        if (IsSkillAvailable() == false)
             return;
 
         m_PlayerMe.m_RealPosition = new Vector3(m_PlayerMe.m_RealPosition.x + 12f, m_PlayerMe.m_RealPosition.y, m_PlayerMe.m_RealPosition.z);
@@ -100,7 +100,7 @@ public class PlayerController : MonoBehaviour
         _uiManager.OnExit();
     }
 
-    private bool CanUseSkill()
+    private bool IsSkillAvailable()
     {
         //if (_uiManager.m_UI_ChatInputField.IsWritingChat)
         //    return false;
