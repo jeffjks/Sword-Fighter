@@ -46,16 +46,12 @@ public class ModularSkill : SkillBase
 {
     public override async UniTask Execute(long timestamp, SkillContext skillContext, CancellationToken token)
     {
-        var tasks = new List<UniTask>(modules.Count + 1);
-
         foreach (var module in modules)
         {
-            tasks.Add(module.ExecuteModule(timestamp, skillContext, token));
+            module.ExecuteModule(timestamp, skillContext, token).Forget();
         }
 
         if (duration > 0f)
-            tasks.Add(UniTask.Delay((int)(duration * 1000f), cancellationToken: token));
-
-        await UniTask.WhenAll(tasks);
+            await UniTask.Delay((int)(duration * 1000f), cancellationToken: token);
     }
 }

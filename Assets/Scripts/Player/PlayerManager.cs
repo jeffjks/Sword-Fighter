@@ -95,8 +95,6 @@ public abstract class PlayerManager : MonoBehaviour
         }
         _cts = new CancellationTokenSource();
 
-        // CurrentStateMachine.SetSkill(playerSkill);
-
         CurrentStateMachine.SetState(PlayerState.UsingSkill);
         CurrentSkill = skillType;
 
