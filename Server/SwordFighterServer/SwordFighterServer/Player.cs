@@ -195,17 +195,6 @@ namespace SwordFighterServer
             currentSkill = PlayerSkill.None;
         }
 
-        private bool IsBlocking(int fromId)
-        {
-            if (currentSkill != PlayerSkill.Block)
-            {
-                return false;
-            }
-            Vector3 oppositeDir = position - Server.clients[fromId].player.position;
-            float dot = Vector3.Dot(direction, oppositeDir);
-            return (dot < 0); // 캐릭터의 방향을 계산하여 막기 판정
-        }
-
         public void PlayerAttack(long timestamp, DamageCenterType damageCenterType, int damage, float radius, float angle)
         {
             if (currentState == PlayerState.Dead)
@@ -242,16 +231,24 @@ namespace SwordFighterServer
             ServerSend.UpdatePlayerPosition(-1, this, Server.GetUnixTime(), true);
         }
 
+        private bool IsWithinBlockAngle(int fromId)
+        {
+            Vector3 oppositeDir = position - Server.clients[fromId].player.position;
+            float dot = Vector3.Dot(direction, oppositeDir);
+            return (dot < 0); // 캐릭터의 방향을 계산하여 막기 판정
+        }
+
         public void ChangePlayerHp(int fromClient, int hitPoints) // 데미지 판정 (hitPoints : 체력 변화량)
         {
-            if (hitPoints <= 0)
-            {
-                if (currentSkill != PlayerSkill.Roll && !IsBlocking(fromClient))
-                {
-                    characterStatus.CurrentHitPoint += hitPoints;
-                    ServerSend.PlayerHp(this);
-                }
-            }
+            if (hitPoints > 0)
+                return;
+            if (currentSkill == PlayerSkill.Roll)
+                return;
+            if (characterStatus.IsBlocking == true && IsWithinBlockAngle(fromClient))
+                return;
+
+            characterStatus.CurrentHitPoint += hitPoints;
+            ServerSend.PlayerHp(this);
 
             if (characterStatus.CurrentHitPoint <= 0)
             {
