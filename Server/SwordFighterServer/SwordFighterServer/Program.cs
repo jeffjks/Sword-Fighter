@@ -13,9 +13,9 @@ namespace SwordFighterServer
 
             Server.Start(4, 26950);
 
+            isRunning = true;
             Thread mainThread = new Thread(new ThreadStart(MainThread));
             mainThread.Start();
-            isRunning = true;
         }
 
         private static void MainThread()
