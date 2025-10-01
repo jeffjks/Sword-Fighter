@@ -5,7 +5,7 @@ namespace SwordFighterServer
 {
     class Program
     {
-        private static bool isRunning = false;
+        private static volatile bool isRunning = false;
 
         static void Main(string[] args)
         {
@@ -28,7 +28,14 @@ namespace SwordFighterServer
             {
                 while (nextLoop < DateTime.Now) // 스레드를 사용하여 매 초 Constants.TICKS_PER_SEC 회 Update() 실행
                 {
-                    GameLogic.Update();
+                    try
+                    {
+                        GameLogic.Update();
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"[GameLoop] Update error: {ex}");
+                    }
 
                     nextLoop = nextLoop.AddMilliseconds(Constants.MS_PER_TICK);
 
