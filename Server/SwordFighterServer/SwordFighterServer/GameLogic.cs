@@ -6,18 +6,19 @@ namespace SwordFighterServer
 {
     class GameLogic
     {
-        private const float broadcastRate = 5f;
-        private static float broadcastTimer = 0f;
-        private static float deltaTime = 1f / Constants.TICKS_PER_SEC;
+        private static int broadcastTimer;
+        private readonly static int msPerTick = 1000 / Constants.TICKS_PER_SEC;
 
         public static int CurrentTick { get; private set; } = 0;
 
+        private const int BroadcastPeriodMs = 200;
+
         public static void Update()
         {
-            broadcastTimer += deltaTime;
+            broadcastTimer += msPerTick;
             CurrentTick++;
 
-            bool isBroadcasting = broadcastTimer >= 1f / broadcastRate;
+            bool isBroadcasting = broadcastTimer >= BroadcastPeriodMs;
 
             foreach (Client client in Server.clients.Values)
             {
@@ -32,19 +33,12 @@ namespace SwordFighterServer
             }
 
             if (isBroadcasting)
-                broadcastTimer -= 1f / broadcastRate;
+            {
+                // Console.WriteLine($"[Broadcast] CurrentTick: {CurrentTick}, ElapsedTime: {Server.ElapsedMs}, TickToTimestamp(CurrentTick): {Server.TickToTimestamp(CurrentTick)}");
+                broadcastTimer -= BroadcastPeriodMs;
+            }
 
             ThreadManager.UpdateMain();
-        }
-
-        public static int GetTickFromTimestamp(long timestamp)
-        {
-            long elapsedMs = timestamp - Server.serverStartTime;
-
-            if (elapsedMs <= 0)
-                return 0;
-
-            return (int) (elapsedMs / Constants.TICKS_PER_SEC); // 결과는 float (소수 Tick 가능)
         }
     }
 }

@@ -29,7 +29,7 @@ namespace SwordFighterServer
             if (_positionHistory.Count == 0)
                 return false;
 
-            var targetTick = GameLogic.GetTickFromTimestamp(targetTimestamp);
+            var targetTick = Server.TimestampToTick(targetTimestamp);
 
             var afterIndex = -1;
 

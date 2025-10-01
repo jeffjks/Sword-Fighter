@@ -10,23 +10,25 @@ namespace SwordFighterServer
         static void Main(string[] args)
         {
             Console.Title = "Server";
-            isRunning = true;
+
+            Server.Start(4, 26950);
 
             Thread mainThread = new Thread(new ThreadStart(MainThread));
             mainThread.Start();
-
-            Server.Start(4, 26950);
+            isRunning = true;
         }
 
         private static void MainThread()
         {
-            Console.WriteLine($"Main thread started. Running at {Constants.TICKS_PER_SEC} ticks per second.");
+            Console.WriteLine($"Main thread started. Running at {Constants.TICKS_PER_SEC} ticks per second."); ;
 
-            DateTime nextLoop = DateTime.Now;
+            int executedTicks = 0;
 
             while (isRunning)
             {
-                while (nextLoop < DateTime.Now) // 스레드를 사용하여 매 초 Constants.TICKS_PER_SEC 회 Update() 실행
+                long elapsedMs = Server.ElapsedMs;
+
+                while (executedTicks < Server.TargetTick) // 타겟 틱만큼 Update 실행
                 {
                     try
                     {
@@ -36,14 +38,16 @@ namespace SwordFighterServer
                     {
                         Console.WriteLine($"[GameLoop] Update error: {ex}");
                     }
-
-                    nextLoop = nextLoop.AddMilliseconds(Constants.MS_PER_TICK);
-
-                    if (nextLoop > DateTime.Now)
-                    {
-                        Thread.Sleep(nextLoop - DateTime.Now);
-                    }
+                    executedTicks++;
                 }
+
+                // 다음 틱까지 남은 시간만큼 Sleep
+                long nextTickMs = ((executedTicks + 1L) * 1000L) / Constants.TICKS_PER_SEC;
+                long sleepMs = nextTickMs - Server.ElapsedMs;
+                if (sleepMs > 0)
+                    Thread.Sleep((int)Math.Min(sleepMs, 2));
+                else
+                    Thread.Yield();
             }
         }
     }

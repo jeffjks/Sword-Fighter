@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Diagnostics;
 using System.Net;
 using System.Net.Sockets;
 
@@ -10,7 +10,7 @@ namespace SwordFighterServer
 {
     class Server
     {
-        public static long serverStartTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+        private static readonly Stopwatch Stopwatch = Stopwatch.StartNew();
 
         public static int MaxPlayers { get; private set; }
         public static int Port { get; private set; }
@@ -24,6 +24,18 @@ namespace SwordFighterServer
 
         private static SkillDatabase skillDatabase = new SkillDatabase();
         private static TcpListener tcpListener;
+
+        /// <summary>서버 시작 이후 경과 시간(ms)</summary>
+        public static long ElapsedMs => Stopwatch.ElapsedMilliseconds;
+
+        /// <summary>현재(ElapsedMs)까지 실행되어야 하는 목표 틱</summary>
+        public static int TargetTick => (int) (ElapsedMs * Constants.TICKS_PER_SEC / 1000L);
+
+        public static int TimestampToTick(long timestampMsSinceStart)
+            => (int) (timestampMsSinceStart * Constants.TICKS_PER_SEC / 1000L);
+
+        public static long TickToTimestamp(int tick)
+            => tick * 1000L / Constants.TICKS_PER_SEC;
 
         public static void Start(int maxPlayers, int port)
         {
