@@ -16,6 +16,7 @@ public class GameManager : MonoBehaviour
     public ObjectPooling m_ObjectPooling;
     [Space(10)]
     public bool m_DebugTestClients;
+    public bool m_DebugPing;
 
     [SerializeField] private int _pingMin, _pingMax;
 
@@ -46,7 +47,7 @@ public class GameManager : MonoBehaviour
             Destroy(this);
         }
 
-        IsDebugPing = _pingMin != 0 || _pingMax != 0;
+        IsDebugPing = m_DebugPing;
     }
 
     public int GetDebugPing()

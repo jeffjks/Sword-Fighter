@@ -38,7 +38,7 @@ public class PlayerMotor : MonoBehaviour
         m_PlayerMe.CurrentStateMachine.SetState(PlayerState.Move);
         Vector3 forwardDirection = m_PlayerController.GetForwardDirection();
 
-        var timestamp = TimeSync.GetSyncTime();
+        var timestamp = TimeSync.GetSyncedTime();
 
         var deltaPos = GetDeltaPosition();
 

@@ -30,7 +30,7 @@ public class PlayerOthers : PlayerManager
             _lastSeqNum = seqNum;
         }
 
-        long now = TimeSync.GetSyncTime();
+        long now = TimeSync.GetSyncedTime();
         int delay = Mathf.Clamp((int) (now - timestamp), 0, MaxPredictionTime); // 예측 제한 500ms
         
         _prevPosition = m_RealPosition; // 현재 위치

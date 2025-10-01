@@ -15,32 +15,32 @@ public class TimeSync : MonoBehaviour
 
     private void Update()
     {
-        if (!_waitingForResponse && GetSyncTime() - _lastSyncTime >= RequestInterval)
+        if (!_waitingForResponse && GetSyncedTime() - _lastSyncTime >= RequestInterval)
         {
             StartTimeSync();
         }
     }
 
-    public static long GetSyncTime()
+    public static long GetSyncedTime()
     {
-        return GetLocalUnixTime() + _timeOffset;
+        return GetLocalTimeMs() + _timeOffset;
     }
 
-    public static long GetLocalUnixTime()
+    public static long GetLocalTimeMs()
     {
-        return DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+        return (long) (Time.realtimeSinceStartup * 1000f);
     }
 
     public static void OnServerTimeResponse(long serverTime, long clientSendTime)
     {
-        var clientReceiveTime = GetLocalUnixTime();
+        var clientReceiveTime = GetLocalTimeMs();
         var rtt = clientReceiveTime - clientSendTime;
         var halfRtt = rtt / 2L;
 
         long estimatedServerTime = serverTime + halfRtt;
         _timeOffset = estimatedServerTime - clientReceiveTime;
         _waitingForResponse = false;
-        _lastSyncTime = GetSyncTime();
+        _lastSyncTime = GetSyncedTime();
         
         Action_OnPingUpdate?.Invoke((int) rtt);
     }

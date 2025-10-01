@@ -54,7 +54,7 @@ public class PlayerController : MonoBehaviour
         if (m_PlayerMe.CurrentState == PlayerState.UsingSkill)
             return;
 
-        var timestamp = TimeSync.GetSyncTime();
+        var timestamp = TimeSync.GetSyncedTime();
         var facingDirection = GetForwardDirection();
 
 

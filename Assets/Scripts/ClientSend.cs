@@ -36,7 +36,7 @@ public class ClientSend : MonoBehaviour
 
     public static void RequestServerTime() {
         Packet packet = new ((int) ClientPackets.requestServerTime);
-        long clientTime = TimeSync.GetLocalUnixTime();
+        long clientTime = TimeSync.GetLocalTimeMs();
         packet.Write(clientTime);
         SendTCPData(packet);
     }

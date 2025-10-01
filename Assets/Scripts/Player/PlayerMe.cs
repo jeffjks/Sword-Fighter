@@ -49,7 +49,7 @@ public class PlayerMe : PlayerManager
         using (StreamWriter writer = new ($"{GameManager.dirReceived}/received.txt", append: true))
         {
             var queueString = string.Join(", ", ClientInputQueue.Select(i => $"[{i.timestamp}]"));
-            writer.WriteLine($"[{seqNum}, {timestamp}] ClientReceived: {position}), [{TimeSync.GetSyncTime()}] {m_RealPosition}");
+            writer.WriteLine($"[{seqNum}, {timestamp}] ClientReceived: {position}), [{TimeSync.GetSyncedTime()}] {m_RealPosition}");
             //writer.WriteLine($"\t{queueString}");
         }
 #endif

@@ -28,7 +28,7 @@ public class TimedState
 
     public void SendBlockEndToServer()
     {
-        var timestamp = TimeSync.GetSyncTime();
+        var timestamp = TimeSync.GetSyncedTime();
         ClientSend.SetBlockState(timestamp, false);
     }
 }
