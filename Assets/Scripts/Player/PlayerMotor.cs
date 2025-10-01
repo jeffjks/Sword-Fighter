@@ -13,10 +13,10 @@ public class PlayerMotor : MonoBehaviour
 
     private void Update()
     {
-        SimulateMove();
+        SimulateMovement();
     }
 
-    private void SimulateMove()
+    private void SimulateMovement()
     {
         var inputVector = m_PlayerController.InputVector;
 

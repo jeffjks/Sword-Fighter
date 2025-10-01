@@ -170,7 +170,7 @@ namespace SwordFighterServer
             ExecutePlayerSkill(input);
         }
 
-        public void ExecutePlayerSkill(SkillInput skillInput)
+        private void ExecutePlayerSkill(SkillInput skillInput)
         {
             if (currentState == PlayerState.Idle || currentState == PlayerState.Move)
             {
