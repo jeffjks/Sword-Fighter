@@ -171,7 +171,7 @@ namespace SwordFighterServer
 
         public void SendServerTime(long clientTime)
         {
-            var serverTime = Server.GetUnixTime();
+            var serverTime = Server.ElapsedMs;
 
             ServerSend.SendServerTime(id, serverTime, clientTime);
         }

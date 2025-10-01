@@ -104,12 +104,5 @@ namespace SwordFighterServer
         {
             return spawnedPlayers.Contains(playerId);
         }
-
-        public static long GetUnixTime()
-        {
-            var unixMs = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
-
-            return unixMs;
-        }
     }
 }

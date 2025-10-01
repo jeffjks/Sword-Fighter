@@ -112,7 +112,7 @@ namespace SwordFighterServer
             {
                 Task = action
             };
-            _scheduledTasks.Enqueue(task, Server.GetUnixTime() + delayMs);
+            _scheduledTasks.Enqueue(task, Server.ElapsedMs + delayMs);
         }
 
         public void AddSchedule(Action action, long delayMs)
@@ -121,12 +121,12 @@ namespace SwordFighterServer
             {
                 Task = action
             };
-            _scheduledTasks.Enqueue(task, Server.GetUnixTime() + delayMs);
+            _scheduledTasks.Enqueue(task, Server.ElapsedMs + delayMs);
         }
 
         private void ExecuteSchedule()
         {
-            long now = Server.GetUnixTime();
+            long now = Server.ElapsedMs;
 
             while (_scheduledTasks.TryPeek(out var element, out var timestamp))
             {
@@ -176,7 +176,7 @@ namespace SwordFighterServer
             {
                 currentState = PlayerState.UsingSkill;
                 currentSkill = skillInput.playerSkill;
-                var serverTime = Server.GetUnixTime();
+                var serverTime = Server.ElapsedMs;
                 deltaPos = Vector3.Zero;
                 inputVector = Vector2.Zero;
                 Vector3 targetPosition = position;
@@ -228,7 +228,7 @@ namespace SwordFighterServer
 
         public void BroadcastPlayer()
         {
-            ServerSend.UpdatePlayerPosition(-1, this, Server.GetUnixTime(), true);
+            ServerSend.UpdatePlayerPosition(-1, this, Server.ElapsedMs, true);
         }
 
         private bool IsWithinBlockAngle(int fromId)
