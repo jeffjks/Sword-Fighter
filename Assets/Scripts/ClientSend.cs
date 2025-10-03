@@ -15,10 +15,13 @@ public class ClientSend : MonoBehaviour
 
     private static async UniTaskVoid SendTCPDataAsync(Packet packet)
     {
-        int ping = GameManager.instance.GetDebugPing() / 2;
+        if (GameManager.IsDebugPing)
+        {
+            int ping = GameManager.instance.GetDebugPing() / 2;
 
-        if (ping > 0)
-            await UniTask.Delay(ping);
+            if (ping > 0)
+                await UniTask.Delay(ping);
+        }
 
         packet.WriteLength(); // 패킷 길이 쓰기
         await Client.instance.tcp.SendDataAsync(packet);
