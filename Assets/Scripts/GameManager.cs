@@ -10,9 +10,12 @@ public class GameManager : MonoBehaviour
 
     public static Dictionary<int, PlayerManager> players = new ();
 
+    private bool isInGame = false;
+
     //public GameObject localPlayerPrefab;
     //public GameObject playerPrefab;
     public UIManager m_UIManager;
+    public InGameManager m_InGameManager;
     public ObjectPooling m_ObjectPooling;
     [Space(10)]
     public bool m_DebugTestClients;
@@ -21,6 +24,15 @@ public class GameManager : MonoBehaviour
     [SerializeField] private int _pingMin, _pingMax;
 
     public static bool IsDebugPing;
+    public static bool InGame {
+        get {
+            return instance.isInGame;
+        }
+        set {
+            instance.isInGame = value;
+            instance.m_InGameManager.gameObject.SetActive(value);
+        }
+    }
 
     [HideInInspector]
     public PlayerController m_PlayerController;

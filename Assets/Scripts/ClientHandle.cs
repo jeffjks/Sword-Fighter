@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Shared.Enums;
 
-public class ClientHandle : MonoBehaviour
+public class ClientHandle
 {
     public static void Welcome(Packet packet) { // msg 후 toClient 읽기
         string msg = packet.ReadString();

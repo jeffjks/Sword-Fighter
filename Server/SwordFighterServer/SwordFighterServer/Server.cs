@@ -8,7 +8,7 @@ using System.Net.Sockets;
 
 namespace SwordFighterServer
 {
-    class Server
+    public class Server
     {
         private static readonly Stopwatch Stopwatch = Stopwatch.StartNew();
 
@@ -22,7 +22,6 @@ namespace SwordFighterServer
         public static HashSet<int> spawnedPlayers = new HashSet<int>();
 
 
-        private static SkillDatabase skillDatabase = new SkillDatabase();
         private static TcpListener tcpListener;
 
         /// <summary>서버 시작 이후 경과 시간(ms)</summary>

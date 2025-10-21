@@ -5,7 +5,7 @@ using Cysharp.Threading.Tasks;
 using System.IO;
 using Shared.Enums;
 
-public class ClientSend : MonoBehaviour
+public class ClientSend
 {
     private static int SeqNum;
 

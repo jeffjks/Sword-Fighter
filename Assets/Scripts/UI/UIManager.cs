@@ -10,7 +10,6 @@ public class UIManager : MonoBehaviour
     public static UIManager instance;
 
     public GameObject m_StartMenu;
-    public GameObject m_InGameMenu;
     public UI_ChatInputField m_UI_ChatInputField;
     public UI_ChatWindow m_UI_ChatWindow;
     public InputField m_IpAdressField;
@@ -19,7 +18,6 @@ public class UIManager : MonoBehaviour
     public Text m_ErrorText;
 
     private ObjectPooling m_ObjectPooling;
-    private bool m_Ingame = false;
 
     private void Awake() // Singleton
     {
@@ -94,11 +92,10 @@ public class UIManager : MonoBehaviour
             return;
         }
         m_StartMenu.SetActive(false);
-        m_InGameMenu.SetActive(true);
         m_UsernameField.interactable = false;
         m_UI_HpBarMain.FillMainHpBar(1f);
         m_ErrorText.text = string.Empty;
-        m_Ingame = true;
+        GameManager.InGame = true;
         m_ObjectPooling.Init(3);
 
         if (!await ConnetcToChatServer()) {
@@ -115,21 +112,20 @@ public class UIManager : MonoBehaviour
         m_UI_ChatInputField.CloseChatInputField();
 
         m_StartMenu.SetActive(true);
-        m_InGameMenu.SetActive(false);
         m_UsernameField.interactable = true;
-        m_Ingame = false;
+        GameManager.InGame = false;
     }
 
     public void OnExit()
     {
-        if (m_Ingame == false)
+        if (GameManager.InGame == false)
             return;
         ReturnToMainMenu();
     }
     
 
     void Update() {
-        if (m_Ingame) {
+        if (GameManager.InGame) {
             if (Client.instance.enabled && !Client.instance.IsConnected()) {
                 ReturnToMainMenu();
             }

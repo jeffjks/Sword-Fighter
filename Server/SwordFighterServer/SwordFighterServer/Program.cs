@@ -6,12 +6,15 @@ namespace SwordFighterServer
     class Program
     {
         private static volatile bool isRunning = false;
+        private const int Port_TCP = 26950;
+        private const int Port_UDP = 26951;
 
         static void Main(string[] args)
         {
             Console.Title = "Server";
 
-            Server.Start(4, 26950);
+            Server.Start(4, Port_TCP);
+            ServerPing.Start(Port_UDP);
 
             isRunning = true;
             Thread mainThread = new Thread(new ThreadStart(MainThread));

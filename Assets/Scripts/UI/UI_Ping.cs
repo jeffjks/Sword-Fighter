@@ -7,12 +7,12 @@ public class UI_Ping : MonoBehaviour
 
     private void OnEnable()
     {
-        TimeSync.Action_OnPingUpdate += UpdatePingText;
+        ClientPing.Action_OnPingUpdate += UpdatePingText;
     }
 
     private void OnDisable()
     {
-        TimeSync.Action_OnPingUpdate -= UpdatePingText;
+        ClientPing.Action_OnPingUpdate -= UpdatePingText;
     }
 
     private void UpdatePingText(int ping)

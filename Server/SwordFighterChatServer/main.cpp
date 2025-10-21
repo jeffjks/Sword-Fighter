@@ -7,6 +7,7 @@ using boost::asio::ip::tcp;
 
 int main(int argc, char* argv[]) {
     SetConsoleOutputCP(CP_UTF8);
+    SetConsoleTitleW(L"SwordFighter Chat Server");
 
     try {
         if (argc < 2) {
