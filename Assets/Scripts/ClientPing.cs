@@ -35,6 +35,8 @@ public class ClientPing
             _pingSeqSent.Add(seq, clientSendTime);
             await udp.SendAsync(sendBuf, sendBuf.Length, remote);
 
+            long clientReceiveTime = TimeSync.GetLocalTimeMs();
+            
             var recvTask = udp.ReceiveAsync();
             var timeoutTask = Task.Delay(timeoutMs);
 
@@ -45,7 +47,6 @@ public class ClientPing
                 return;
             }
 
-            long clientReceiveTime = TimeSync.GetLocalTimeMs();
             var res = recvTask.Result;
             var buf = res.Buffer;
 
