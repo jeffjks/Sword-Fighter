@@ -19,7 +19,7 @@ public class ClientPing
     private static readonly Dictionary<uint, long> _pingSeqSent = new Dictionary<uint, long>();
     public static event UnityAction<int> Action_OnPingUpdate;
 
-    public static async UniTaskVoid SendPingAsync(string host, uint seq)
+    public static async UniTask SendPingAsync(string host, uint seq)
     {
         try
         {

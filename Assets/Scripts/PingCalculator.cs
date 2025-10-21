@@ -1,4 +1,5 @@
 using UnityEngine;
+using Cysharp.Threading.Tasks;
 
 public class PingCalculator : MonoBehaviour
 {
@@ -21,7 +22,6 @@ public class PingCalculator : MonoBehaviour
 
     private void SendPint()
     {
-        Debug.Log($"Send Ping: {Seq}");
         ClientPing.SendPingAsync(Client.instance.defaultIp, Seq).Forget();
         Seq++;
 
