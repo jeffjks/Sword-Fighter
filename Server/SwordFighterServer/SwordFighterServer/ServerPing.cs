@@ -64,10 +64,14 @@ namespace SwordFighterServer
                     var buf = recv.Buffer;
                     var remote = recv.RemoteEndPoint;
 
-                    if (buf.Length < 4 + 4 + 8)
+                    if (buf.Length < 8)
+                    {
                         continue;
+                    }
                     if (BinaryPrimitives.ReadUInt32LittleEndian(buf) != PING)
+                    {
                         continue;
+                    }
 
                     uint seq = BinaryPrimitives.ReadUInt32LittleEndian(buf.AsSpan(4));
 

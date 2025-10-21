@@ -45,10 +45,9 @@ public class ClientPing
                 return;
             }
 
+            long clientReceiveTime = TimeSync.GetLocalTimeMs();
             var res = recvTask.Result;
             var buf = res.Buffer;
-            long clientReceiveTime = TimeSync.GetLocalTimeMs();
-            Debug.Log("A");
 
             if (buf.Length < 8)
                 return;
@@ -58,7 +57,6 @@ public class ClientPing
                 return;
 
             var rtt = clientReceiveTime - clientSendTime;
-            Debug.Log("B: " + rtt);
             Action_OnPingUpdate?.Invoke((int) rtt);
 
             return;
