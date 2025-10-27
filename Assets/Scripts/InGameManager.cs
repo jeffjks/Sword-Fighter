@@ -6,11 +6,13 @@ public class InGameManager : MonoBehaviour
 
     private void OnEnable()
     {
-        m_InGameMenu.SetActive(true);
+        if (m_InGameMenu != null)
+            m_InGameMenu.SetActive(true);
     }
 
     private void OnDisable()
     {
-        m_InGameMenu.SetActive(false);
+        if (m_InGameMenu != null)
+            m_InGameMenu.SetActive(false);
     }
 }
