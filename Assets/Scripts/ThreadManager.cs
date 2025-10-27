@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class ThreadManager : MonoBehaviour
 {
-    private static readonly List<Action> executeOnMainThread = new List<Action>();
-    private static readonly List<Action> executeCopiedOnMainThread = new List<Action>();
+    private static readonly List<UnityAction> executeOnMainThread = new List<UnityAction>();
+    private static readonly List<UnityAction> executeCopiedOnMainThread = new List<UnityAction>();
     private static bool actionToExecuteOnMainThread = false;
 
     private void Update()
@@ -15,7 +16,7 @@ public class ThreadManager : MonoBehaviour
 
     /// <summary>Sets an action to be executed on the main thread.</summary>
     /// <param name="_action">The action to be executed on the main thread.</param>
-    public static void ExecuteOnMainThread(Action _action)
+    public static void ExecuteOnMainThread(UnityAction _action)
     {
         if (_action == null)
         {

@@ -108,7 +108,7 @@ public abstract class ClientBase : MonoBehaviour
             {
                 while (true)
                 {
-                    int byteLength = await _stream.ReadAsync(_receiveBuffer, 0, dataBufferSize);
+                    int byteLength = await _stream.ReadAsync(_receiveBuffer, 0, dataBufferSize).ConfigureAwait(false);
 
                     if (byteLength <= 0)
                     {
@@ -134,7 +134,7 @@ public abstract class ClientBase : MonoBehaviour
             {
                 if (socket != null && _stream != null)
                 {
-                    await _stream.WriteAsync(packet.ToArray(), 0, packet.Length());
+                    await _stream.WriteAsync(packet.ToArray(), 0, packet.Length()).ConfigureAwait(false);
                 }
             }
             catch (Exception e)

@@ -42,8 +42,6 @@ public class TimeSync : MonoBehaviour
         _timeOffset = estimatedServerTime - clientReceiveTime;
         _waitingForResponse = false;
         _lastSyncTime = GetSyncedTime();
-
-        Debug.Log($"TCP Ping: {rtt}");
     }
 
     private void StartTimeSync()
