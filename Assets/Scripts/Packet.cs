@@ -50,9 +50,9 @@ public enum ChatClientPackets
     chatClientMessage
 }
 
-public class Packet : IDisposable
+public class Packet
 {
-    private List<byte> buffer;
+    private readonly List<byte> buffer;
     private byte[] readableBuffer;
     private int readPos;
 
@@ -443,27 +443,4 @@ public class Packet : IDisposable
         return new Quaternion(ReadFloat(_moveReadPos), ReadFloat(_moveReadPos), ReadFloat(_moveReadPos), ReadFloat(_moveReadPos));
     }
     #endregion
-
-    private bool disposed = false;
-
-    protected virtual void Dispose(bool _disposing)
-    {
-        if (!disposed)
-        {
-            if (_disposing)
-            {
-                buffer = null;
-                readableBuffer = null;
-                readPos = 0;
-            }
-
-            disposed = true;
-        }
-    }
-
-    public void Dispose()
-    {
-        Dispose(true);
-        GC.SuppressFinalize(this);
-    }
 }

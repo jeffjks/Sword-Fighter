@@ -25,7 +25,6 @@ public class ClientSend
 
         packet.WriteLength(); // 패킷 길이 쓰기
         await Client.instance.tcp.SendDataAsync(packet);
-        packet.Dispose();
     }
 
     #region Packets

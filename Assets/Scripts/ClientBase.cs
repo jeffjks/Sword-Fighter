@@ -167,11 +167,10 @@ public abstract class ClientBase : MonoBehaviour
                 {
                     ThreadManager.ExecuteOnMainThread(() =>
                     {
-                        using (Packet packet = new (packetBytes)) {
-                            int packetId = packet.ReadInt(); // 패킷 종류 (SpawnPlayer, PlayerMovement, ChatMessage 등)
-                            if (instance.IsConnected()) { // 접속 종료 시 패킷 처리 중지
-                                instance.PacketHandlers[packetId](packet);
-                            }
+                        var packet = new Packet(packetBytes);
+                        int packetId = packet.ReadInt(); // 패킷 종류 (SpawnPlayer, PlayerMovement, ChatMessage 등)
+                        if (instance.IsConnected()) { // 접속 종료 시 패킷 처리 중지
+                            instance.PacketHandlers[packetId](packet);
                         }
                     });
                 }
@@ -201,12 +200,14 @@ public abstract class ClientBase : MonoBehaviour
             if (ping > 0)
                 await UniTask.Delay(ping);
 
-            using (Packet packet = new (packetBytes)) {
-                int packetId = packet.ReadInt();
-                if (instance.IsConnected()) {
+            ThreadManager.ExecuteOnMainThread(() =>
+            {
+                var packet = new Packet(packetBytes);
+                int packetId = packet.ReadInt(); // 패킷 종류 (SpawnPlayer, PlayerMovement, ChatMessage 등)
+                if (instance.IsConnected()) { // 접속 종료 시 패킷 처리 중지
                     instance.PacketHandlers[packetId](packet);
                 }
-            }
+            });
         }
 
         private void Disconnect() {
