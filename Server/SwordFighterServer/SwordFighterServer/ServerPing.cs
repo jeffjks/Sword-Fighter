@@ -59,7 +59,6 @@ namespace SwordFighterServer
                         Console.WriteLine($"[UDP] Receive error: {ex.Message}");
                         continue;
                     }
-                    Console.WriteLine($"[UDP] Received Something");
 
                     var buf = recv.Buffer;
                     var remote = recv.RemoteEndPoint;
@@ -74,6 +73,7 @@ namespace SwordFighterServer
                     }
 
                     uint seq = BinaryPrimitives.ReadUInt32LittleEndian(buf.AsSpan(4));
+                    Console.WriteLine($"[UDP] Ping Received: {seq}");
 
                     byte[] rsp = new byte[8];
                     BinaryPrimitives.WriteUInt32LittleEndian(rsp, PONG);

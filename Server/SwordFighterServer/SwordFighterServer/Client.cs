@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Net;
 using System.Net.Sockets;
 using System.Numerics;
@@ -16,36 +15,40 @@ namespace SwordFighterServer
         public Player player;
         public TCP tcp;
 
+        public bool isConnected = false;
+
         public Client(int id)
         {
             this.id = id;
-            tcp = new TCP(id);
+            tcp = new TCP(this, id);
         }
 
         public class TCP
         {
-            public TcpClient socket;
+            public TcpClient _socket;
 
+            private readonly Client instance;
             private readonly int id;
-            private NetworkStream stream;
-            private Packet receivedData;
-            private byte[] receiveBuffer;
+            private NetworkStream _stream;
+            private Packet _receivedData;
+            private byte[] _receiveBuffer;
 
-            public TCP(int id)
+            public TCP(Client client, int id)
             {
+                instance = client;
                 this.id = id;
             }
 
             public void Connect(TcpClient socket)
             {
-                this.socket = socket;
+                _socket = socket;
                 socket.ReceiveBufferSize = dataBufferSize;
                 socket.SendBufferSize = dataBufferSize;
 
-                stream = socket.GetStream();
+                _stream = socket.GetStream();
 
-                receivedData = new Packet();
-                receiveBuffer = new byte[dataBufferSize];
+                _receivedData = new Packet();
+                _receiveBuffer = new byte[dataBufferSize];
 
                 _ = ReceiveLoopAsync();
 
@@ -58,7 +61,7 @@ namespace SwordFighterServer
                 {
                     while (true)
                     {
-                        int byteLength = await stream.ReadAsync(receiveBuffer, 0, dataBufferSize);
+                        int byteLength = await _stream.ReadAsync(_receiveBuffer, 0, dataBufferSize);
 
                         if (byteLength <= 0)
                         {
@@ -67,9 +70,9 @@ namespace SwordFighterServer
                         }
 
                         byte[] data = new byte[byteLength];
-                        Array.Copy(receiveBuffer, data, byteLength);
+                        Array.Copy(_receiveBuffer, data, byteLength);
 
-                        receivedData.Reset(HandleData(data));
+                        _receivedData.Reset(HandleData(data));
                     }
                 }
                 catch (Exception e)
@@ -83,9 +86,9 @@ namespace SwordFighterServer
             {
                 try
                 {
-                    if (socket != null && stream != null)
+                    if (_socket != null && _stream != null)
                     {
-                        await stream.WriteAsync(packet.ToArray(), 0, packet.Length());
+                        await _stream.WriteAsync(packet.ToArray(), 0, packet.Length());
                     }
                 }
                 catch (Exception e)
@@ -98,29 +101,29 @@ namespace SwordFighterServer
             {
                 int packetLength = 0;
 
-                receivedData.SetBytes(data); // Add data
+                _receivedData.SetBytes(data); // Add data
 
-                if (receivedData.UnreadLength() >= 4) // Read packetLength
+                if (_receivedData.UnreadLength() >= 4) // Read packetLength
                 {
-                    packetLength = receivedData.ReadInt();
+                    packetLength = _receivedData.ReadInt();
                     if (packetLength <= 0)
                     {
                         return true;
                     }
                 }
 
-                while (packetLength > 0 && packetLength <= receivedData.UnreadLength())
+                while (packetLength > 0 && packetLength <= _receivedData.UnreadLength())
                 {
-                    byte[] packetBytes = receivedData.ReadBytes(packetLength); // receivedData에서 packetLength만큼 다 읽음
+                    byte[] packetBytes = _receivedData.ReadBytes(packetLength); // receivedData에서 packetLength만큼 다 읽음
 
                     Packet packet = new Packet(packetBytes);
                     int packetId = packet.ReadInt();
                     Server.packetHandlers[packetId](id, packet);
 
                     packetLength = 0;
-                    if (receivedData.UnreadLength() >= 4) // byte가 남았다면 packetLength를 읽고 다시 읽기 진행
+                    if (_receivedData.UnreadLength() >= 4) // byte가 남았다면 packetLength를 읽고 다시 읽기 진행
                     {
-                        packetLength = receivedData.ReadInt();
+                        packetLength = _receivedData.ReadInt();
                         if (packetLength <= 0)
                         {
                             return true;
@@ -138,11 +141,15 @@ namespace SwordFighterServer
 
             public void Disconnect()
             {
-                socket.Close();
-                stream = null;
-                receivedData = null;
-                receiveBuffer = null;
-                socket = null;
+                _stream?.Close();
+                _stream = null;
+                _socket?.Close();
+                _socket = null;
+
+                _receivedData = null;
+                _receiveBuffer = null;
+
+                instance.isConnected = false;
             }
         }
 
@@ -178,7 +185,11 @@ namespace SwordFighterServer
 
         private void Disconnect()
         {
-            Console.WriteLine($"{tcp.socket.Client.RemoteEndPoint} has disconnected.");
+            if (isConnected == false)
+                return;
+            isConnected = false;
+
+            Console.WriteLine($"{tcp._socket.Client.RemoteEndPoint} has disconnected.");
 
             player = null;
             tcp.Disconnect();

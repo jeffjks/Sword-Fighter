@@ -21,6 +21,8 @@ namespace SwordFighterServer
 
         public static HashSet<int> spawnedPlayers = new HashSet<int>();
 
+        private static SkillDatabase _skillDatabase;
+
 
         private static TcpListener tcpListener;
 
@@ -60,7 +62,7 @@ namespace SwordFighterServer
             
             for (int i = 1; i <= MaxPlayers; i++) // 비어있는 가장 첫 clients Dictionary에 배정
             {
-                if (clients[i].tcp.socket == null)
+                if (clients[i].tcp._socket == null)
                 {
                     clients[i].tcp.Connect(client);
                     CurrentPlayers++;
@@ -89,6 +91,9 @@ namespace SwordFighterServer
                 { (int) ClientPackets.changeHp, ServerHandle.ChangeHp },
                 { (int) ClientPackets.setBlockState, ServerHandle.SetBlockState },
             };
+
+            _skillDatabase = new();
+
             Console.WriteLine("Initialized packets.");
         }
 

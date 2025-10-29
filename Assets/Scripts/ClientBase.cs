@@ -210,19 +210,24 @@ public abstract class ClientBase : MonoBehaviour
             });
         }
 
-        private void Disconnect() {
-            instance.Disconnect();
-
+        public void Disconnect() {
+            _stream?.Close();
             _stream = null;
+            socket?.Close();
+            socket = null;
+
             _receivedData = null;
             _receiveBuffer = null;
-            socket = null;
+
+            instance.isConnected = false;
         }
     }
 
-    virtual public void Disconnect() {
+    public virtual void Disconnect() {
+        if (isConnected == false)
+            return;
         isConnected = false;
-        tcp.socket.Close();
+        tcp?.Disconnect();
     }
 
     public bool IsConnected() {
