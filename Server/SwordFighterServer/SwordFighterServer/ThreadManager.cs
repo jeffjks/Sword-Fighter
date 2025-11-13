@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Text;
 
@@ -6,44 +7,27 @@ namespace SwordFighterServer
 {
     class ThreadManager
     {
-        private static readonly List<Action> executeOnMainThread = new List<Action>();
-        private static readonly List<Action> executeCopiedOnMainThread = new List<Action>();
-        private static bool actionToExecuteOnMainThread = false;
+        private static readonly ConcurrentQueue<Action> _executeOnMainThread = new ConcurrentQueue<Action>();
 
         /// <summary>Sets an action to be executed on the main thread.</summary>
-        /// <param name="_action">The action to be executed on the main thread.</param>
-        public static void ExecuteOnMainThread(Action _action)
+        /// <param name="action">The action to be executed on the main thread.</param>
+        public static void ExecuteOnMainThread(Action action)
         {
-            if (_action == null)
+            if (action == null)
             {
                 Console.WriteLine("No action to execute on main thread!");
                 return;
             }
 
-            lock (executeOnMainThread)
-            {
-                executeOnMainThread.Add(_action);
-                actionToExecuteOnMainThread = true;
-            }
+            _executeOnMainThread.Enqueue(action);
         }
 
         /// <summary>Executes all code meant to run on the main thread. NOTE: Call this ONLY from the main thread.</summary>
         public static void UpdateMain()
         {
-            if (actionToExecuteOnMainThread)
+            while (_executeOnMainThread.TryDequeue(out var action))
             {
-                executeCopiedOnMainThread.Clear();
-                lock (executeOnMainThread)
-                {
-                    executeCopiedOnMainThread.AddRange(executeOnMainThread);
-                    executeOnMainThread.Clear();
-                    actionToExecuteOnMainThread = false;
-                }
-
-                for (int i = 0; i < executeCopiedOnMainThread.Count; i++)
-                {
-                    executeCopiedOnMainThread[i]();
-                }
+                action?.Invoke();
             }
         }
     }
