@@ -185,8 +185,6 @@ namespace SwordFighterServer
 
         private void Disconnect()
         {
-            if (isConnected == false)
-                return;
             isConnected = false;
 
             Console.WriteLine($"{tcp._socket.Client.RemoteEndPoint} has disconnected.");

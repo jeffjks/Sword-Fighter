@@ -224,10 +224,10 @@ public abstract class ClientBase : MonoBehaviour
     }
 
     public virtual void Disconnect() {
-        if (isConnected == false)
-            return;
-        isConnected = false;
+        tcp.socket.Close();
         tcp?.Disconnect();
+        
+        isConnected = false;
     }
 
     public bool IsConnected() {

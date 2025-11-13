@@ -5,9 +5,6 @@ using System.Threading.Tasks;
 
 public class PingManager : MonoBehaviour
 {
-    private int _pingTimer;
-    private static bool IsRunning;
-
     private CancellationTokenSource _cts;
 
     private void Start()
@@ -24,5 +21,10 @@ public class PingManager : MonoBehaviour
     public void StopPingLoop()
     {
         _cts?.Cancel();
+    }
+
+    private void OnDestroy()
+    {
+        StopPingLoop();
     }
 }
