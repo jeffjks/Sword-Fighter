@@ -47,6 +47,7 @@ public class TimeSync : MonoBehaviour
     private void StartTimeSync()
     {
         _waitingForResponse = true;
-        ClientSend.RequestServerTime();
+        long clientTime = NowMs();
+        ClientSend.RequestServerTime(clientTime);
     }
 }

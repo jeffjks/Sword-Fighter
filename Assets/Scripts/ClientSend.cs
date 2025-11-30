@@ -36,9 +36,8 @@ public class ClientSend
         SendTCPData(packet);
     }
 
-    public static void RequestServerTime() {
+    public static void RequestServerTime(long clientTime) {
         Packet packet = new ((int) ClientPackets.requestServerTime);
-        long clientTime = TimeSync.NowMs();
         packet.Write(clientTime);
         SendTCPData(packet);
     }
