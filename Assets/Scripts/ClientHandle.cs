@@ -14,8 +14,9 @@ public class ClientHandle
         
         ChatClientSend.SendNetworkMessage(new WelcomeReqDTO(myId)); // 채팅 서버에 서버로부터 받은 userID 전송
 
+        long clientTime = TimeSync.NowMs();
         ClientSend.WelcomeReceived();
-        ClientSend.RequestServerTime();
+        ClientSend.RequestServerTime(clientTime);
     }
 
     public static void RequestServerTime(Packet packet) {
